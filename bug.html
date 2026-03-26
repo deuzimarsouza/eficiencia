@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Developer Bug Log</title>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @font-face{
+            font-family: "BricolageBold";
+            src: url("fonts/BricolageGrotesque-Bold.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageMedium";
+            src: url("fonts/BricolageGrotesque-Medium.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageRegular";
+            src: url("fonts/BricolageGrotesque-Regular.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageLight";
+            src: url("fonts/BricolageGrotesque-Light.otf");
+        }
+
+        body {
+            font-family: "BricolageRegular";
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            padding: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 { margin-bottom: 10px; font-size: 24pt; font-weight: 600; color: blue;}
+        p.subtitle { font-size: 12pt; }
+
+        .version-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(0, 0, 255, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 255, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .version-number {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .version-date {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .bug-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bug-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .badge-fix { background-color: rgb(0, 170, 119); color: white; }
+        .badge-imp { background-color: rgb(119, 0, 255); color: white; }
+
+        .bug-description { line-height: 1.5; }
+
+        /* Filtro de busca simples */
+        #searchBar {
+            width: 100%;
+            font-family: "BricolageMedium";
+            padding: 14px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 0, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>aprimoramento<br>e correções de bugs</h1>
+            <p class="subtitle">acompanhe a evolução do projeto.</p>
+        </header>
+
+        <input type="text" id="searchBar" placeholder="Filtrar por versão ou correção..." onkeyup="filterLogs()">
+
+        <div id="logs-container">
+
+
+
+            <article class="version-card">
+                <div class="version-header">
+                    <span class="version-number">v 0.3</span>
+                    <span class="version-date">07 de Janeiro, 2026</span>
+                </div>
+                <ul class="bug-list">
+                    <li class="bug-item">
+                        <span class="badge badge-fix">Fixed</span>
+                        <div class="bug-description">Removendo o erro de clicar duas vezes na tela o aplicativo usar efeito zoom.</div>
+                    </li>
+                    <li class="bug-item">
+                        <span class="badge badge-imp">Improved</span>
+                        <div class="bug-description">Refinamento no design dos icones.</div>
+                    </li>
+                    <li class="bug-item">
+                        <span class="badge badge-imp">Improved</span>
+                        <div class="bug-description">Substituindo a fonte do texto e interface anterior para melhorar a leitura do usuario em diferentes dispositivos.</div>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="version-card">
+                <div class="version-header">
+                    <span class="version-number">v 0.2</span>
+                    <span class="version-date">07 de Janeiro, 2026</span>
+                </div>
+                <ul class="bug-list">
+                    <li class="bug-item">
+                        <span class="badge badge-fix">Fixed</span>
+                        <div class="bug-description">Corrigido erro de renderização dos icones ao carregar a pagina.</div>
+                    </li>
+                    <li class="bug-item">
+                        <span class="badge badge-imp">Improved</span>
+                        <div class="bug-description">Mantendo a velocidade de inicialização do aplicativo em 90%.</div>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="version-card">
+                <div class="version-header">
+                    <span class="version-number">v 0.1</span>
+                    <span class="version-date">05 de Janeiro, 2026</span>
+                </div>
+                <ul class="bug-list">
+                    <li class="bug-item">
+                        <span class="badge badge-fix">Fixed</span>
+                        <div class="bug-description">Correção da inicialização de interatividade com usuario.</div>
+                    </li>
+                </ul>
+            </article>
+        </div>
+    </div>
+
+    <script>
+        function filterLogs() {
+            const input = document.getElementById('searchBar').value.toLowerCase();
+            const cards = document.getElementsByClassName('version-card');
+
+            for (let card of cards) {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(input) ? "block" : "none";
+            }
+        }
+    </script>
+</body>
+</html>

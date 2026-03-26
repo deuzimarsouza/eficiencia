@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Produção Pro - Leidiane</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --border: #e2e8f0;
+}
+
+@font-face{
+    font-family: "BricolageBold";
+    src: url("fonts/BricolageGrotesque-Bold.otf");
+}
+
+@font-face{
+    font-family: "BricolageRegular";
+    src: url("fonts/BricolageGrotesque-Regular.otf");
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 450px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 3px solid rgba(0, 0, 255, 0.2);
+    padding: 25px;
+    margin-bottom: 15px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-family: "BricolageBold";
+}
+
+header p {
+    font-size: 1rem;
+    color: #64748b;
+    font-family: "BricolageBold";
+}
+
+.meta-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid var(--border);
+}
+
+label {
+    font-size: 1.15rem;
+    color: #006aff;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    display: block;
+    font-family: "BricolageBold";
+}
+
+input, select {
+    padding: 10px;
+    width: 100%;
+    border: 3px solid rgba(0, 0, 255, 0.2);
+    border-radius: 8px;
+    text-transform: uppercase;
+    font-size: 1.15rem;
+    background-color: white;
+    color: var(--text);
+    font-family: "BricolageBold";
+}
+
+.model-row {
+    display: grid;
+    grid-template-columns: 1fr 90px;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.total-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #eaeaff;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "BricolageBold";
+    color: var(--primary);
+}
+
+.total-value {
+    font-size: 1.4rem;
+    font-family: "BricolageBold";
+    color: var(--primary);
+}
+
+.actions {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.main-btn {
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.1s;
+    font-family: "BricolageBold";
+    text-transform: uppercase;
+}
+
+.main-btn:active {
+    transform: scale(0.98);
+}
+
+.btn-add { background: #e2e8f0; color: #475569; }
+.btn-remove-row { background: #fee2e2; color: #ef4444; }
+.btn-save { background: var(--success); color: white; margin-top: 5px; }
+
+/* --- MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 300px;
+    width: 80%;
+    font-family: "BricolageRegular";
+}
+
+.btn-modal-ok {
+    margin-top: 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container" id="report-area">
+    <header>
+        <h1>RELATÓRIO DE PRODUÇÃO</h1>
+        <p>PREPARAÇÃO E CORDÃO • LEIDIANE</p>
+    </header>
+
+    <div class="meta-info">
+        <div class="input-group">
+            <label>TURNO</label>
+            <select id="shift-input">
+                <option value="1º Turno">1º Turno</option>
+                <option value="2º Turno">2º Turno</option>
+                <option value="3º Turno">3º Turno</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>DATA</label>
+            <input type="date" id="current-date">
+        </div>
+    </div>
+
+    <div id="model-list"></div>
+
+    <div class="total-section">
+        <span>TOTAL GERAL</span>
+        <span class="total-value" id="grand-total">0</span>
+    </div>
+</div>
+
+<div class="actions">
+    <button class="main-btn btn-add" onclick="addRow()">+ ADICIONAR MODELO</button>
+    <button class="main-btn btn-remove-row" onclick="removeLastRow()">✕ REMOVER ÚLTIMA LINHA</button>
+    <button class="main-btn btn-save" onclick="saveData()">💾 SALVAR ALTERAÇÃO</button>
+</div>
+
+<div class="modal-overlay" id="modal-msg">
+    <div class="modal-content">
+        <span id="modal-icon" style="font-size: 3rem;"></span>
+        <div id="modal-title" style="font-weight: 700; margin: 10px 0; font-size: 1.2rem;"></div>
+        <p id="modal-text"></p>
+        <button class="btn-modal-ok" onclick="closeModal()">ENTENDI</button>
+    </div>
+</div>
+
+<script>
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('current-date').value = hoje;
+
+function createRow(modelo = "", qtd = "") {
+    const div = document.createElement('div');
+    div.className = 'model-row';
+    div.innerHTML = `
+        <input type="text" class="model-name" placeholder="Modelo" value="${modelo}">
+        <input type="number" class="qty" placeholder="0" value="${qtd}" oninput="calculateTotal()">
+    `;
+    return div;
+}
+
+function addRow() {
+    const list = document.getElementById('model-list');
+    // LIMITE DE 8 LINHAS
+    if (list.children.length >= 5) {
+        showCustomModal('⚠️', 'Limite Atingido!', 'Você só pode adicionar no máximo 5 modelos por relatório.');
+        return;
+    }
+    list.appendChild(createRow());
+}
+
+function removeLastRow() {
+    const list = document.getElementById('model-list');
+    // VERIFICA SE ESTÁ VAZIO
+    if (list.children.length === 0) {
+        showCustomModal('❌', 'Lista Vazia!', 'Não existem mais linhas para remover.');
+        return;
+    }
+    list.removeChild(list.lastElementChild);
+    calculateTotal();
+}
+
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('.qty').forEach(input => {
+        total += Number(input.value) || 0;
+    });
+    document.getElementById('grand-total').innerText = total;
+}
+
+// Função Única de Modal
+function showCustomModal(icon, title, text) {
+    document.getElementById('modal-icon').innerText = icon;
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-text').innerText = text;
+    document.getElementById('modal-msg').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('modal-msg').style.display = 'none';
+}
+
+function saveData() {
+    const rows = document.querySelectorAll('.model-row');
+    const dataToSave = [];
+    rows.forEach(row => {
+        const modelo = row.querySelector('.model-name').value;
+        const qtd = row.querySelector('.qty').value;
+        if (modelo || qtd) dataToSave.push({ modelo, qtd });
+    });
+
+    localStorage.setItem('producao_dados', JSON.stringify(dataToSave));
+    localStorage.setItem('producao_turno', document.getElementById('shift-input').value);
+    localStorage.setItem('producao_data', document.getElementById('current-date').value);
+    
+    showCustomModal('✅', 'Sucesso!', 'Os dados foram salvos corretamente no seu navegador.');
+}
+
+function loadData() {
+    const savedData = localStorage.getItem('producao_dados');
+    const modelList = document.getElementById('model-list');
+    modelList.innerHTML = '';
+
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        data.forEach(item => modelList.appendChild(createRow(item.modelo, item.qtd)));
+    } else {
+        const initial = [
+            { modelo: "OLK. CORRE TURBO", qtd: 672 },
+            { modelo: "OLK. CORRE 4", qtd: 1404 }
+        ];
+        initial.forEach(d => modelList.appendChild(createRow(d.modelo, d.qtd)));
+    }
+    calculateTotal();
+}
+
+window.onload = loadData;
+</script>
+
+</body>
+</html>

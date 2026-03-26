@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Painel Principal - Dark Mode</title>
+
+    <style>
+
+        @font-face{
+            font-family: "BricolageBold";
+            src: url("fonts/BricolageGrotesque-Bold.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageMedium";
+            src: url("fonts/BricolageGrotesque-Medium.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageRegular";
+            src: url("fonts/BricolageGrotesque-Regular.otf");
+        }
+
+        @font-face{
+            font-family: "BricolageLight";
+            src: url("fonts/BricolageGrotesque-Light.otf");
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background: #121212;
+            color: #ffffff;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+ 
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 7vh;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+
+        .info-version {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            background: url(icons/system-regular-21-bug-hover-bug.gif) center center/48px no-repeat;
+            filter: invert(0.5); 
+        }
+
+        .header {
+            width: 100%;
+            height: 23vh;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: left;
+        }
+
+        #saudacao {
+            color: #e0e0e0; /* Cinza claro para saudação */
+            font-size: 2.1rem;
+            font-family: "BricolageMedium";
+            font-weight: 100;
+        }
+
+        #usuario {
+            color: #4dabf7; /* Azul mais vibrante para contraste no escuro */
+            font-family: "BricolageMedium";
+            font-size: 2.1rem;
+            font-weight: 100;
+        }
+
+        #btn-cards {
+            width: 100%;
+            height: 50vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .card {
+            width: 48%;
+            height: 48%;
+            border: 2px solid rgba(77, 171, 247, 0.2); /* Borda azul suave */
+            border-radius: 12px;
+            cursor: pointer;
+            outline: none;
+            background-color: #1e1e1e; /* Fundo dos cards escuro */
+            color: #ffffff;
+            font-family: "BricolageRegular";
+            text-align: left;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            transition: 0.5s;
+        }
+
+        .card:hover {
+            border: 2px solid #4dabf7;
+            transition: 0.5s;
+            box-shadow: 4px 4px 0px #4dabf7; /* Sombra azul vibrante */
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            /* Descomente a linha abaixo se os seus ícones forem escuros e precisarem ficar brancos */
+            /* filter: invert(1); */
+        }
+
+        .icon-potencial {
+            background: url(icons/rapido.png) center center/38px no-repeat;          
+        }
+
+        .icon-resultado {
+            background: url(icons/painel.png) center center/38px no-repeat;          
+        }
+
+        .icon-preparacao {
+            background: url(icons/caixas.png) center center/38px no-repeat;          
+        }
+
+        .icon-modelos {
+            background: url(icons/tag.png) center center/38px no-repeat;          
+        }
+
+        .text-content h2 {
+            font-size: 18px;
+            padding-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .text-content p {
+            color: #a0a0a0; /* Cinza claro para os textos menores */
+            font-size: 12px;
+        }
+        
+        sup {
+            color: rgba(77, 171, 247, 0.8);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-left: 2px;
+            letter-spacing: 1px;
+        }
+
+        #more-services {
+            width: 100%;
+            height: 20vh;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        #morecontrols {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            border: 2px solid rgba(77, 171, 247, 0.2);
+            background: #1e1e1e; /* Fundo escuro igual aos cards */
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+
+        #morecontrols:hover {
+            border: 2px solid #4dabf7;
+            transition: 0.5s;
+            box-shadow: 4px 4px 0px #4dabf7;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="navbar">
+        <button class="info-version" onclick="goTo('bug.html')"></button>
+    </div>
+
+    <header class="header">
+        <div class="hora-dia">
+        <h1 id="saudacao">Carregando...</h1>
+        <h1 id="usuario">Carregando...</h1>
+        </div>
+    </header>
+
+    <div id="btn-cards">
+
+        <button class="card card-projecao" onclick="goTo('potencial.html')">
+            <div class="icon-wrapper icon-potencial"></div>
+            <div class="text-content">
+                <h2>Projeção</h2>
+                <p>Determine a produção de modelos por quantidade e mão de obra ativa.</p>
+            </div>
+        </button>
+
+        <button class="card card-resultado" onclick="goTo('resultado.html')">
+            <div class="icon-wrapper icon-resultado"></div>
+            <div class="text-content">
+                <h2>Resultado</h2>
+                <p>Calculo rapido de produção para acompanhamento de ganho e perdas.</p>
+            </div>
+        </button>
+
+        <button class="card card-preparacao" onclick="goTo('preparacao.html')">
+            <div class="icon-wrapper icon-preparacao"></div>
+            <div class="text-content">
+                <h2>Preparação</h2>
+                <p>Formulário de fechamento de produção dos modelos na preparação</p>
+            </div>
+        </button>
+
+        <button class="card card-modelos" onclick="goTo('tempo.html')">
+            <div class="icon-wrapper icon-modelos"></div>
+            <div class="text-content">
+                <h2>Modelos<sup> Beta </sup></h2>
+                <p>Apoio rápido para análise de componentes e tempo de modelos.</p>
+            </div>
+        </button>
+
+    </div>
+
+    <div id="more-services">
+        <button id="morecontrols" onclick="goTo('notes.html')">
+            <div class="icon-wrapper icon-modelos"></div>
+            <div class="text-content">
+                <h2>Modelos</h2>
+                <p>Apoio rápido para análise de componentes e tempo de modelos.</p>
+            </div>
+        </button>
+    </div>
+
+</div>
+
+<script>
+    function goTo(page) {
+        setTimeout(() => {
+            window.location.href = page;
+        }, 200);
+    }
+
+    function atualizarSaudacao() {
+        const agora = new Date();
+        const hora = agora.getHours();
+        const saudacaoElemento = document.getElementById('saudacao');
+        const corpo = document.body;
+
+        let mensagem = "";
+
+        if (hora >= 5 && hora < 12) {
+            mensagem = "Bom dia,";
+            corpo.className = "manha";
+        } else if (hora >= 12 && hora < 18) {
+            mensagem = "Boa tarde,";
+            corpo.className = "tarde";
+        } else {
+            mensagem = "Boa noite,";
+            corpo.className = "noite";
+        }
+
+        saudacaoElemento.innerText = mensagem;
+    }
+
+    // Executa as funções ao carregar a página
+    atualizarSaudacao();
+
+</script>
+</body>
+</html>
