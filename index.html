@@ -1,303 +1,233 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Painel Principal - Dark Mode</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente Mamão com Açúcar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-
-        @font-face{
-            font-family: "BricolageBold";
-            src: url("fonts/BricolageGrotesque-Bold.otf");
-        }
-
-        @font-face{
-            font-family: "BricolageMedium";
-            src: url("fonts/BricolageGrotesque-Medium.otf");
-        }
-
-        @font-face{
-            font-family: "BricolageRegular";
-            src: url("fonts/BricolageGrotesque-Regular.otf");
-        }
-
-        @font-face{
-            font-family: "BricolageLight";
-            src: url("fonts/BricolageGrotesque-Light.otf");
+        :root {
+            --primary-orange: #FFA74D;
+            --light-orange: #FFF4E0;
+            --card-bg: #FAF0D7;
+            --gray-bg: #F5F7F9;
+            --text-dark: #000000;
+            --text-gray: #666;
+            --white: #ffffff;
         }
 
         * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            padding: 0;
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: #121212;
-            color: #ffffff;
-            width: 100vw;
-            height: 100vh;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px; /* Simulação de tela mobile */
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .logo-box {
+            width: 55px;
+            height: 55px;
+            border: 2px solid var(--primary-orange);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
- 
-        .container {
-            width: 100vw;
-            height: 100vh;
+
+        .logo-box img {
+            width: 30px;
+        }
+
+        .menu-btn {
+            width: 55px;
+            height: 55px;
+            border: 1px solid #E2E8F0;
+            border-radius: 15px;
+            background: none;
             display: flex;
-            justify-content: space-between;
             flex-direction: column;
-            padding: 24px;
-        }
-
-        .navbar {
-            width: 100%;
-            height: 7vh;
-            display: flex;
-            justify-content: end;
+            justify-content: center;
             align-items: center;
+            gap: 5px;
+            cursor: pointer;
         }
 
-        .info-version {
-            width: 48px;
-            height: 48px;
-            border-radius: 6px;
+        .menu-btn span {
+            width: 25px;
+            height: 2px;
+            background-color: #64748B;
+            border-radius: 2px;
+        }
+
+        /* Title Styles */
+        .main-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--text-dark);
+            letter-spacing: -1px;
+        }
+
+        .main-title span {
+            color: var(--primary-orange);
+        }
+
+        /* Tabs Styles */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border-radius: 12px;
             border: none;
-            outline: none;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            background: url(icons/system-regular-21-bug-hover-bug.gif) center center/48px no-repeat;
-            filter: invert(0.5); 
+            white-space: nowrap;
+            transition: 0.3s;
+            background-color: var(--gray-bg);
+            color: var(--text-dark);
         }
 
-        .header {
-            width: 100%;
-            height: 23vh;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: left;
+        .tab.active {
+            background-color: var(--primary-orange);
+            color: var(--white);
         }
 
-        #saudacao {
-            color: #e0e0e0; /* Cinza claro para saudação */
-            font-size: 2.1rem;
-            font-family: "BricolageMedium";
-            font-weight: 100;
-        }
-
-        #usuario {
-            color: #4dabf7; /* Azul mais vibrante para contraste no escuro */
-            font-family: "BricolageMedium";
-            font-size: 2.1rem;
-            font-weight: 100;
-        }
-
-        #btn-cards {
-            width: 100%;
-            height: 50vh;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
+        /* Card Styles */
         .card {
-            width: 48%;
-            height: 48%;
-            border: 2px solid rgba(77, 171, 247, 0.2); /* Borda azul suave */
-            border-radius: 12px;
-            cursor: pointer;
-            outline: none;
-            background-color: #1e1e1e; /* Fundo dos cards escuro */
-            color: #ffffff;
-            font-family: "BricolageRegular";
-            text-align: left;
-            padding: 18px;
+            background-color: var(--card-bg);
+            border-radius: 25px;
+            padding: 30px 25px;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
-            transition: 0.5s;
+            gap: 15px;
         }
 
-        .card:hover {
-            border: 2px solid #4dabf7;
-            transition: 0.5s;
-            box-shadow: 4px 4px 0px #4dabf7; /* Sombra azul vibrante */
+        .card h2 {
+            font-size: 24px;
+            font-weight: 700;
         }
 
-        .icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            /* Descomente a linha abaixo se os seus ícones forem escuros e precisarem ficar brancos */
-            /* filter: invert(1); */
+        .card p {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.4;
+            max-width: 90%;
         }
 
-        .icon-potencial {
-            background: url(icons/rapido.png) center center/38px no-repeat;          
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            align-items: baseline;
         }
 
-        .icon-resultado {
-            background: url(icons/painel.png) center center/38px no-repeat;          
+        .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
         }
 
-        .icon-preparacao {
-            background: url(icons/caixas.png) center center/38px no-repeat;          
-        }
-
-        .icon-modelos {
-            background: url(icons/tag.png) center center/38px no-repeat;          
-        }
-
-        .text-content h2 {
-            font-size: 18px;
-            padding-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .text-content p {
-            color: #a0a0a0; /* Cinza claro para os textos menores */
-            font-size: 12px;
-        }
-        
-        sup {
-            color: rgba(77, 171, 247, 0.8);
-            font-size: 12px;
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
             text-transform: uppercase;
-            margin-left: 2px;
-            letter-spacing: 1px;
         }
 
-        #more-services {
-            width: 100%;
-            height: 20vh;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            align-items: center;
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
         }
 
-        #morecontrols {
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            border: 2px solid rgba(77, 171, 247, 0.2);
-            background: #1e1e1e; /* Fundo escuro igual aos cards */
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.5s;
+        /* Responsividade extra */
+        @media (max-width: 350px) {
+            .main-title { font-size: 28px; }
+            .stats-row { flex-direction: column; gap: 10px; }
         }
-
-        #morecontrols:hover {
-            border: 2px solid #4dabf7;
-            transition: 0.5s;
-            box-shadow: 4px 4px 0px #4dabf7;
-        }
-
     </style>
 </head>
 <body>
 
-<div class="container">
+    <div class="app-container">
+        <header>
+            <div class="logo-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C10 2 8 4 8 7C8 8.5 9 10 10 11C8 12 6 14.5 6 17C6 20 8.5 22 12 22C15.5 22 18 20 18 17C18 14.5 16 12 14 11C15 10 16 8.5 16 7C16 4 14 2 12 2Z" stroke="#FFA74D" stroke-width="2"/>
+                    <circle cx="12" cy="16" r="1" fill="#FFA74D"/>
+                    <circle cx="10" cy="18" r="0.5" fill="#FFA74D"/>
+                    <circle cx="14" cy="18" r="0.5" fill="#FFA74D"/>
+                </svg>
+            </div>
+            <button class="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </header>
 
-    <div class="navbar">
-        <button class="info-version" onclick="goTo('bug.html')"></button>
+        <h1 class="main-title">assistente <span>mamão</span> com açúcar.</h1>
+
+        <nav class="tabs-container">
+            <button class="tab active" onclick="switchTab(this)">Produção</button>
+            <button class="tab" onclick="switchTab(this)">Mão de Obra</button>
+            <button class="tab" onclick="switchTab(this)">Área Técnica</button>
+        </nav>
+
+        <main class="card">
+            <h2>Projeção Fabrica</h2>
+            <p>Determine a capacidade de produção das linhas com o tempo do modelo abastecido diariamente.</p>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-label">Projetado</span>
+                    <span class="stat-value">4.324</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Eficiência</span>
+                    <span class="stat-value">85%</span>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <header class="header">
-        <div class="hora-dia">
-        <h1 id="saudacao">Carregando...</h1>
-        <h1 id="usuario">Carregando...</h1>
-        </div>
-    </header>
-
-    <div id="btn-cards">
-
-        <button class="card card-projecao" onclick="goTo('potencial.html')">
-            <div class="icon-wrapper icon-potencial"></div>
-            <div class="text-content">
-                <h2>Projeção</h2>
-                <p>Determine a produção de modelos por quantidade e mão de obra ativa.</p>
-            </div>
-        </button>
-
-        <button class="card card-resultado" onclick="goTo('resultado.html')">
-            <div class="icon-wrapper icon-resultado"></div>
-            <div class="text-content">
-                <h2>Resultado</h2>
-                <p>Calculo rapido de produção para acompanhamento de ganho e perdas.</p>
-            </div>
-        </button>
-
-        <button class="card card-preparacao" onclick="goTo('preparacao.html')">
-            <div class="icon-wrapper icon-preparacao"></div>
-            <div class="text-content">
-                <h2>Preparação</h2>
-                <p>Formulário de fechamento de produção dos modelos na preparação</p>
-            </div>
-        </button>
-
-        <button class="card card-modelos" onclick="goTo('tempo.html')">
-            <div class="icon-wrapper icon-modelos"></div>
-            <div class="text-content">
-                <h2>Modelos<sup> Beta </sup></h2>
-                <p>Apoio rápido para análise de componentes e tempo de modelos.</p>
-            </div>
-        </button>
-
-    </div>
-
-    <div id="more-services">
-        <button id="morecontrols" onclick="goTo('notes.html')">
-            <div class="icon-wrapper icon-modelos"></div>
-            <div class="text-content">
-                <h2>Modelos</h2>
-                <p>Apoio rápido para análise de componentes e tempo de modelos.</p>
-            </div>
-        </button>
-    </div>
-
-</div>
-
-<script>
-    function goTo(page) {
-        setTimeout(() => {
-            window.location.href = page;
-        }, 200);
-    }
-
-    function atualizarSaudacao() {
-        const agora = new Date();
-        const hora = agora.getHours();
-        const saudacaoElemento = document.getElementById('saudacao');
-        const corpo = document.body;
-
-        let mensagem = "";
-
-        if (hora >= 5 && hora < 12) {
-            mensagem = "Bom dia,";
-            corpo.className = "manha";
-        } else if (hora >= 12 && hora < 18) {
-            mensagem = "Boa tarde,";
-            corpo.className = "tarde";
-        } else {
-            mensagem = "Boa noite,";
-            corpo.className = "noite";
+    <script>
+        function switchTab(element) {
+            // Remove a classe active de todos os botões
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Adiciona ao botão clicado
+            element.classList.add('active');
         }
-
-        saudacaoElemento.innerText = mensagem;
-    }
-
-    // Executa as funções ao carregar a página
-    atualizarSaudacao();
-
-</script>
+    </script>
 </body>
 </html>
