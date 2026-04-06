@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Eficiência de Linha</title>
+
+<style>
+@font-face{
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+
+* {
+    font-family: "LufgaRegular", sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    scrollbar-width: none;
+    outline: none;
+    color: #000000;
+}
+
+body {
+    background: #000000;
+    width: 100%;
+    max-width: 480px; 
+    padding: 24px;
+    min-height: 100vh;
+    position: relative;
+    margin: 0 auto;
+}
+
+select {
+    appearance: none;
+    text-indent: 4px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+button {
+    height: 60px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: transform 0.1s;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+button:active { transform: scale(0.95); }
+
+/* =========================================
+   DESIGN: TABELAS (CARDS)
+   ========================================= */
+
+.container-tabela {
+    background: #ffffff;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(137, 73, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-linha {
+    width: 100%;
+    padding: 14px;
+    background: #8949ff;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+table {
+    width: 100%;
+    background: #ffffff;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f4f0ff;
+    color: #8949ff;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 4px;
+    border-bottom: 2px solid #eae0ff;
+    text-align: center;
+}
+
+td { 
+    background: #ffffff; 
+    padding: 8px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f4f5f7;
+    text-align: center;
+}
+
+tr:last-child td { border-bottom: none; }
+
+td.resumo { border-left: 2px dashed #f0f0f0; }
+
+td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
+    color: #8949ff;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.input-tabela {
+    width: 100%;
+    height: 42px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    background: #f4f6f8; 
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #222;
+    transition: all 0.2s ease;
+}
+
+.modelo, .linha-select {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.input-tabela:focus {
+    background: #ffffff;
+    border-color: #8949ff;
+    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+}
+
+.total-linha {
+    width: 100%;
+    padding: 14px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge-total {
+    font-size: 12px;
+    color: #666;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.badge-total b { font-size: 16px; color: #8949ff; font-weight: 900; margin-left: 4px; }
+.badge-total.difer b { color: #d32f2f; }
+.badge-total.positivo b { color: #10b981; }
+
+.text-red { color: #ef4444 !important; font-weight: 900; }
+.text-green { color: #10b981 !important; font-weight: 900; }
+
+/* =========================================
+   BOTOES INFERIORES
+   ========================================= */
+
+.botoes-acao {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-bottom: 24px;
+}
+
+.botoes-acao button {
+    height: 48px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+}
+
+.btn-outline-red {
+    background: #ffffff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.btn-purple {
+    background: #8949ff;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-green {
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+    grid-column: span 2;
+    font-size: 15px;
+}
+
+.btn-limpar {
+    grid-column: span 2;
+    background: #fff5f5;
+    color: #d32f2f;
+    border: 2px solid #ffcdcd;
+    margin-top: 4px;
+}
+
+.btn-limpar:hover, .btn-limpar:active {
+    background: #ffebeb;
+}
+
+/* =========================================
+   MODAL PERSONALIZADO
+   ========================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: none; /* Fica flex quando ativo */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 24px;
+}
+
+.modal-overlay.ativo {
+    opacity: 1;
+}
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.2s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-overlay.ativo .modal-box {
+    transform: translateY(0) scale(1);
+}
+
+.modal-icone {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.modal-mensagem {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+.modal-botoes {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-botoes button {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="tabela-producao"></div>
+
+<div id="tabela-resumo-wrapper">
+    <div class="container-tabela">
+        <div class="titulo-linha">RESUMO DA PRODUÇÃO</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:30%">Linha</th>
+                    <th style="width:18%">Proj.</th>
+                    <th style="width:18%">Real</th>
+                    <th style="width:17%">Dif.</th>
+                    <th style="width:17%">%</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-resumo">
+                </tbody>
+        </table>
+        <div class="total-linha">
+            <span class="badge-total">PROJ.: <b id="total-proj">0</b></span>
+            <span class="badge-total">REAL: <b id="total-real">0</b></span>
+            <span class="badge-total difer">DIF.: <b id="total-dif">0</b></span>
+            <span class="badge-total positivo">%: <b id="total-perc">0%</b></span>
+        </div>
+    </div>
+</div>
+
+<div class="botoes-acao">
+    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">&#10005; Remover Linha</button>
+    <button class="btn-purple" onclick="adicionarLinhaResumo()">&#10010; Adicionar Linha</button>
+    <button class="btn-green" onclick="salvarDados()">&#128190; SALVAR DADOS NO DISPOSITIVO</button>
+    <button class="btn-limpar" onclick="limparDados()">LIMPAR TODOS OS DADOS</button>
+</div>
+
+<div id="modal-overlay" class="modal-overlay">
+    <div class="modal-box">
+        <div id="modal-icone" class="modal-icone"></div>
+        <div id="modal-mensagem" class="modal-mensagem"></div>
+        <div id="modal-botoes" class="modal-botoes"></div>
+    </div>
+</div>
+
+<script>
+const MODELOS_DB = [
+  { nome:"130G", tempo: 4.477 }, { nome: "ACQUA", tempo: 4.185 }, { nome: "ACQUA INF.", tempo: 4.184 }, { nome: "ADRENA", tempo: 5.657 }, { nome: "ADRENA 2", tempo: 5.449 },
+  { nome: "ASFALTO", tempo: 6.056 }, { nome: "ATMOS", tempo: 5.056 }, { nome: "CHALLENGER 6", tempo: 8.183 }, { nome: "CIRCUITO", tempo: 7.241 }, { nome: "CITRUS 2", tempo: 4.792 },
+  { nome: "CLIC", tempo: 2.290 }, { nome: "CLIMA", tempo: 4.511 }, { nome: "CORRE 4", tempo: 20.933 }, { nome: "CORRE 4 50 ANOS", tempo: 21.872 }, { nome: "CORRE 5", tempo: 13.963 },
+  { nome: "CORRE GRAFENO 3", tempo: 17.811 }, { nome: "CORRE MAX", tempo: 10.342 }, { nome: "CORRE S", tempo: 10.932 }, { nome: "CORRE SUPRA 2", tempo: 20.996 }, { nome: "CORRE TRILHA 3", tempo: 11.356 },
+  { nome: "CORRE TURBO", tempo: 13.136 }, { nome: "CORRE VENTO 3", tempo: 9.282 }, { nome: "EASY 2", tempo: 5.304 }, { nome: "ERA", tempo: 3.931 }, { nome: "ESSENTIAL 3", tempo: 4.608 },
+  { nome: "INVERSE", tempo: 8.044 }, { nome: "LANCE", tempo: 5.066 }, { nome: "NEBLINA", tempo: 8.954 }, { nome: "NYX", tempo: 4.901 }, { nome: "ORBITA", tempo: 4.540 },
+  { nome: "PIXEL INF.", tempo: 3.655 }, { nome: "PLAZA", tempo: 4.186 }, { nome: "PRIDE 4", tempo: 4.906 }, { nome: "PRIDE 4 INF.", tempo: 4.914 }, { nome: "PURPURA", tempo: 5.555 },
+  { nome: "QU4DRA 2", tempo: 9.317 }, { nome: "QU4DRA BR1", tempo: 13.324 }, { nome: "REFLECT", tempo: 6.354 }, { nome: "REVERSO 2", tempo: 8.748 }, { nome: "REVERSO 3", tempo: 10.328 },
+  { nome: "RITMO", tempo: 7.959 }, { nome: "RUSH", tempo: 3.837 }, { nome: "SAGAZ", tempo: 5.582 }, { nome: "SONORO 3", tempo: 8.488 }, { nome: "SUBVERSE", tempo: 7.938 },
+  { nome: "SUBVERSE 2", tempo: 7.906 }, { nome: "SWIFT 5", tempo: 4.516 }, { nome: "TREINO", tempo: 7.525 }, { nome: "TRIUNFO", tempo: 4.553 }, { nome: "VEST", tempo: 4.292 },
+  { nome: "VIRTUOSE", tempo: 5.308 }, { nome: "VOA 2", tempo: 4.908 }, { nome: "VOA 3", tempo: 4.988 }, { nome: "VOLCAN 2", tempo: 4.531 }, { nome: "VOLTA", tempo: 7.641 },
+
+  { nome: "-", tempo: 0 },
+
+  { nome: "ACTION 4", tempo: 8.756 }, { nome: "ATLANTIS 2", tempo: 7.618 }, { nome: "BASE ONE", tempo: 15.676 }, { nome: "BASE PRIME", tempo: 12.318 }, { nome: "BASE RIDE", tempo: 9.917 }, { nome: "CDS SPORT", tempo: 13.612 },
+  { nome: "COOL RIDE 3", tempo: 12.167 }, { nome: "COOL RIDE 3 INF.", tempo: 12.166 }, { nome: "CREATION", tempo: 12.373 }, { nome: "DYNASTY 5", tempo: 9.037 }, { nome: "DYNASTY 7", tempo: 11.924 }, { nome: "DYNASTY 8", tempo: 6.391 },
+  { nome: "EDO CROSS", tempo: 10.384 }, { nome: "ENDEAVOR 3", tempo: 7.656 }, { nome: "ENIGMA 2", tempo: 8.128 }, { nome: "ENIGMA 3", tempo: 7.148 }, { nome: "FALCON 5", tempo: 8.058 },
+  { nome: "FRONTIER 15", tempo: 8.281 }, { nome: "GLOW 2", tempo: 7.722 }, { nome: "GLOW 3", tempo: 6.516 }, { nome: "GOYA", tempo: 5.672 }, { nome: "GOYA 2", tempo: 5.703 }, { nome: "GOYA 3", tempo: 6.243 },
+  { nome: "HAWK 5", tempo: 6.253 }, { nome: "HAWK 6", tempo: 9.255 }, { nome: "INVICTUS 4", tempo: 8.601 }, { nome: "LEGEND 4", tempo: 9.827 }, { nome: "LEGEND 5", tempo: 8.818 }, { nome: "LIVELY", tempo: 5.273 },
+  { nome: "MIRAI 7", tempo: 7.068 }, { nome: "MIRAI 8", tempo: 6.646 }, { nome: "NEO AURA", tempo: 8.229 }, { nome: "NEO AURA 2", tempo: 8.229 }, { nome: "NEO AURA KINT", tempo: 11.690 }, { nome: "NEO PRYSMA", tempo: 6.690 },
+  { nome: "NEO VORTEX", tempo: 8.324 }, { nome: "ORACLE", tempo: 11.477 }, { nome: "REGENT AS", tempo: 4.754 }, { nome: "REGENT AS JUNIOR", tempo: 4.778 }, { nome: "REGENT IN", tempo: 4.755 }, { nome: "REGENT IN JR", tempo: 4.753 },
+  { nome: "REGENT MD", tempo: 7.756 }, { nome: "SKYWAY", tempo: 6.687 }, { nome: "STRATOS 3", tempo: 6.486 }, { nome: "SUNRISE", tempo: 10.966 }, { nome: "VICTORY", tempo: 12.015 }, { nome: "VIRTUE", tempo: 5.935 },
+  { nome: "VIRTUE 2", tempo: 6.416 }, { nome: "VITALITY 5", tempo: 6.634 }, { nome: "VITALITY 6", tempo: 6.700 }, { nome: "VITALITY 7", tempo: 6.809 }, { nome: "WAY 4", tempo: 7.346 }, { nome: "WAY 5", tempo: 5.933 },
+  { nome: "ZEST 2", tempo: 7.649 }
+];
+
+
+const CAPACIDADE_LINHA = 365.2;
+const CARGA_PESSOA = 380;
+
+let dadosResumo = [
+    { linha: "Linha 01", proj: "", real: "" },
+    { linha: "Linha 02", proj: "", real: "" },
+    { linha: "Linha 03", proj: "", real: "" }
+];
+
+/* =========================================
+   FUNÇÕES DO MODAL
+   ========================================= */
+function fecharModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('ativo');
+    setTimeout(() => { overlay.style.display = 'none'; }, 200);
+}
+
+function mostrarAlerta(icone, mensagem) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-icone').innerHTML = icone;
+    document.getElementById('modal-mensagem').innerHTML = mensagem;
+    
+    document.getElementById('modal-botoes').innerHTML = `
+        <button class="btn-purple" onclick="fecharModal()" style="width: 100%">OK</button>
+    `;
+    
+    overlay.style.display = 'flex';
+    setTimeout(() => overlay.classList.add('ativo'), 10);
+}
+
+function mostrarConfirmacao(icone, mensagem, onConfirm) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-icone').innerHTML = icone;
+    document.getElementById('modal-mensagem').innerHTML = mensagem;
+    
+    window.acaoConfirmada = () => {
+        fecharModal();
+        onConfirm();
+    };
+
+    document.getElementById('modal-botoes').innerHTML = `
+        <button class="btn-outline-red" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-green" onclick="window.acaoConfirmada()">Sim, Limpar</button>
+    `;
+    
+    overlay.style.display = 'flex';
+    setTimeout(() => overlay.classList.add('ativo'), 10);
+}
+
+
+/* =========================================
+   CÓDIGO DA APLICAÇÃO
+   ========================================= */
+
+function criarSelectModelos() {
+    let html = `<select class="input-tabela modelo"><option value="">-</option>`;
+    MODELOS_DB.forEach(m => {
+        html += `<option value="${m.tempo}">${m.nome}</option>`;
+    });
+    return html + `</select>`;
+}
+
+function criarSelectLinhas(valorAtual) {
+    let html = `<select class="input-tabela linha-select">`;
+    for (let i = 1; i <= 20; i++) {
+        let numFormatado = i < 10 ? `0${i}` : i;
+        let nomeLinha = `Linha ${numFormatado}`;
+        let selecionado = nomeLinha === valorAtual ? "selected" : "";
+        html += `<option value="${nomeLinha}" ${selecionado}>${nomeLinha}</option>`;
+    }
+    html += `</select>`;
+    return html;
+}
+
+function inicializarTabelaProducao() {
+    const div = document.createElement("div");
+    div.className = "container-tabela";
+
+    div.innerHTML = `
+    <div class="titulo-linha">LINHA DE PRODUÇÃO</div>
+    <table id="tbl-prod" data-tempo="0" data-ativos="0" data-pares="0">
+        <thead>
+            <tr><th style="width:38%">Modelo</th><th style="width:17%">Pares</th><th style="width:15%">N</th><th style="width:15%">A</th><th style="width:15%">E</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${criarSelectModelos()}</td>
+                <td><input type="number" class="input-tabela pares" value=""></td>
+                <td rowspan="3" class="resumo necessidade">-</td>
+                <td rowspan="3" class="resumo"><input type="number" class="input-tabela ativos" value=""></td>
+                <td rowspan="3" class="resumo eficiencia">-</td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos()}</td>
+                <td><input type="number" class="input-tabela pares" value=""></td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos()}</td>
+                <td><input type="number" class="input-tabela pares" value=""></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-linha">
+        <span class="badge-total">PARES: <b>0</b></span>
+        <span class="badge-total difer">DIFER.: <b>0</b></span>
+    </div>`;
+
+    document.getElementById("tabela-producao").appendChild(div);
+    div.querySelectorAll("select, input").forEach(el => {
+        el.addEventListener("input", () => calcularTabelaProducao());
+    });
+}
+
+function calcularTabelaProducao() {
+    const tabela = document.getElementById("tbl-prod");
+    if(!tabela) return;
+    
+    let tempoT = 0, paresT = 0;
+    const modelos = tabela.querySelectorAll(".modelo");
+    const pares = tabela.querySelectorAll(".pares");
+
+    modelos.forEach((m, i) => {
+        const t = parseFloat(m.value);
+        const p = parseFloat(pares[i].value);
+        if (p) paresT += p;
+        if (t && p) tempoT += t * p;
+    });
+
+    const ativos = parseFloat(tabela.querySelector(".ativos").value) || 0;
+    
+    const necessidade = tempoT ? Math.round(tempoT / CAPACIDADE_LINHA) : 0;
+    const eficiencia = ativos ? Math.round((tempoT / (ativos * CARGA_PESSOA)) * 100) : 0;
+
+    tabela.querySelector(".necessidade").innerText = necessidade || "-";
+    tabela.querySelector(".eficiencia").innerText = ativos ? eficiencia + "%" : "-";
+    
+    tabela.nextElementSibling.innerHTML = `
+        <span class="badge-total">PARES: <b>${paresT}</b></span>
+        <span class="badge-total difer">DIFER.: <b>${ativos > 0 ? ativos - necessidade : 0}</b></span>
+    `;
+}
+
+function renderizarTabelaResumo() {
+    const tbody = document.getElementById('tbody-resumo');
+    tbody.innerHTML = '';
+
+    dadosResumo.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'linha-item';
+        tr.innerHTML = `
+            <td>${criarSelectLinhas(item.linha)}</td>
+            <td><input type="number" class="input-tabela proj-input" data-index="${index}" value="${item.proj}"></td>
+            <td><input type="number" class="input-tabela real-input" data-index="${index}" value="${item.real}"></td>
+            <td class="resumo texto-destaque dif-cell">-</td>
+            <td class="resumo texto-destaque perc-cell">-</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll('.proj-input, .real-input, .linha-select').forEach(input => {
+        input.addEventListener('input', calcularResumo);
+    });
+
+    calcularResumo();
+}
+
+function calcularResumo() {
+    const linhas = document.querySelectorAll('.linha-item');
+    let totalProj = 0, totalReal = 0;
+
+    linhas.forEach((tr, index) => {
+        const linhaSelect = tr.querySelector('.linha-select').value;
+        const projInput = tr.querySelector('.proj-input').value;
+        const realInput = tr.querySelector('.real-input').value;
+        
+        const proj = parseFloat(projInput) || 0;
+        const real = parseFloat(realInput) || 0;
+        
+        dadosResumo[index].linha = linhaSelect;
+        dadosResumo[index].proj = projInput;
+        dadosResumo[index].real = realInput;
+
+        totalProj += proj;
+        totalReal += real;
+
+        const dif = real - proj;
+        const perc = proj > 0 ? Math.round((real / proj) * 100) : (real === 0 && proj === 0 ? 0 : 100);
+
+        const difCell = tr.querySelector('.dif-cell');
+        const percCell = tr.querySelector('.perc-cell');
+
+        if (projInput === "" && realInput === "") {
+            difCell.innerText = "-";
+            difCell.className = "resumo texto-destaque dif-cell";
+            percCell.innerText = "-";
+        } else {
+            difCell.innerText = dif > 0 ? `+${dif}` : dif;
+            difCell.className = `resumo texto-destaque dif-cell ${dif > 0 ? 'text-green' : (dif < 0 ? 'text-red' : '')}`;
+            percCell.innerText = `${perc}%`;
+        }
+    });
+
+    const totalDif = totalReal - totalProj;
+    const totalPerc = totalProj > 0 ? Math.round((totalReal / totalProj) * 100) : 0;
+
+    document.getElementById('total-proj').innerText = totalProj;
+    document.getElementById('total-real').innerText = totalReal;
+    
+    const elDif = document.getElementById('total-dif');
+    elDif.innerText = totalDif > 0 ? `+${totalDif}` : totalDif;
+    elDif.parentElement.className = `badge-total difer ${totalDif > 0 ? 'positivo' : ''}`;
+    
+    document.getElementById('total-perc').innerText = `${totalPerc}%`;
+}
+
+function adicionarLinhaResumo() {
+    const num = dadosResumo.length + 1;
+    const linhaNome = `Linha ${num < 10 ? '0' + num : num}`;
+    dadosResumo.push({ linha: linhaNome, proj: "", real: "" });
+    renderizarTabelaResumo();
+}
+
+function removerUltimaLinhaResumo() {
+    if (dadosResumo.length > 0) {
+        dadosResumo.pop();
+        renderizarTabelaResumo();
+    }
+}
+
+function limparDados() {
+    // Chama o nosso novo modal de confirmação
+    mostrarConfirmacao("🗑️", "Tem certeza que deseja limpar TODOS os dados inseridos?", () => {
+        
+        // --- Tudo aqui dentro roda se o usuário clicar em "Sim, Limpar" ---
+        document.querySelectorAll('.modelo, .pares, .ativos').forEach(el => el.value = "");
+        calcularTabelaProducao();
+        
+        dadosResumo.forEach((item, index) => {
+            let num = index + 1;
+            item.linha = `Linha ${num < 10 ? '0' + num : num}`;
+            item.proj = "";
+            item.real = "";
+        });
+        renderizarTabelaResumo();
+        
+        localStorage.removeItem('relatorio_eficiencia');
+        
+        // Mostra o modal de sucesso após limpar
+        setTimeout(() => {
+            mostrarAlerta("✨", "Dados limpos com sucesso!");
+        }, 300); // pequeno delay para a transição ficar suave
+        
+    });
+}
+
+function salvarDados() {
+    const prodModelos = Array.from(document.querySelectorAll('.modelo')).map(s => s.value);
+    const prodPares = Array.from(document.querySelectorAll('.pares')).map(i => i.value);
+    const prodAtivos = document.querySelector('.ativos').value;
+    
+    const data = {
+        producao: { modelos: prodModelos, pares: prodPares, ativos: prodAtivos },
+        resumo: dadosResumo
+    };
+    
+    localStorage.setItem('relatorio_eficiencia', JSON.stringify(data));
+    
+    // Chama o novo modal de alerta no lugar do alert()
+    mostrarAlerta('💾', 'Dados salvos com sucesso no dispositivo!');
+}
+
+function carregarDados() {
+    const saved = localStorage.getItem('relatorio_eficiencia');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            
+            if (data.producao) {
+                const modelos = document.querySelectorAll('.modelo');
+                const pares = document.querySelectorAll('.pares');
+                data.producao.modelos.forEach((val, i) => { if(modelos[i]) modelos[i].value = val; });
+                data.producao.pares.forEach((val, i) => { if(pares[i]) pares[i].value = val; });
+                document.querySelector('.ativos').value = data.producao.ativos || '';
+            }
+            
+            if (data.resumo && data.resumo.length > 0) {
+                dadosResumo = data.resumo;
+            }
+        } catch (e) {
+            console.error("Erro ao carregar dados salvos.", e);
+        }
+    }
+    
+    calcularTabelaProducao();
+    renderizarTabelaResumo();
+}
+
+// Inicializações
+inicializarTabelaProducao();
+carregarDados();
+</script>
+
+</body>
+</html>

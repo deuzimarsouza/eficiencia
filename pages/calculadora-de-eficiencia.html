@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Eficiência</title>
+<style>
+    :root {
+        --bg-color: #09090b;
+        --card-bg: #18181b;
+        --input-bg: #27272a;
+        --border-color: #3f3f46;
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent: #8b5cf6;
+        --accent-hover: #7c3aed;
+        --success: #10b981;
+        --danger: #ef4444;
+        --surface: rgba(139, 92, 246, 0.05);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+        background: var(--bg-color);
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 32px 16px;
+    }
+
+    .card {
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+        width: 100%;
+        max-width: 580px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    .titulo {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .titulo span {
+        color: var(--accent);
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 16px;
+    }
+
+    select, input {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+        appearance: none;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+    select:focus, input:focus {
+        background: #202024;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .number-control {
+        display: flex;
+        gap: 8px;
+    }
+
+    .number-control input {
+        min-width: 0;
+    }
+
+    .btn-icon {
+        width: 52px;
+        height: 52px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+    }
+
+    .btn-icon:hover {
+        background: #202024;
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .btn-icon:active {
+        transform: scale(0.95);
+        background: #27272a;
+    }
+
+    .global-settings {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 24px;
+        padding-top: 24px;
+        border-top: 1px dashed var(--border-color);
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .results-panel {
+        background: var(--surface);
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .result-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .result-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .result-value {
+        font-size: 28px;
+        color: var(--text-primary);
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .text-accent { color: var(--accent); }
+    .text-green { color: var(--success); }
+    .text-red { color: var(--danger); }
+
+    .explicacao {
+        background: #121214;
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        margin-top: 8px;
+    }
+
+    .explicacao h3 {
+        font-size: 15px;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .explicacao h3::before {
+        content: "ℹ️";
+        font-size: 16px;
+    }
+
+    .explicacao p, .explicacao li {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .explicacao ul {
+        margin-top: 12px;
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .formula-box {
+        background: #000;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-family: monospace;
+        color: var(--accent);
+        font-size: 13px;
+        margin-top: 12px;
+        border: 1px solid #27272a;
+    }
+
+    @media (max-width: 560px) {
+        .row { grid-template-columns: 1fr; gap: 12px; }
+        .global-settings { grid-template-columns: 1fr; gap: 16px; }
+        .results-panel { grid-template-columns: 1fr; }
+        .card { padding: 24px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="titulo">Calculadora de <span>Eficiência</span></div>
+
+    <div class="row" id="linha-unica">
+        <select id="modelo-select" onchange="calcular()">
+            </select>
+        
+        <div class="number-control">
+            <input type="number" id="pares-input" placeholder="Qtd. Pares" min="0" oninput="calcular()">
+            <button type="button" class="btn-icon" 
+                onmousedown="iniciarAjuste('pares-input', 1, event)" 
+                onmouseup="pararAjuste()" 
+                onmouseleave="pararAjuste()"
+                ontouchstart="iniciarAjuste('pares-input', 1, event)"
+                ontouchend="pararAjuste()"
+                title="Adicionar par">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            </button>
+            <button type="button" class="btn-icon" 
+                onmousedown="iniciarAjuste('pares-input', -1, event)" 
+                onmouseup="pararAjuste()" 
+                onmouseleave="pararAjuste()"
+                ontouchstart="iniciarAjuste('pares-input', -1, event)"
+                ontouchend="pararAjuste()"
+                title="Remover par">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="global-settings">
+        <div class="input-group">
+            <label>Turno de Trabalho</label>
+            <select id="turno" onchange="calcular()">
+                <option value="440">1º Turno (Carga: 440 min)</option>
+                <option value="440">2º Turno (Carga: 440 min)</option>
+                <option value="380">3º Turno (Carga: 380 min)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Pessoas Ativas (N)</label>
+            <div class="number-control">
+                <input type="number" id="ativos" placeholder="Qtd. de operadores" min="0" oninput="calcular()">
+                <button type="button" class="btn-icon" 
+                    onmousedown="iniciarAjuste('ativos', 1, event)" 
+                    onmouseup="pararAjuste()" 
+                    onmouseleave="pararAjuste()"
+                    ontouchstart="iniciarAjuste('ativos', 1, event)"
+                    ontouchend="pararAjuste()"
+                    title="Adicionar operador">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <button type="button" class="btn-icon" 
+                    onmousedown="iniciarAjuste('ativos', -1, event)" 
+                    onmouseup="pararAjuste()" 
+                    onmouseleave="pararAjuste()"
+                    ontouchstart="iniciarAjuste('ativos', -1, event)"
+                    ontouchend="pararAjuste()"
+                    title="Remover operador">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-panel">
+        <div class="result-item">
+            <span class="result-label">Total de Pares</span>
+            <span id="res-pares" class="result-value">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Necessidade de Pessoas</span>
+            <span id="res-necessidade" class="result-value">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Eficiência Atual</span>
+            <span id="res-eficiencia" class="result-value text-accent">0%</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Diferença de Pessoal</span>
+            <span id="res-diferenca" class="result-value text-muted">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Pares / Hora (1 Op.)</span>
+            <span id="res-pares-hora" class="result-value">0</span>
+        </div>
+    </div>
+
+    <div class="explicacao">
+        <h3>Como os cálculos são feitos?</h3>
+        <p>A eficiência compara o tempo padrão que os produtos deveriam levar para ser feitos com o tempo real que a equipe tem disponível.</p>
+        
+        <div class="formula-box">
+            Eficiência (%) = (Minutos Produzidos ÷ Minutos Disponíveis) × 100
+        </div>
+
+        <ul>
+            <li><strong>Minutos Produzidos:</strong> Tempo Padrão do Modelo × Quantidade de Pares.</li>
+            <li><strong>Minutos Disponíveis:</strong> Pessoas Ativas na Linha × Carga Horária do Turno.</li>
+            <li><strong>Necessidade de Pessoas:</strong> Minutos Produzidos ÷ 365.2 (Capacidade Padrão).</li>
+            <li><strong>Diferença:</strong> Pessoas Ativas subtraído da Necessidade.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+const MODELOS_DB = [
+  { nome:"130G", tempo: 4.477 }, { nome: "ACQUA", tempo: 4.185 }, { nome: "ACQUA INF.", tempo: 4.184 }, { nome: "ADRENA", tempo: 5.657 }, { nome: "ADRENA 2", tempo: 5.449 },
+  { nome: "ASFALTO", tempo: 6.056 }, { nome: "ATMOS", tempo: 5.056 }, { nome: "CHALLENGER 6", tempo: 8.183 }, { nome: "CIRCUITO", tempo: 7.241 }, { nome: "CITRUS 2", tempo: 4.792 },
+  { nome: "CLIC", tempo: 2.290 }, { nome: "CLIMA", tempo: 4.511 }, { nome: "CORRE 4", tempo: 20.933 }, { nome: "CORRE 4 50 ANOS", tempo: 21.872 }, { nome: "CORRE 5", tempo: 13.963 },
+  { nome: "CORRE GRAFENO 3", tempo: 17.811 }, { nome: "CORRE MAX", tempo: 10.342 }, { nome: "CORRE S", tempo: 10.932 }, { nome: "CORRE SUPRA 2", tempo: 20.996 }, { nome: "CORRE TRILHA 3", tempo: 11.356 },
+  { nome: "CORRE TURBO", tempo: 13.136 }, { nome: "CORRE VENTO 3", tempo: 9.282 }, { nome: "EASY 2", tempo: 5.304 }, { nome: "ERA", tempo: 3.931 }, { nome: "ESSENTIAL 3", tempo: 4.608 },
+  { nome: "INVERSE", tempo: 8.044 }, { nome: "LANCE", tempo: 5.066 }, { nome: "NEBLINA", tempo: 8.954 }, { nome: "NYX", tempo: 4.901 }, { nome: "ORBITA", tempo: 4.540 },
+  { nome: "PIXEL INF.", tempo: 3.655 }, { nome: "PLAZA", tempo: 4.186 }, { nome: "PRIDE 4", tempo: 4.906 }, { nome: "PRIDE 4 INF.", tempo: 4.914 }, { nome: "PURPURA", tempo: 5.555 },
+  { nome: "QU4DRA 2", tempo: 9.317 }, { nome: "QU4DRA BR1", tempo: 13.324 }, { nome: "REFLECT", tempo: 6.354 }, { nome: "REVERSO 2", tempo: 8.748 }, { nome: "REVERSO 3", tempo: 10.328 },
+  { nome: "RITMO", tempo: 7.959 }, { nome: "RUSH", tempo: 3.837 }, { nome: "SAGAZ", tempo: 5.582 }, { nome: "SONORO 3", tempo: 8.488 }, { nome: "SUBVERSE", tempo: 7.938 },
+  { nome: "SUBVERSE 2", tempo: 7.906 }, { nome: "SWIFT 5", tempo: 4.516 }, { nome: "TREINO", tempo: 7.525 }, { nome: "TRIUNFO", tempo: 4.553 }, { nome: "VEST", tempo: 4.292 },
+  { nome: "VIRTUOSE", tempo: 5.308 }, { nome: "VOA 2", tempo: 4.908 }, { nome: "VOA 3", tempo: 4.988 }, { nome: "VOLCAN 2", tempo: 4.531 }, { nome: "VOLTA", tempo: 7.641 },
+
+  { nome: "-", tempo: 0 },
+
+  { nome: "ACTION 4", tempo: 8.756 }, { nome: "ATLANTIS 2", tempo: 7.618 }, { nome: "BASE ONE", tempo: 15.676 }, { nome: "BASE PRIME", tempo: 12.318 }, { nome: "BASE RIDE", tempo: 9.917 }, { nome: "CDS SPORT", tempo: 13.612 },
+  { nome: "COOL RIDE 3", tempo: 12.167 }, { nome: "COOL RIDE 3 INF.", tempo: 12.166 }, { nome: "CREATION", tempo: 12.373 }, { nome: "DYNASTY 5", tempo: 9.037 }, { nome: "DYNASTY 7", tempo: 11.924 }, { nome: "DYNASTY 8", tempo: 6.391 },
+  { nome: "EDO CROSS", tempo: 10.384 }, { nome: "ENDEAVOR 3", tempo: 7.656 }, { nome: "ENIGMA 2", tempo: 8.128 }, { nome: "ENIGMA 3", tempo: 7.148 }, { nome: "FALCON 5", tempo: 8.058 },
+  { nome: "FRONTIER 15", tempo: 8.281 }, { nome: "GLOW 2", tempo: 7.722 }, { nome: "GLOW 3", tempo: 6.516 }, { nome: "GOYA", tempo: 5.672 }, { nome: "GOYA 2", tempo: 5.703 }, { nome: "GOYA 3", tempo: 6.243 },
+  { nome: "HAWK 5", tempo: 6.253 }, { nome: "HAWK 6", tempo: 9.255 }, { nome: "INVICTUS 4", tempo: 8.601 }, { nome: "LEGEND 4", tempo: 9.827 }, { nome: "LEGEND 5", tempo: 8.818 }, { nome: "LIVELY", tempo: 5.273 },
+  { nome: "MIRAI 7", tempo: 7.068 }, { nome: "MIRAI 8", tempo: 6.646 }, { nome: "NEO AURA", tempo: 8.229 }, { nome: "NEO AURA 2", tempo: 8.229 }, { nome: "NEO AURA KINT", tempo: 11.690 }, { nome: "NEO PRYSMA", tempo: 6.690 },
+  { nome: "NEO VORTEX", tempo: 8.324 }, { nome: "ORACLE", tempo: 11.477 }, { nome: "REGENT AS", tempo: 4.754 }, { nome: "REGENT AS JUNIOR", tempo: 4.778 }, { nome: "REGENT IN", tempo: 4.755 }, { nome: "REGENT IN JR", tempo: 4.753 },
+  { nome: "REGENT MD", tempo: 7.756 }, { nome: "SKYWAY", tempo: 6.687 }, { nome: "STRATOS 3", tempo: 6.486 }, { nome: "SUNRISE", tempo: 10.966 }, { nome: "VICTORY", tempo: 12.015 }, { nome: "VIRTUE", tempo: 5.935 },
+  { nome: "VIRTUE 2", tempo: 6.416 }, { nome: "VITALITY 5", tempo: 6.634 }, { nome: "VITALITY 6", tempo: 6.700 }, { nome: "VITALITY 7", tempo: 6.809 }, { nome: "WAY 4", tempo: 7.346 }, { nome: "WAY 5", tempo: 5.933 },
+  { nome: "ZEST 2", tempo: 7.649 }
+];
+
+
+    const CAPACIDADE_LINHA = 365.2;
+    let holdTimeout;
+    let holdInterval;
+
+    function inicializar() {
+        const select = document.getElementById('modelo-select');
+        let optionsHTML = '<option value="">Selecione o Modelo</option>';
+        
+        MODELOS_DB.forEach(m => {
+            optionsHTML += `<option value="${m.tempo}">${m.nome}</option>`;
+        });
+        
+        select.innerHTML = optionsHTML;
+    }
+
+    function ajustarValor(inputId, valor) {
+        const input = document.getElementById(inputId);
+        let atual = parseInt(input.value) || 0;
+        let novoValor = atual + valor;
+        
+        if (novoValor < 0) novoValor = 0; 
+        
+        input.value = novoValor;
+        calcular(); 
+    }
+
+    function iniciarAjuste(inputId, valor, evento) {
+        if(evento && evento.cancelable) evento.preventDefault(); 
+        
+        ajustarValor(inputId, valor); 
+        
+        pararAjuste(); 
+        
+        holdTimeout = setTimeout(() => {
+            holdInterval = setInterval(() => {
+                ajustarValor(inputId, valor);
+            }, 60); 
+        }, 300);
+    }
+
+    function pararAjuste() {
+        clearTimeout(holdTimeout);
+        clearInterval(holdInterval);
+    }
+
+    function calcular() {
+        const tempo = parseFloat(document.getElementById('modelo-select').value) || 0;
+        const qtd = parseFloat(document.getElementById('pares-input').value) || 0;
+        
+        const ativos = parseFloat(document.getElementById('ativos').value) || 0;
+        const cargaPessoa = parseFloat(document.getElementById('turno').value) || 440;
+
+        const tempoTotal = tempo * qtd; 
+        const totalPares = qtd;
+
+        const necessidade = tempoTotal ? Math.round(tempoTotal / CAPACIDADE_LINHA) : 0;
+        const minutosDisponiveis = ativos * cargaPessoa;
+        const eficiencia = ativos > 0 ? Math.round((tempoTotal / minutosDisponiveis) * 100) : 0;
+        const diferenca = ativos > 0 ? ativos - necessidade : 0;
+        
+        const paresPorHora = tempo > 0 ? Math.round(60 / tempo) : 0;
+
+        document.getElementById('res-pares').innerText = totalPares;
+        document.getElementById('res-necessidade').innerText = necessidade;
+        document.getElementById('res-eficiencia').innerText = ativos > 0 ? eficiencia + '%' : '0%';
+        
+        document.getElementById('res-pares-hora').innerText = paresPorHora;
+        
+        const elDiferenca = document.getElementById('res-diferenca');
+        elDiferenca.innerText = diferenca > 0 ? '+' + diferenca : diferenca;
+        
+        elDiferenca.className = 'result-value'; 
+        if (diferenca > 0) elDiferenca.classList.add('text-green');
+        else if (diferenca < 0) elDiferenca.classList.add('text-red');
+        else elDiferenca.classList.add('text-muted');
+    }
+
+    inicializar();
+</script>
+
+</body>
+</html>

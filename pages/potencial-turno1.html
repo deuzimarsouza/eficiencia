@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página em Desenvolvimento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            position: relative; /* Necessário para fixar o rodapé */
+        }
+
+        .container {
+            max-width: 480px;
+            padding: 40px 20px;
+        }
+
+        .icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            color: #a1a1aa;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            font-size: 16px;
+            font-weight: 400;
+            color: #a1a1aa;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .btn-voltar {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #e4e4e7;
+        }
+
+        .btn-voltar:active {
+            transform: scale(0.98);
+        }
+
+        .btn-voltar svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* --- Estilos do Rodapé do Criador --- */
+        .footer-creator {
+            position: absolute;
+            bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .footer-creator:hover {
+            opacity: 1; /* Fica mais visível ao passar o mouse */
+        }
+
+        .creator-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #27272a; /* Cor de fundo caso a imagem demore a carregar */
+            border: 1px solid #3f3f46;
+        }
+
+        .creator-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .creator-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .creator-role {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+
+        <h1>Página em Desenvolvimento</h1>
+        <p>Estamos trabalhando para construir esta função.<br>Em breve ela estará disponível para acesso.</p>
+        
+        <button class="btn-voltar" onclick="voltarPagina()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Voltar para o início
+        </button>
+    </div>
+
+    <footer class="footer-creator">
+        <img src="../src/dev/user-dev.jpg" alt="Foto de Perfil" class="creator-photo">
+        <div class="creator-info">
+            <span class="creator-name">Deuzimar Souza</span>
+            <span class="creator-role">Desenvolvedor</span>
+        </div>
+    </footer>
+
+    <script>
+        function voltarPagina() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/'; 
+            }
+        }
+    </script>
+
+</body>
+</html>

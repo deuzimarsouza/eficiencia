@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Eficiência de Linha - Inteligente</title>
+
+<style>
+@font-face{
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+
+* {
+    font-family: "LufgaRegular", sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    scrollbar-width: none;
+    outline: none;
+    color: #000000;
+}
+
+/* Aplicando a responsividade exigida */
+body {
+    background: #000000;
+    width: 100%;
+    max-width: 480px; 
+    padding: 24px;
+    min-height: 100vh;
+    position: relative;
+    margin: 0 auto;
+}
+
+select {
+    appearance: none;
+    text-indent: 4px;
+    background-color: transparent;
+}
+
+button {
+    flex: 1; 
+    height: 60px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: transform 0.1s;
+    font-weight: 600;
+}
+
+button:active { transform: scale(0.95); }
+
+/* =========================================
+   DESIGN: TABELAS (CARDS)
+   ========================================= */
+
+.container-tabela {
+    background: #ffffff;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(137, 73, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-linha {
+    width: 100%;
+    padding: 14px;
+    background: #8949ff;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+table {
+    width: 100%;
+    background: #ffffff;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f4f0ff;
+    color: #8949ff;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 4px;
+    border-bottom: 2px solid #eae0ff;
+}
+
+td { 
+    background: #ffffff; 
+    padding: 8px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f4f5f7;
+}
+
+tr:last-child td { border-bottom: none; }
+
+td.resumo { border-left: 2px dashed #f0f0f0; }
+
+td.resumo.necessidade, td.resumo.eficiencia {
+    color: #8949ff;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.ativos, .pares, .modelo {
+    width: 100%;
+    height: 42px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    background: #f4f6f8; 
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #222;
+    transition: all 0.2s ease;
+}
+
+.modelo {
+    text-align: left;
+    padding-left: 8px;
+    cursor: pointer;
+}
+
+.ativos:focus, .pares:focus, .modelo:focus {
+    background: #ffffff;
+    border-color: #8949ff;
+    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+}
+
+.total-linha {
+    width: 100%;
+    padding: 14px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.badge-total {
+    font-size: 12px;
+    color: #666;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.badge-total b { font-size: 16px; color: #8949ff; font-weight: 900; margin-left: 4px; }
+.badge-total.difer b { color: #d32f2f; }
+
+/* =========================================
+   DESIGN UNIFICADO: RESUMO, OCIOSOS E OTIMIZAÇÃO
+   ========================================= */
+.resumo-fabrica-container {
+    background: #1a1a1c;
+    border: 2px solid #2a2a2e;
+    border-radius: 16px;
+    padding: 18px 14px;
+    margin-top: 24px;
+}
+
+/* Variação Perigo (Ociosos) */
+.resumo-fabrica-container.danger {
+    background: #1f1414; 
+    border-color: #3a1c1c;
+    margin-top: 16px;
+}
+.resumo-fabrica-titulo.danger-text { color: #ff4e3a; }
+
+/* Variação Destaque (Otimização) */
+.resumo-fabrica-container.highlight {
+    background: #14101f; 
+    border-color: #271d3b;
+    margin-top: 16px;
+}
+.resumo-fabrica-titulo.highlight-text { color: #a77bff; }
+
+.resumo-fabrica-titulo {
+    color: #ffffff;
+    text-align: center;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.resumo-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.resumo-card {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-bottom: 4px solid #8949ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.resumo-card.potencial { border-bottom-color: #2ecc71; }
+.resumo-card.potencial b { color: #2ecc71; font-size: 24px; }
+
+.resumo-card.danger { border-bottom-color: #ff4e3a; }
+.resumo-card.danger b { color: #ff4e3a; }
+
+.resumo-card.info { border-bottom-color: #bca1ff; }
+
+.resumo-card span {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.resumo-card b {
+    display: block;
+    font-size: 20px;
+    color: #000000;
+    font-weight: 900;
+}
+
+/* Estilo para cartões que funcionam como botões */
+.resumo-card.action-card {
+    cursor: pointer;
+    background: #f4f0ff;
+    transition: all 0.2s ease;
+}
+
+.resumo-card.action-card:active {
+    transform: scale(0.95);
+    background: #e2d4ff;
+}
+
+.resumo-card.action-card b { color: #8949ff; font-size: 22px; }
+
+/* ========================================= */
+
+#menu {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    max-width: 480px; 
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to top, #000000 85%, transparent);
+    z-index: 100;
+    padding: 0 24px 24px 24px;
+    height: 100px;
+}
+
+.btn-options { 
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%; 
+    gap: 12px; 
+}
+
+.create { background: #fff url('../src/icons/magic-wand.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
+.salvar { background: #fff url('../src/icons/disk.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
+.delete { background: #fff url('../src/icons/trash.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
+
+.toast {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 28px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    z-index: 10000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toast.show { top: 12px; }
+.toast-success { background: #2ecc71; }
+.toast-error { background: #e74c3c; }
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+
+.modal { background: white; padding: 25px; border-radius: 24px; width: 320px; text-align: center; }
+.modal input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #cecbff; border-radius: 12px; text-align: center; font-weight: bold; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; height: 48px; border: none; }
+.btn-confirm { background: #8949ff; color: white; }
+.btn-cancel { background: #f0f0f0; color: #666; }
+
+#space-data { width: 100%; height: 120px; } 
+</style>
+</head>
+
+<body>
+
+<div id="modalCriar" class="modal-overlay">
+    <div class="modal">
+        <h3>Nova Linha</h3>
+        <p>Insira o nome da linha de produção</p>
+        <input type="text" id="inputNomeTabela" placeholder="EX: LINHA 01" maxlength="20">
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalCriar')">Sair</button>
+            <button class="btn-confirm" onclick="confirmarCriacao()">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalRemover" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color: #e74c3c;">REMOVER LINHA?</h3>
+        <p>Deseja apagar a última linha criada?</p>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalRemover')">Não</button>
+            <button class="btn-confirm" style="background:#e74c3c; color:white;" onclick="confirmarRemocao()">Sim, apagar</button>
+        </div>
+    </div>
+</div>
+
+<div id="tabelas"></div>
+<div id="resumoGeral"></div>
+<div id="sugestoesInteligentes"></div>
+
+<div id="menu">
+    <div class="btn-options">
+        <button class="salvar" onclick="salvarDados()">SALVAR</button>
+        <button class="create" onclick="abrirModal('modalCriar')">ADICIONAR</button>
+        <button class="delete" onclick="abrirModalRemover()">REMOVER</button>
+    </div>
+</div>
+
+<div id="space-data"></div>
+
+<script>
+const STORAGE_KEY = "eficiencia_linhas";
+
+const MODELOS_DB = [
+  { nome:"130G", tempo: 4.477 }, { nome: "ACQUA", tempo: 4.185 }, { nome: "ACQUA INF.", tempo: 4.184 }, { nome: "ADRENA", tempo: 5.657 }, { nome: "ADRENA 2", tempo: 5.449 },
+  { nome: "ASFALTO", tempo: 6.056 }, { nome: "ATMOS", tempo: 5.056 }, { nome: "CHALLENGER 6", tempo: 8.183 }, { nome: "CIRCUITO", tempo: 7.241 }, { nome: "CITRUS 2", tempo: 4.792 },
+  { nome: "CLIC", tempo: 2.290 }, { nome: "CLIMA", tempo: 4.511 }, { nome: "CORRE 4", tempo: 20.933 }, { nome: "CORRE 4 50 ANOS", tempo: 21.872 }, { nome: "CORRE 5", tempo: 13.963 },
+  { nome: "CORRE GRAFENO 3", tempo: 17.811 }, { nome: "CORRE MAX", tempo: 10.342 }, { nome: "CORRE S", tempo: 10.932 }, { nome: "CORRE SUPRA 2", tempo: 20.996 }, { nome: "CORRE TRILHA 3", tempo: 11.356 },
+  { nome: "CORRE TURBO", tempo: 13.136 }, { nome: "CORRE VENTO 3", tempo: 9.282 }, { nome: "EASY 2", tempo: 5.304 }, { nome: "ERA", tempo: 3.931 }, { nome: "ESSENTIAL 3", tempo: 4.608 },
+  { nome: "INVERSE", tempo: 8.044 }, { nome: "LANCE", tempo: 5.066 }, { nome: "NEBLINA", tempo: 8.954 }, { nome: "NYX", tempo: 4.901 }, { nome: "ORBITA", tempo: 4.540 },
+  { nome: "PIXEL INF.", tempo: 3.655 }, { nome: "PLAZA", tempo: 4.186 }, { nome: "PRIDE 4", tempo: 4.906 }, { nome: "PRIDE 4 INF.", tempo: 4.914 }, { nome: "PURPURA", tempo: 5.555 },
+  { nome: "QU4DRA 2", tempo: 9.317 }, { nome: "QU4DRA BR1", tempo: 13.324 }, { nome: "REFLECT", tempo: 6.354 }, { nome: "REVERSO 2", tempo: 8.748 }, { nome: "REVERSO 3", tempo: 10.328 },
+  { nome: "RITMO", tempo: 7.959 }, { nome: "RUSH", tempo: 3.837 }, { nome: "SAGAZ", tempo: 5.582 }, { nome: "SONORO 3", tempo: 8.488 }, { nome: "SUBVERSE", tempo: 7.938 },
+  { nome: "SUBVERSE 2", tempo: 7.906 }, { nome: "SWIFT 5", tempo: 4.516 }, { nome: "TREINO", tempo: 7.525 }, { nome: "TRIUNFO", tempo: 4.553 }, { nome: "VEST", tempo: 4.292 },
+  { nome: "VIRTUOSE", tempo: 5.308 }, { nome: "VOA 2", tempo: 4.908 }, { nome: "VOA 3", tempo: 4.988 }, { nome: "VOLCAN 2", tempo: 4.531 }, { nome: "VOLTA", tempo: 7.641 },
+
+  { nome: "-", tempo: 0 },
+
+  { nome: "ACTION 4", tempo: 8.756 }, { nome: "ATLANTIS 2", tempo: 7.618 }, { nome: "BASE ONE", tempo: 15.676 }, { nome: "BASE PRIME", tempo: 12.318 }, { nome: "BASE RIDE", tempo: 9.917 }, { nome: "CDS SPORT", tempo: 13.612 },
+  { nome: "COOL RIDE 3", tempo: 12.167 }, { nome: "COOL RIDE 3 INF.", tempo: 12.166 }, { nome: "CREATION", tempo: 12.373 }, { nome: "DYNASTY 5", tempo: 9.037 }, { nome: "DYNASTY 7", tempo: 11.924 }, { nome: "DYNASTY 8", tempo: 6.391 },
+  { nome: "EDO CROSS", tempo: 10.384 }, { nome: "ENDEAVOR 3", tempo: 7.656 }, { nome: "ENIGMA 2", tempo: 8.128 }, { nome: "ENIGMA 3", tempo: 7.148 }, { nome: "FALCON 5", tempo: 8.058 },
+  { nome: "FRONTIER 15", tempo: 8.281 }, { nome: "GLOW 2", tempo: 7.722 }, { nome: "GLOW 3", tempo: 6.516 }, { nome: "GOYA", tempo: 5.672 }, { nome: "GOYA 2", tempo: 5.703 }, { nome: "GOYA 3", tempo: 6.243 },
+  { nome: "HAWK 5", tempo: 6.253 }, { nome: "HAWK 6", tempo: 9.255 }, { nome: "INVICTUS 4", tempo: 8.601 }, { nome: "LEGEND 4", tempo: 9.827 }, { nome: "LEGEND 5", tempo: 8.818 }, { nome: "LIVELY", tempo: 5.273 },
+  { nome: "MIRAI 7", tempo: 7.068 }, { nome: "MIRAI 8", tempo: 6.646 }, { nome: "NEO AURA", tempo: 8.229 }, { nome: "NEO AURA 2", tempo: 8.229 }, { nome: "NEO AURA KINT", tempo: 11.690 }, { nome: "NEO PRYSMA", tempo: 6.690 },
+  { nome: "NEO VORTEX", tempo: 8.324 }, { nome: "ORACLE", tempo: 11.477 }, { nome: "REGENT AS", tempo: 4.754 }, { nome: "REGENT AS JUNIOR", tempo: 4.778 }, { nome: "REGENT IN", tempo: 4.755 }, { nome: "REGENT IN JR", tempo: 4.753 },
+  { nome: "REGENT MD", tempo: 7.756 }, { nome: "SKYWAY", tempo: 6.687 }, { nome: "STRATOS 3", tempo: 6.486 }, { nome: "SUNRISE", tempo: 10.966 }, { nome: "VICTORY", tempo: 12.015 }, { nome: "VIRTUE", tempo: 5.935 },
+  { nome: "VIRTUE 2", tempo: 6.416 }, { nome: "VITALITY 5", tempo: 6.634 }, { nome: "VITALITY 6", tempo: 6.700 }, { nome: "VITALITY 7", tempo: 6.809 }, { nome: "WAY 4", tempo: 7.346 }, { nome: "WAY 5", tempo: 5.933 },
+  { nome: "ZEST 2", tempo: 7.649 }
+];
+
+const CAPACIDADE_LINHA = 365.2;
+const CARGA_PESSOA = 380;
+
+function notify(msg, type = 'info') {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+    }, 2500);
+}
+
+function abrirModal(id) {
+    document.getElementById(id).style.display = "flex";
+    if(id === 'modalCriar') document.getElementById("inputNomeTabela").focus();
+}
+
+function fecharModal(id) {
+    document.getElementById(id).style.display = "none";
+    document.getElementById("inputNomeTabela").value = "";
+}
+
+function abrirModalRemover() {
+    if (document.querySelectorAll(".container-tabela").length === 0) {
+        notify("SEM LINHAS!", "error");
+        return;
+    }
+    abrirModal('modalRemover');
+}
+
+function confirmarCriacao() {
+    const nome = document.getElementById("inputNomeTabela").value.trim();
+    if (!nome) {
+        notify("NOME OBRIGATÓRIO! ⚠️", "error");
+        return;
+    }
+    criarTabela({ titulo: nome.toUpperCase() });
+    fecharModal('modalCriar');
+}
+
+function confirmarRemocao() {
+    const tabelas = document.querySelectorAll(".container-tabela");
+    tabelas[tabelas.length - 1].remove();
+    salvarDados(true);
+    atualizarResumoGeral();
+    fecharModal('modalRemover');
+}
+
+function criarSelectModelos(valor = "") {
+    let html = `<select class="modelo"><option value="">-</option>`;
+    MODELOS_DB.forEach(m => {
+        html += `<option value="${m.tempo}" ${valor == m.tempo ? "selected" : ""}>${m.nome}</option>`;
+    });
+    return html + `</select>`;
+}
+
+function criarTabela(dadosTabela = null) {
+    const div = document.createElement("div");
+    div.className = "container-tabela";
+    const titulo = dadosTabela?.titulo || "LINHA";
+
+    div.innerHTML = `
+    <div class="titulo-linha">${titulo}</div>
+    <table data-tempo="0" data-ativos="0" data-pares="0">
+        <thead>
+            <tr><th style="width:38%">Modelo</th><th style="width:17%">Pares</th><th style="width:15%">N</th><th style="width:15%">A</th><th style="width:15%">E</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[0]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[0]?.pares || ""}"></td>
+                <td rowspan="3" class="resumo necessidade">-</td>
+                <td rowspan="3" class="resumo"><input type="number" class="ativos" value="${dadosTabela?.linhas?.[0]?.ativos || ""}"></td>
+                <td rowspan="3" class="resumo eficiencia">-</td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[1]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[1]?.pares || ""}"></td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[2]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[2]?.pares || ""}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-linha">
+        <span class="badge-total">PARES: <b>0</b></span>
+        <span class="badge-total difer">DIFER.: <b>0</b></span>
+    </div>`;
+
+    document.getElementById("tabelas").appendChild(div);
+    div.querySelectorAll("select, input").forEach(el => {
+        el.addEventListener("input", () => { calcularTabela(div); atualizarResumoGeral(); });
+    });
+    calcularTabela(div);
+    atualizarResumoGeral();
+}
+
+function calcularTabela(container) {
+    const tabela = container.querySelector("table");
+    let tempoT = 0, paresT = 0;
+    const modelos = tabela.querySelectorAll(".modelo");
+    const pares = tabela.querySelectorAll(".pares");
+
+    modelos.forEach((m, i) => {
+        const t = parseFloat(m.value);
+        const p = parseFloat(pares[i].value);
+        if (p) paresT += p;
+        if (t && p) tempoT += t * p;
+    });
+
+    const ativos = parseFloat(tabela.querySelector(".ativos").value) || 0;
+    tabela.dataset.pares = paresT;
+    tabela.dataset.tempo = tempoT;
+    tabela.dataset.ativos = ativos;
+
+    const necessidade = tempoT ? Math.round(tempoT / CAPACIDADE_LINHA) : 0;
+    const eficiencia = ativos ? Math.round((tempoT / (ativos * CARGA_PESSOA)) * 100) : 0;
+
+    tabela.querySelector(".necessidade").innerText = necessidade || "-";
+    tabela.querySelector(".eficiencia").innerText = ativos ? eficiencia + "%" : "-";
+    
+    container.querySelector(".total-linha").innerHTML = `
+        <span class="badge-total">PARES: <b>${paresT}</b></span>
+        <span class="badge-total difer">DIFER.: <b>${ativos - necessidade}</b></span>
+    `;
+}
+
+function proxMultiplo4(num) {
+    if (num <= 0) return 0;
+    return Math.ceil(num / 4) * 4;
+}
+
+function aplicarOtimizacao(indexTabela, indexLinha, quantidade) {
+    if (quantidade <= 0) return;
+
+    const containers = document.querySelectorAll(".container-tabela");
+    const containerAlvo = containers[indexTabela];
+    
+    if (containerAlvo) {
+        const inputsPares = containerAlvo.querySelectorAll(".pares");
+        const inputAlvo = inputsPares[indexLinha];
+        
+        const valorAtual = parseFloat(inputAlvo.value) || 0;
+        inputAlvo.value = valorAtual + quantidade;
+
+        // Recalcular e atualizar UI
+        calcularTabela(containerAlvo);
+        atualizarResumoGeral();
+        notify(`ADICIONADO +${quantidade} PARES!`, "success");
+    }
+}
+
+function removerTrabalhadores(indexTabela, quantidade) {
+    if (quantidade <= 0) return;
+    const containers = document.querySelectorAll(".container-tabela");
+    const containerAlvo = containers[indexTabela];
+    
+    if (containerAlvo) {
+        const inputAtivos = containerAlvo.querySelector(".ativos");
+        const valorAtual = parseFloat(inputAtivos.value) || 0;
+        inputAtivos.value = Math.max(0, valorAtual - quantidade);
+
+        // Recalcular e atualizar UI
+        calcularTabela(containerAlvo);
+        atualizarResumoGeral();
+        notify(`REMOVIDO -${quantidade} PESSOAS!`, "success");
+    }
+}
+
+function atualizarResumoGeral() {
+    let tPares = 0, tAtivos = 0, tTempo = 0;
+    let sugestoesHtml = "";
+
+    const containers = document.querySelectorAll(".container-tabela");
+    
+    containers.forEach((container, containerIndex) => {
+        const t = container.querySelector("table");
+        const titulo = container.querySelector(".titulo-linha").innerText;
+        const p = parseFloat(t.dataset.pares) || 0;
+        const a = parseFloat(t.dataset.ativos) || 0;
+        const temp = parseFloat(t.dataset.tempo) || 0;
+
+        tPares += p; tAtivos += a; tTempo += temp;
+
+        const necessidade = temp ? Math.round(temp / CAPACIDADE_LINHA) : 0;
+        const ociosos = a - necessidade;
+
+        const efici = a ? (temp / (a * CARGA_PESSOA)) : 0;
+        
+        // Se tiver 2 ou mais ociosos, mostra card de ação para COMPLETAR
+        if (ociosos >= 2) {
+            let maiorT = 0, melhorM = "", indexModeloAlvo = 0;
+            container.querySelectorAll(".modelo").forEach((sel, selIndex) => {
+                if(sel.value && parseFloat(sel.value) > maiorT) {
+                    maiorT = parseFloat(sel.value);
+                    melhorM = sel.options[sel.selectedIndex].text;
+                    indexModeloAlvo = selIndex;
+                }
+            });
+
+            if (melhorM) {
+                const pCompletar = proxMultiplo4(Math.ceil((ociosos * CAPACIDADE_LINHA) / maiorT));
+
+                sugestoesHtml += `
+                <div class="resumo-fabrica-container danger">
+                    <div class="resumo-fabrica-titulo danger-text">⚠️ COMPLETAR OCIOSIDADE: ${titulo}</div>
+                    
+                    <div class="resumo-grid" style="margin-bottom: 12px;">
+                        <div class="resumo-card danger">
+                            <span>Sobra na Linha</span>
+                            <b style="font-size: 16px;">${ociosos} Pessoas</b>
+                        </div>
+                        <div class="resumo-card danger">
+                            <span>Foco p/ Completar</span>
+                            <b style="font-size: 16px;">${melhorM}</b>
+                        </div>
+                    </div>
+
+                    <div class="resumo-grid">
+                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${pCompletar})" style="background: #fff5f5; border-bottom-color: #ff4e3a;">
+                            <span style="color: #d32f2f;">Preencher c/ Pares</span>
+                            <b style="color: #ff4e3a;">+${pCompletar} prs</b>
+                        </div>
+                        <div class="resumo-card action-card" onclick="removerTrabalhadores(${containerIndex}, ${ociosos})" style="background: #fff5f5; border-bottom-color: #ff4e3a;">
+                            <span style="color: #d32f2f;">Cortar Mão de Obra</span>
+                            <b style="color: #ff4e3a;">-${ociosos} func.</b>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        } 
+        // OTIMIZAÇÃO NORMAL: Se a eficiência estiver baixa
+        else if(efici > 0 && efici < 0.85) {
+            let maiorT = 0, melhorM = "", indexModeloAlvo = 0;
+            container.querySelectorAll(".modelo").forEach((sel, selIndex) => {
+                if(sel.value && parseFloat(sel.value) > maiorT) {
+                    maiorT = parseFloat(sel.value);
+                    melhorM = sel.options[sel.selectedIndex].text;
+                    indexModeloAlvo = selIndex;
+                }
+            });
+
+            if(melhorM) {
+                const f80 = (a * CARGA_PESSOA * 0.80) - temp;
+                const f85 = (a * CARGA_PESSOA * 0.85) - temp;
+
+                const p80 = f80 > 0 ? proxMultiplo4(Math.ceil(f80 / maiorT)) : 0;
+                const p85 = f85 > 0 ? proxMultiplo4(Math.ceil(f85 / maiorT)) : 0;
+
+                sugestoesHtml += `
+                <div class="resumo-fabrica-container highlight">
+                    <div class="resumo-fabrica-titulo highlight-text">💡 OTIMIZAÇÃO: ${titulo}</div>
+                    
+                    <div class="resumo-grid" style="margin-bottom: 12px;">
+                        <div class="resumo-card info">
+                            <span>Foco de Produção</span>
+                            <b style="font-size: 16px;">${melhorM}</b>
+                        </div>
+                        <div class="resumo-card info">
+                            <span>Efic. Atual</span>
+                            <b>${Math.round(efici*100)}%</b>
+                        </div>
+                    </div>
+
+                    <div class="resumo-grid">
+                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${p80})">
+                            <span>Aplicar 80%</span>
+                            <b>+${p80} prs</b>
+                        </div>
+                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${p85})">
+                            <span>Aplicar 85%</span>
+                            <b>+${p85} prs</b>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }
+    });
+
+    if (!tPares && !tAtivos) {
+        document.getElementById("resumoGeral").innerHTML = "";
+        document.getElementById("sugestoesInteligentes").innerHTML = "";
+        return;
+    }
+
+    document.getElementById("resumoGeral").innerHTML = `
+    <div class="resumo-fabrica-container">
+        <div class="resumo-fabrica-titulo">🏭 Resumo da Fábrica</div>
+        <div class="resumo-grid">
+            <div class="resumo-card">
+                <span>Mão de Obra</span>
+                <b>${tAtivos}</b>
+            </div>
+            <div class="resumo-card potencial">
+                <span>Potencial</span>
+                <b id="TtPares">${tPares}</b>
+            </div>
+            <div class="resumo-card">
+                <span>Eficiência</span>
+                <b id="TtEficiencia">${tAtivos ? Math.round((tTempo / (tAtivos * CARGA_PESSOA)) * 100) + "%" : "-"}</b>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById("sugestoesInteligentes").innerHTML = sugestoesHtml;
+}
+
+function salvarDados(silencioso = false) {
+    const dados = [];
+    document.querySelectorAll(".container-tabela").forEach(container => {
+        const titulo = container.querySelector(".titulo-linha").innerText;
+        const tabela = container.querySelector("table");
+        const linhas = [];
+        const modelos = tabela.querySelectorAll(".modelo");
+        const pares = tabela.querySelectorAll(".pares");
+        const ativos = tabela.querySelector(".ativos").value;
+            
+        modelos.forEach((m, i) => {
+            linhas.push({ modelo: m.value, pares: pares[i].value, ativos: i === 0 ? ativos : "" });
+        });
+        dados.push({ titulo, linhas });
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    if (!silencioso) notify("DADOS SALVOS!", "success");
+
+}
+
+function carregarDados() {
+    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    dados.forEach(d => criarTabela(d));
+}
+
+carregarDados();
+</script>
+
+</body>
+</html>

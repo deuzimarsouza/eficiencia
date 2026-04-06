@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard App</title>
+    <style>
+        @font-face{
+            font-family: "BricolageRegular";
+            src: url("src/fonts/BricolageGrotesque-Regular.otf");
+        }
+
+        @font-face{
+            font-family: "LufgaRegular";
+            src: url("src/fonts/LufgaRegular.ttf");
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            font-family: "LufgaRegular";
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- ESTILOS DA TELA SPLASH --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        #icon-logo {
+            width: 96px;
+            height: 96px;
+            background: url(src/logo/manufacturing.png) center center/72px no-repeat;
+            margin-bottom: 120px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #271d3b;
+            border-top: 5px solid #8949ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .splash-text {
+            color: #ffffff;
+            font-size: 16px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        /* ------------------------------- */
+
+        .app-container {
+            width: 100%;
+            max-width: 480px; 
+            padding: 24px;
+            min-height: 100vh;
+            position: relative; 
+            /* Começa oculto e será exibido pelo JS */
+            display: none; 
+            animation: scaleInApp 0.5s ease;
+        }
+
+        @keyframes scaleInApp {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-box {
+            width: 56px;
+            height: 56px;
+            border: 2px solid #8949ff;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url(src/logo/manufacturing.png) center center/32px no-repeat;
+        }
+
+        .menu-box {
+            width: 56px;
+            height: 56px;
+            border: 2px solid #E0E5F0;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .menu-box svg {
+            width: 24px;
+            height: 24px;
+            stroke: #7A869A;
+        }
+
+        .floating-menu {
+            position: absolute;
+            top: 96px;
+            right: 24px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            display: none;
+            transform-origin: top right;
+            animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .floating-menu.active {
+            display: block;
+        }
+
+        .floating-menu-item {
+            display: flex;
+            align-items: center;
+            width: 240px;
+            gap: 12px;
+            padding: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #111111;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 12px;
+        }
+
+        .floating-menu-item:hover {
+            background-color: #F8F9FA;
+        }
+
+        .floating-menu-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: #7A869A;
+            fill: none;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: #8949ff;
+            color: #ffffff;
+        }
+
+        .tab-btn:not(.active) {
+            background-color: #EFEFEF;
+            color: #271d3b;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: #14101f;
+            border: 2px solid #48356d;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        #ia {
+            color: transparent;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #5f77ff, #c599f8);
+        }
+
+        #fast {
+            font-size: 24px;
+            color: transparent;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #ff7e5f, #feb47b);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .card p {
+            font-size: 14.5px;
+            color: #979797;
+            line-height: 1.4;
+            margin-bottom: 28px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #000000;
+        }
+
+        .turn-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: #ffffff;
+            border: 2px solid #E0E5F0;
+            border-radius: 12px;
+            padding: 10px 24px 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111111;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .turn-select:focus {
+            border-color: #8949ff;
+        }
+
+        .action-btn {
+            background-color: #8949ff;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.3s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .action-btn:hover {
+            background-color: #333333;
+        }
+
+                .footer-creator {
+            position: absolute;
+            bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+
+        .footer-creator:hover {
+            opacity: 1;
+        }
+
+        .creator-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #27272a;
+            border: 1px solid #3f3f46;
+        }
+
+        .creator-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .creator-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .creator-role {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <div id="icon-logo"></div>
+    <div class="spinner"></div>
+    <p class="splash-text">verificando<br>conexão</p>
+
+    <footer class="footer-creator">
+    <img src="src/dev/user-dev.jpg" alt="Foto de Perfil" class="creator-photo">
+    <div class="creator-info">
+        <span class="creator-name">Deuzimar Souza</span>
+        <span class="creator-role">Desenvolvedor</span>
+    </div>
+    </footer>
+</div>
+
+<div class="app-container" id="app-container">
+    <header>
+        <div class="logo-box"></div>
+
+        <button id="menuBtn" class="menu-box">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </header>
+
+    <div id="floatingMenu" class="floating-menu">
+        <a href="#" class="floating-menu-item">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 16V12M12 8H12.01" stroke-width="2" stroke-linecap="round"/></svg>
+            Sobre
+        </a>
+        <a href="#" class="floating-menu-item">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Ajuda
+        </a>
+        <a href="#" class="floating-menu-item">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="2"/><path d="M11 10.5l1.5-1.5 1.5 1.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Feedback
+        </a>
+    </div>
+
+    <nav class="tabs">
+        <button class="tab-btn active" data-target="producao">Produção</button>
+        <button class="tab-btn" data-target="mao-obra">Mão de Obra</button>
+        <button class="tab-btn" data-target="area-tecnica">Área Técnica</button>
+    </nav>
+
+    <main>
+        <div id="producao" class="tab-content active">
+
+            <div class="card">
+                <h2>Projeção <span id="ia">IA</span></h2>
+                <p>Calcule a capacidade produtiva das linhas baseando-se no tempo do modelo e mão de obra ativa diariamente.</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <select id="turnoSelect" class="turn-select">
+                            <option value="1">1º TURNO</option>
+                            <option value="2">2º TURNO</option>
+                            <option value="3">3º TURNO</option>
+                        </select>
+                    </div>
+                    <div class="stat">
+                        <button class="action-btn" onclick="fazerProjecao()">PROJETAR &#10140;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Projeção <span id="fast">Rapida</span></h2>
+                <p>Calcule e verifique a eficiência de uma linha em produção sem modificar na projeção diaria e com calculo rapido veja o resultado por linha.</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <select id="turnoSelectRapido" class="turn-select">
+                            <option value="1">1º TURNO</option>
+                            <option value="2">2º TURNO</option>
+                            <option value="3">3º TURNO</option>
+                        </select>
+                    </div>
+                    <div class="stat">
+                        <button class="action-btn" onclick="fazerProjecaoRapida()">PROJETAR &#10140;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Calculadora de Eficiência</h2>
+                <p>Calcule o resultado geral produzido pelas linhas de preparação de forma rápida e intuitiva</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <select id="turnoSelectRapido" class="turn-select">
+                            <option>SEM FUNÇÃO</option>
+                        </select>
+                    </div>
+                    <div class="stat">
+                        <button class="action-btn" onclick="goTo('pages/calculadora-de-eficiencia.html')">CALCULAR &#10140;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mao-obra" class="tab-content">
+            <div class="card">
+                <h2>#valor</h2>
+                <p>#valor</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <span class="stat-label">#valor</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">#valor</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="area-tecnica" class="tab-content">
+            <div class="card">
+                <h2>#valor</h2>
+                <p>#valor</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <span class="stat-label">0</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">0</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- LÓGICA DA TELA SPLASH ---
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            const splashScreen = document.getElementById('splash-screen');
+            const appContainer = document.getElementById('app-container');
+            
+            // Oculta o splash screen
+            splashScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+                // Exibe o aplicativo principal
+                appContainer.style.display = 'block';
+            }, 100); // tempo para o fade out concluir
+        }, 1000); // 5 segundos de espera
+    });
+    // -----------------------------
+
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            button.classList.add('active');
+
+            const targetId = button.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+
+    const menuBtn = document.getElementById('menuBtn');
+    const floatingMenu = document.getElementById('floatingMenu');
+
+    menuBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        floatingMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (event) => {
+        const isClickInsideMenu = floatingMenu.contains(event.target);
+        const isClickOnMenuBtn = menuBtn.contains(event.target);
+
+        if (!isClickInsideMenu && !isClickOnMenuBtn) {
+            floatingMenu.classList.remove('active');
+        }
+    });
+
+    // Função de redirecionamento dinâmico baseado no select
+    function fazerProjecao() {
+        const turnoSelecionado = document.getElementById('turnoSelect').value;
+        const paginaDestino = `pages/potencial-turno${turnoSelecionado}.html`;
+        
+        setTimeout(() => {
+            window.location.href = paginaDestino;
+        }, 150);
+    }
+
+    function fazerProjecaoRapida() {
+        const turnoSelecionadoRapido = document.getElementById('turnoSelectRapido').value;
+        const paginaDestinoRapido = `pages/potencial-rapido${turnoSelecionadoRapido}.html`;
+        
+        setTimeout(() => {
+            window.location.href = paginaDestinoRapido;
+        }, 150);
+    }
+
+        function goTo(page) {
+        setTimeout(() => {
+            window.location.href = page;
+        }, 150);
+    }
+
+</script>
+
+</body>
+</html>
