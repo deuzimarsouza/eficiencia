@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Dashboard App</title>
     <style>
         @font-face{
@@ -184,14 +184,12 @@
             fill: none;
         }
 
-        /* Ajuste na barra de abas para permitir rolagem horizontal */
         .tabs {
             display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            justify-content: flex-start; 
-            margin-bottom: 24px;
-            padding-bottom: 4px;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0px;
         }
         
         .tabs::-webkit-scrollbar {
@@ -252,7 +250,7 @@
             color: transparent;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #5f77ff, #c599f8);
+            background-image: linear-gradient(to right, #5f616e, #565657);
         }
 
         #fast {
@@ -260,7 +258,7 @@
             color: transparent;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #ff7e5f, #feb47b);
+            background-image: linear-gradient(to right, #ff7e5f, #ff755d);
             margin-bottom: 12px;
             font-weight: 700;
         }
@@ -337,6 +335,11 @@
         
         .action-btn:hover {
             background-color: #333333;
+        }
+
+
+        .offline-select {
+            display: none;
         }
 
         .footer-creator {
@@ -458,7 +461,7 @@
         <div id="producao" class="tab-content active">
 
             <div class="card">
-                <h2>Projeção <span id="ia">IA</span></h2>
+                <h2>Projeção <span id="ia">Beta</span></h2>
                 <p>Calcule a capacidade produtiva das linhas baseando-se no tempo do modelo e mão de obra ativa diariamente.</p>
                 <div class="card-footer">
                     <div class="stat">
@@ -475,18 +478,16 @@
             </div>
 
             <div class="card">
-                <h2>Projeção <span id="fast">Rapida</span></h2>
-                <p>Calcule e verifique a eficiência de uma linha em produção sem modificar na projeção diaria e com calculo rapido veja o resultado por linha.</p>
+                <h2>Calculo de <span id="fast">Diferença</span></h2>
+                <p>Calcule e verifique o ganho e perda de uma linha em produção sem modificar na projeção diaria e com calculo rapido veja o resultado por linha.</p>
                 <div class="card-footer">
                     <div class="stat">
-                        <select id="turnoSelectRapido" class="turn-select">
-                            <option value="1">1º TURNO</option>
-                            <option value="2">2º TURNO</option>
-                            <option value="3">3º TURNO</option>
+                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
+                            <option>SEM FUNÇÃO</option>
                         </select>
                     </div>
                     <div class="stat">
-                        <button class="action-btn" onclick="fazerProjecaoRapida()">PROJETAR &#10140;</button>
+                        <button class="action-btn" onclick="goTo('pages/potencial-rapido.html')">PROJETAR &#10140;</button>
                     </div>
                 </div>
             </div>
@@ -496,7 +497,7 @@
                 <p>Calcule o resultado geral produzido pelas linhas de preparação de forma rápida e intuitiva</p>
                 <div class="card-footer">
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select">
+                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
                             <option>SEM FUNÇÃO</option>
                         </select>
                     </div>
@@ -530,7 +531,7 @@
                 <p>Consulte informações basicas dos modelos e distruição de pares por numerações.<br> EM DESENVOLVIMENTO</p>
                 <div class="card-footer">
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select">
+                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
                             <option>SEM FUNÇÃO</option>
                         </select>
                     </div>
