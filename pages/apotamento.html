@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Busca - OF de Corte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta Dark Mode Solicitada */
+            --bg-color: #000000; 
+            --surface-color: #0f0f0f; /* Fundo dos cards (levemente mais claro que o preto absoluto para dar profundidade) */
+            --surface-hover: #141414;
+            --border-color: #262626; 
+            --border-hover: #3a3a3a;
+            
+            --text-main: #ffffff; 
+            --text-muted: #a3a3a3; /* Cinza claro para subtítulos e labels */
+            
+            --primary: #8949ff; 
+            --primary-hover: #9b66ff; 
+            --primary-glow: rgba(137, 73, 255, 0.15); /* Efeito de brilho */
+            
+            /* Cores de Status adaptadas para Dark Mode */
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --success-text: #34d399;
+            --error-bg: rgba(239, 68, 68, 0.15);
+            --error-text: #f87171;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-text: #fbbf24;
+            
+            --pill-bg: #1a1a1a;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px; /* Maior espaçamento entre a busca e os resultados */
+        }
+
+        .search-section {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 48px 40px; /* Mais respiro interno */
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #1a1a1a;
+            color: var(--text-muted);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-badge.connected { background-color: var(--success-bg); color: var(--success-text); border-color: rgba(52, 211, 153, 0.2); }
+        .status-badge.error { background-color: var(--error-bg); color: var(--error-text); border-color: rgba(248, 113, 113, 0.2); }
+        .status-indicator { width: 8px; height: 8px; border-radius: 50%; background-color: currentColor; box-shadow: 0 0 8px currentColor; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 { font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
+        p.subtitle { color: var(--text-muted); font-size: 16px; margin: 12px 0 0 0; }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px;
+            border-radius: var(--radius-md); font-size: 15px; font-weight: 600;
+            font-family: inherit; cursor: pointer; transition: var(--transition); border: none;
+        }
+
+        .btn-primary { 
+            background-color: var(--primary); 
+            color: #ffffff; 
+            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.3); 
+        }
+        
+        .btn-primary:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 16px rgba(137, 73, 255, 0.5); 
+        }
+
+        .input-group { display: flex; position: relative; }
+        
+        input[type="text"], select {
+            padding: 14px 20px; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md);
+            font-size: 15px; 
+            font-family: inherit; 
+            outline: none; 
+            transition: var(--transition);
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            font-weight: 500;
+        }
+        
+        input[type="text"] { width: 300px; }
+        input[type="text"]::placeholder { color: #525252; font-weight: 400; }
+        input[type="text"]:focus, select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px var(--primary-glow); 
+        }
+        
+        /* Ajuste do ícone do select para ficar visível no fundo preto */
+        select { 
+            cursor: pointer; 
+            min-width: 160px; 
+            appearance: none; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a3a3a3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 16px center; 
+            background-size: 16px; 
+            padding-right: 48px; 
+        }
+        
+        select option { background-color: var(--surface-color); color: var(--text-main); }
+
+        #resultado { display: flex; flex-direction: column; gap: 32px; }
+
+        /* Melhoria no design do Card */
+        .card {
+            background-color: var(--surface-color); 
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color); 
+            box-shadow: var(--shadow-sm);
+            padding: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 36px; 
+            transition: var(--transition);
+        }
+        
+        .card:hover { 
+            border-color: var(--primary);
+            box-shadow: 0 8px 30px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .info-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 32px 24px; 
+        }
+        
+        .info-item { display: flex; flex-direction: column; gap: 8px; }
+        
+        .info-label { 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            color: var(--text-muted); 
+            font-weight: 600; 
+        }
+        
+        .info-value { 
+            font-size: 16px; 
+            color: var(--text-main); 
+            font-weight: 500; 
+        }
+
+        .sizes-section { 
+            border-top: 1px solid var(--border-color); 
+            padding-top: 32px; 
+        }
+        
+        .sizes-header { 
+            font-size: 15px; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            margin-bottom: 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 8px; 
+        }
+        
+        .sizes-header-title { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            color: var(--primary); 
+        }
+
+        /* Mantendo o Grid de 4x4 para telas menores */
+        .sizes-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+            padding-bottom: 12px; 
+        }
+        
+        .size-box { 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            background-color: var(--bg-color); /* Fundo preto puro para contraste */
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .size-box:hover {
+            border-color: var(--border-hover);
+            background-color: var(--surface-hover);
+        }
+
+        .size-number { 
+            background-color: var(--pill-bg); 
+            border-bottom: 1px solid var(--border-color); 
+            text-align: center; 
+            padding: 10px 0; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: var(--text-muted); 
+        }
+        
+        .size-qty { 
+            text-align: center; 
+            padding: 16px 0; 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: var(--text-main); 
+        }
+
+        .size-splits { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+            padding: 12px 10px; 
+            background-color: var(--pill-bg); 
+            border-top: 1px solid var(--border-color); 
+            align-items: center; 
+        }
+        
+        .split-pill { 
+            background-color: var(--primary); 
+            color: #ffffff; 
+            font-size: 12px; 
+            font-weight: 700; 
+            padding: 6px 0; 
+            border-radius: 6px; 
+            text-align: center; 
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        
+        .split-pill.partial { 
+            background-color: #262626; 
+            color: var(--text-muted); 
+        }
+
+        /* Estilização para o estado vazio (sem busca ou não encontrado) */
+        .empty-state {
+            text-align: center; 
+            padding: 80px 20px; 
+            color: var(--text-muted);
+            font-size: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 20px;
+            background: var(--surface-color); 
+            border-radius: var(--radius-lg); 
+            border: 1px dashed var(--border-color);
+        }
+
+        .empty-state svg {
+            color: var(--border-hover);
+        }
+
+        /* Customização da Barra de Rolagem para o Dark Mode */
+        ::-webkit-scrollbar { height: 10px; width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 6px; border: 2px solid var(--bg-color); }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Comportamento lado a lado para telas maiores (Computador) */
+        @media (min-width: 768px) {
+            .sizes-grid {
+                display: flex;
+                flex-wrap: wrap; 
+                gap: 16px;
+            }
+            .size-box {
+                flex: 1 1 auto; 
+                min-width: 80px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="search-section">
+        <div id="statusBadge" class="status-badge">
+            <div class="status-indicator"></div>
+            <span>Buscando base...</span>
+        </div>
+
+        <div class="header">
+            <h1>Gestão de Produção</h1>
+            <p class="subtitle">Consulta e Apontamento de Lotes por OF</p>
+        </div>
+        
+        <div class="toolbar">
+            <div class="input-group">
+                <input type="text" id="ofInput" placeholder="Número da OF (ex: 436007321)">
+            </div>
+
+            <div class="input-group">
+                <select id="divisorSelect" onchange="buscarOF()">
+                    <option value="0">Sem Divisão</option>
+                    <option value="12">Lotes de 12</option>
+                    <option value="24">Lotes de 24</option>
+                    <option value="48">Lotes de 48</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="buscarOF()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                Pesquisar
+            </button>
+        </div>
+    </div>
+
+    <div id="resultado">
+        <div class="empty-state">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <span>Digite uma OF para iniciar a busca.</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let headers = [];
+    let tableData = [];
+    const SPLIT_INDEX = 9; 
+
+    async function carregarBancoDeDados() {
+        const statusBadge = document.getElementById('statusBadge');
+        const spanText = statusBadge.querySelector('span');
+
+        try {
+            const response = await fetch('dados.txt');
+            
+            if (!response.ok) {
+                throw new Error('Arquivo não encontrado ou bloqueado pelo navegador.');
+            }
+
+            const text = await response.text();
+            processarDados(text);
+
+            statusBadge.className = 'status-badge connected';
+            spanText.textContent = 'Base Conectada';
+
+        } catch (error) {
+            console.error("Erro ao carregar:", error);
+            
+            statusBadge.className = 'status-badge error';
+            spanText.textContent = 'Erro de Conexão';
+
+            // Cores ajustadas para Dark Mode na mensagem de erro
+            document.getElementById('resultado').innerHTML = `
+                <div class="empty-state" style="border-color: #7f1d1d; background-color: rgba(239, 68, 68, 0.05);">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span style="color: #f87171; font-weight: 500; text-align: center; max-width: 550px; line-height: 1.6;">
+                        Não foi possível carregar o <strong>dados.txt</strong> automaticamente.<br><br>
+                        O navegador bloqueia leitura direta de arquivos locais. Você precisa abrir este sistema usando um Servidor Local (ex: extensão "Live Server" no VS Code).
+                    </span>
+                </div>`;
+        }
+    }
+
+    window.onload = carregarBancoDeDados;
+
+    function processarDados(text) {
+        const linhas = text.split('\n').filter(linha => linha.trim() !== '');
+        
+        if (linhas.length > 0) {
+            headers = linhas[0].split('\t').map(h => h.trim());
+            tableData = [];
+            
+            for (let i = 1; i < linhas.length; i++) {
+                const colunas = linhas[i].split('\t').map(c => c.trim());
+                if (colunas.length > 1) {
+                    tableData.push(colunas);
+                }
+            }
+        }
+    }
+
+    function buscarOF() {
+        const ofBusca = document.getElementById('ofInput').value.trim();
+        const resultadoDiv = document.getElementById('resultado');
+
+        if (tableData.length === 0) return; 
+
+        if (!ofBusca) {
+            // Cores ajustadas para Dark Mode na mensagem de aviso
+            resultadoDiv.innerHTML = `
+                <div class="empty-state" style="border-color: #92400e; background-color: rgba(245, 158, 11, 0.05);">
+                    <span style="color: #fbbf24; font-weight: 500;">Digite o número de uma OF para pesquisar.</span>
+                </div>`;
+            return;
+        }
+
+        const dadosFiltrados = tableData.filter(linha => linha[3] === ofBusca);
+
+        if (dadosFiltrados.length > 0) {
+            renderizarCards(dadosFiltrados);
+        } else {
+            resultadoDiv.innerHTML = `
+                <div class="empty-state">
+                    <span>Nenhum registro encontrado para a OF <strong style="color: var(--primary);">${ofBusca}</strong>.</span>
+                </div>`;
+        }
+    }
+
+    function renderizarCards(dados) {
+        let html = '';
+        const divisor = parseInt(document.getElementById('divisorSelect').value, 10);
+
+        dados.forEach(linha => {
+            html += `<div class="card">`;
+            
+            html += `<div class="info-grid">`;
+            for (let i = 0; i < SPLIT_INDEX; i++) {
+                if (headers[i]) {
+                    if (headers[i].trim().toUpperCase() !== 'QNT. PES') {
+                        const valor = linha[i] !== undefined && linha[i] !== '' ? linha[i] : '-';
+                        html += `
+                            <div class="info-item">
+                                <span class="info-label">${headers[i]}</span>
+                                <span class="info-value">${valor}</span>
+                            </div>
+                        `;
+                    }
+                }
+            }
+            html += `</div>`; 
+
+            html += `
+                <div class="sizes-section">
+                    <div class="sizes-header">
+                        <div class="sizes-header-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="6.5"></line></svg>
+                            Grade e Apontamento (Pares)
+                        </div>
+                    </div>
+                    <div class="sizes-grid">
+            `;
+            
+            let temTamanho = false;
+
+            for (let i = SPLIT_INDEX; i < headers.length; i++) {
+                if (headers[i]) {
+                    const valorStr = linha[i] !== undefined ? linha[i].trim() : '';
+                    
+                    if (valorStr !== '' && valorStr !== '-') {
+                        temTamanho = true;
+                        let qty = parseInt(valorStr, 10);
+                        
+                        html += `
+                            <div class="size-box">
+                                <div class="size-number">${headers[i]}</div>
+                                <div class="size-qty">${qty}</div>
+                        `;
+
+                        if (divisor > 0 && !isNaN(qty) && qty > 0) {
+                            html += `<div class="size-splits">`;
+                            
+                            const numLotesCheios = Math.floor(qty / divisor);
+                            const sobra = qty % divisor;
+                            
+                            for(let j = 0; j < numLotesCheios; j++) {
+                                html += `<div class="split-pill">${divisor}</div>`;
+                            }
+                            
+                            if (sobra > 0) {
+                                html += `<div class="split-pill partial">${sobra}</div>`;
+                            }
+                            
+                            html += `</div>`;
+                        }
+
+                        html += `</div>`;
+                    }
+                }
+            }
+            
+            if (!temTamanho) {
+                html += `<span style="color: var(--text-muted); font-size: 15px; font-weight: 500;">Nenhuma quantidade registrada nesta grade.</span>`;
+            }
+
+            html += `
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        document.getElementById('resultado').innerHTML = html;
+    }
+
+    document.getElementById('ofInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            buscarOF();
+        }
+    });
+</script>
+
+</body>
+</html>
