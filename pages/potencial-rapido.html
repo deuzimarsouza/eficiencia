@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Eficiência de Linha - Resumo</title>
+
+<style>
+@font-face{
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+
+* {
+    font-family: "LufgaRegular", sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    scrollbar-width: none;
+    outline: none;
+    color: #000000;
+}
+
+body {
+    background: #000000;
+    width: 100%;
+    max-width: 480px; 
+    padding: 24px;
+    min-height: 100vh;
+    position: relative;
+    margin: 0 auto;
+}
+
+select {
+    appearance: none;
+    text-indent: 4px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+button {
+    height: 60px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: transform 0.1s;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+button:active { transform: scale(0.95); }
+
+/* =========================================
+   DESIGN: TABELAS (CARDS)
+   ========================================= */
+
+.container-tabela {
+    background: #ffffff;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(137, 73, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-linha {
+    width: 100%;
+    padding: 14px;
+    background: #8949ff;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+table {
+    width: 100%;
+    background: #ffffff;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f4f0ff;
+    color: #8949ff;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 4px;
+    border-bottom: 2px solid #eae0ff;
+    text-align: center;
+}
+
+td { 
+    background: #ffffff; 
+    padding: 8px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f4f5f7;
+    text-align: center;
+}
+
+tr:last-child td { border-bottom: none; }
+
+td.resumo { border-left: 2px dashed #f0f0f0; }
+
+td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
+    color: #8949ff;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.input-tabela {
+    width: 100%;
+    height: 42px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    background: #f4f6f8; 
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #222;
+    transition: all 0.2s ease;
+}
+
+.linha-select {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.input-tabela:focus {
+    background: #ffffff;
+    border-color: #8949ff;
+    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+}
+
+.total-linha {
+    width: 100%;
+    padding: 14px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge-total {
+    font-size: 12px;
+    color: #666;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.badge-total b { font-size: 16px; color: #8949ff; font-weight: 900; margin-left: 4px; }
+.badge-total.difer b { color: #d32f2f; }
+.badge-total.positivo b { color: #10b981; }
+
+.text-red { color: #ef4444 !important; font-weight: 900; }
+.text-green { color: #10b981 !important; font-weight: 900; }
+
+/* =========================================
+   BOTOES INFERIORES
+   ========================================= */
+
+.botoes-acao {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-bottom: 24px;
+}
+
+.botoes-acao button {
+    height: 48px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+}
+
+.btn-outline-red {
+    background: #ffffff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+}
+
+.btn-purple {
+    background: #8949ff;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-green {
+    background: #10b981;
+    color: #ffffff;
+    border: none;
+    grid-column: span 2;
+    font-size: 15px;
+}
+
+.btn-limpar {
+    grid-column: span 2;
+    background: #fff5f5;
+    color: #d32f2f;
+    border: 2px solid #ffcdcd;
+    margin-top: 4px;
+}
+
+.btn-limpar:hover, .btn-limpar:active {
+    background: #ffebeb;
+}
+
+/* =========================================
+   MODAL PERSONALIZADO
+   ========================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: none; /* Fica flex quando ativo */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 24px;
+}
+
+.modal-overlay.ativo {
+    opacity: 1;
+}
+
+.modal-box {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.2s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.modal-overlay.ativo .modal-box {
+    transform: translateY(0) scale(1);
+}
+
+.modal-icone {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.modal-mensagem {
+    font-size: 15px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+.modal-botoes {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-botoes button {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="tabela-resumo-wrapper">
+    <div class="container-tabela">
+        <div class="titulo-linha">RESUMO DA PRODUÇÃO</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:30%">Linha</th>
+                    <th style="width:18%">Proj.</th>
+                    <th style="width:18%">Real</th>
+                    <th style="width:17%">Dif.</th>
+                    <th style="width:17%">%</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-resumo">
+                </tbody>
+        </table>
+        <div class="total-linha">
+            <span class="badge-total">PROJ.: <b id="total-proj">0</b></span>
+            <span class="badge-total">REAL: <b id="total-real">0</b></span>
+            <span class="badge-total difer">DIF.: <b id="total-dif">0</b></span>
+            <span class="badge-total positivo">%: <b id="total-perc">0%</b></span>
+        </div>
+    </div>
+</div>
+
+<div class="botoes-acao">
+    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">&#10005; Remover Linha</button>
+    <button class="btn-purple" onclick="adicionarLinhaResumo()">&#10010; Adicionar Linha</button>
+    <button class="btn-green" onclick="salvarDados()">&#128190; SALVAR DADOS NO DISPOSITIVO</button>
+    <button class="btn-limpar" onclick="limparDados()">LIMPAR TODOS OS DADOS</button>
+</div>
+
+<div id="modal-overlay" class="modal-overlay">
+    <div class="modal-box">
+        <div id="modal-icone" class="modal-icone"></div>
+        <div id="modal-mensagem" class="modal-mensagem"></div>
+        <div id="modal-botoes" class="modal-botoes"></div>
+    </div>
+</div>
+
+<script>
+let dadosResumo = [
+    { linha: "Linha 01", proj: "", real: "" },
+    { linha: "Linha 02", proj: "", real: "" },
+    { linha: "Linha 03", proj: "", real: "" }
+];
+
+/* =========================================
+   FUNÇÕES DO MODAL
+   ========================================= */
+function fecharModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('ativo');
+    setTimeout(() => { overlay.style.display = 'none'; }, 200);
+}
+
+function mostrarAlerta(icone, mensagem) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-icone').innerHTML = icone;
+    document.getElementById('modal-mensagem').innerHTML = mensagem;
+    
+    document.getElementById('modal-botoes').innerHTML = `
+        <button class="btn-purple" onclick="fecharModal()" style="width: 100%">OK</button>
+    `;
+    
+    overlay.style.display = 'flex';
+    setTimeout(() => overlay.classList.add('ativo'), 10);
+}
+
+function mostrarConfirmacao(icone, mensagem, onConfirm) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-icone').innerHTML = icone;
+    document.getElementById('modal-mensagem').innerHTML = mensagem;
+    
+    window.acaoConfirmada = () => {
+        fecharModal();
+        onConfirm();
+    };
+
+    document.getElementById('modal-botoes').innerHTML = `
+        <button class="btn-outline-red" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-green" onclick="window.acaoConfirmada()">Sim, Limpar</button>
+    `;
+    
+    overlay.style.display = 'flex';
+    setTimeout(() => overlay.classList.add('ativo'), 10);
+}
+
+/* =========================================
+   CÓDIGO DA APLICAÇÃO
+   ========================================= */
+
+function criarSelectLinhas(valorAtual) {
+    let html = `<select class="input-tabela linha-select">`;
+    for (let i = 1; i <= 20; i++) {
+        let numFormatado = i < 10 ? `0${i}` : i;
+        let nomeLinha = `Linha ${numFormatado}`;
+        let selecionado = nomeLinha === valorAtual ? "selected" : "";
+        html += `<option value="${nomeLinha}" ${selecionado}>${nomeLinha}</option>`;
+    }
+    html += `</select>`;
+    return html;
+}
+
+function renderizarTabelaResumo() {
+    const tbody = document.getElementById('tbody-resumo');
+    tbody.innerHTML = '';
+
+    dadosResumo.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'linha-item';
+        tr.innerHTML = `
+            <td>${criarSelectLinhas(item.linha)}</td>
+            <td><input type="number" class="input-tabela proj-input" data-index="${index}" value="${item.proj}"></td>
+            <td><input type="number" class="input-tabela real-input" data-index="${index}" value="${item.real}"></td>
+            <td class="resumo texto-destaque dif-cell">-</td>
+            <td class="resumo texto-destaque perc-cell">-</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll('.proj-input, .real-input, .linha-select').forEach(input => {
+        input.addEventListener('input', calcularResumo);
+    });
+
+    calcularResumo();
+}
+
+function calcularResumo() {
+    const linhas = document.querySelectorAll('.linha-item');
+    let totalProj = 0, totalReal = 0;
+
+    linhas.forEach((tr, index) => {
+        const linhaSelect = tr.querySelector('.linha-select').value;
+        const projInput = tr.querySelector('.proj-input').value;
+        const realInput = tr.querySelector('.real-input').value;
+        
+        const proj = parseFloat(projInput) || 0;
+        const real = parseFloat(realInput) || 0;
+        
+        dadosResumo[index].linha = linhaSelect;
+        dadosResumo[index].proj = projInput;
+        dadosResumo[index].real = realInput;
+
+        totalProj += proj;
+        totalReal += real;
+
+        const dif = real - proj;
+        const perc = proj > 0 ? Math.round((real / proj) * 100) : (real === 0 && proj === 0 ? 0 : 100);
+
+        const difCell = tr.querySelector('.dif-cell');
+        const percCell = tr.querySelector('.perc-cell');
+
+        if (projInput === "" && realInput === "") {
+            difCell.innerText = "-";
+            difCell.className = "resumo texto-destaque dif-cell";
+            percCell.innerText = "-";
+        } else {
+            difCell.innerText = dif > 0 ? `+${dif}` : dif;
+            difCell.className = `resumo texto-destaque dif-cell ${dif > 0 ? 'text-green' : (dif < 0 ? 'text-red' : '')}`;
+            percCell.innerText = `${perc}%`;
+        }
+    });
+
+    const totalDif = totalReal - totalProj;
+    const totalPerc = totalProj > 0 ? Math.round((totalReal / totalProj) * 100) : 0;
+
+    document.getElementById('total-proj').innerText = totalProj;
+    document.getElementById('total-real').innerText = totalReal;
+    
+    const elDif = document.getElementById('total-dif');
+    elDif.innerText = totalDif > 0 ? `+${totalDif}` : totalDif;
+    elDif.parentElement.className = `badge-total difer ${totalDif > 0 ? 'positivo' : ''}`;
+    
+    document.getElementById('total-perc').innerText = `${totalPerc}%`;
+}
+
+function adicionarLinhaResumo() {
+    const num = dadosResumo.length + 1;
+    const linhaNome = `Linha ${num < 10 ? '0' + num : num}`;
+    dadosResumo.push({ linha: linhaNome, proj: "", real: "" });
+    renderizarTabelaResumo();
+}
+
+function removerUltimaLinhaResumo() {
+    if (dadosResumo.length > 0) {
+        dadosResumo.pop();
+        renderizarTabelaResumo();
+    }
+}
+
+function limparDados() {
+    mostrarConfirmacao("🗑️", "Tem certeza que deseja limpar TODOS os dados inseridos?", () => {
+        
+        dadosResumo.forEach((item, index) => {
+            let num = index + 1;
+            item.linha = `Linha ${num < 10 ? '0' + num : num}`;
+            item.proj = "";
+            item.real = "";
+        });
+        renderizarTabelaResumo();
+        
+        localStorage.removeItem('relatorio_eficiencia');
+        
+        setTimeout(() => {
+            mostrarAlerta("✨", "Dados limpos com sucesso!");
+        }, 300); 
+        
+    });
+}
+
+function salvarDados() {
+    const data = {
+        resumo: dadosResumo
+    };
+    
+    localStorage.setItem('relatorio_eficiencia', JSON.stringify(data));
+    
+    mostrarAlerta('💾', 'Dados salvos com sucesso no dispositivo!');
+}
+
+function carregarDados() {
+    const saved = localStorage.getItem('relatorio_eficiencia');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            
+            if (data.resumo && data.resumo.length > 0) {
+                dadosResumo = data.resumo;
+            }
+        } catch (e) {
+            console.error("Erro ao carregar dados salvos.", e);
+        }
+    }
+    
+    renderizarTabelaResumo();
+}
+
+// Inicializações
+carregarDados();
+</script>
+
+</body>
+</html>
