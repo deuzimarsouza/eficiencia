@@ -1,626 +1,827 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Dashboard App</title>
-    <style>
-        @font-face{
-            font-family: "BricolageRegular";
-            src: url("src/fonts/BricolageGrotesque-Regular.otf");
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eficiência de Linha - Inteligente</title>
+<style>
+@font-face {
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+* {
+    font-family: "LufgaRegular", system-ui, sans-serif;
+    box-sizing: border-box; padding: 0; margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; scrollbar-width: none; outline: none; color: #000;
+}
+:root {
+    --purple: #8949ff; --purple-light: #f4f0ff; --purple-border: #eae0ff;
+    --green: #2ecc71; --red: #ff4e3a; --red-dark: #d32f2f;
+    --bg: #000; --card-bg: #fff; --factory-bg: #111114; --factory-border: #222228; --menu-h: 90px;
+}
+body { background: var(--bg); min-height: 100vh; padding-bottom: calc(var(--menu-h) + 24px); }
 
-        @font-face{
-            font-family: "LufgaRegular";
-            src: url("src/fonts/LufgaRegular.ttf");
-        }
+#app { width: 100%; max-width: 1400px; margin: 0 auto; padding: 24px 24px 0; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            font-family: "LufgaRegular";
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+/* HEADER */
+#header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #1e1e22;
+    flex-wrap: wrap; gap: 12px;
+}
+#header h1 { color: #fff; font-size: clamp(15px,3vw,22px); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+#header h1 span { color: var(--purple); }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-stats { display: flex; gap: 10px; }
+.header-stat { background: #1a1a1e; border: 1px solid #2a2a30; border-radius: 10px; padding: 8px 14px; text-align: center; }
+.header-stat span { display: block; font-size: 10px; color: #666; font-weight: 800; text-transform: uppercase; }
+.header-stat b { color: var(--purple); font-size: 16px; font-weight: 900; }
 
-        body {
-            background-color: #000000;
-            display: flex;
-            justify-content: center;
-        }
+/* BOTÃO SINO */
+.btn-bell {
+    position: relative; width: 48px; height: 48px; border-radius: 14px;
+    background: #1a1a1e; border: 2px solid #2a2a30;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; transition: all .15s; flex-shrink: 0;
+}
+.btn-bell:active { transform: scale(.93); }
+.btn-bell.has-alerts { border-color: var(--red); animation: bell-pulse 2s infinite; }
+@keyframes bell-pulse {
+    0%,100%{ box-shadow: 0 0 0 0 rgba(255,78,58,.4); }
+    50%{ box-shadow: 0 0 0 8px rgba(255,78,58,0); }
+}
+.bell-badge {
+    display: none; position: absolute; top: -6px; right: -6px;
+    background: var(--red); color: #fff; border-radius: 999px;
+    font-size: 10px; font-weight: 900; min-width: 18px; height: 18px;
+    align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #000;
+}
+.bell-badge.show { display: flex; }
 
-        /* --- ESTILOS DA TELA SPLASH --- */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #000000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
+/* FÁBRICAS */
+#fabricas-container { display: flex; flex-direction: column; gap: 32px; }
+.fabrica-wrapper { background: var(--factory-bg); border: 1px solid var(--factory-border); border-radius: 20px; overflow: hidden; }
+.fabrica-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; background: #161619; border-bottom: 1px solid var(--factory-border);
+    flex-wrap: wrap; gap: 10px;
+}
+.fabrica-titulo { display: flex; align-items: center; gap: 10px; }
+.fabrica-titulo-icon {
+    width: 36px; height: 36px; background: linear-gradient(135deg, var(--purple), #6020cc);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.fabrica-titulo-text { color: #fff; font-size: clamp(14px,2.5vw,18px); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.fabrica-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn-fabrica {
+    height: 36px; padding: 0 14px; border-radius: 10px; border: none; cursor: pointer;
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px;
+    transition: all .15s; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.btn-fabrica:active { transform: scale(.94); }
+.btn-add-linha { background: var(--purple); color: #fff; }
+.btn-remove-fabrica { background: #1a1a2a; color: #666; border: 1px solid #2a2a3a; font-size: 10px; }
 
-        #icon-logo {
-            width: 96px;
-            height: 96px;
-            background: url(src/logo/manufacturing.png) center center/72px no-repeat;
-            margin-bottom: 120px;
-        }
+.fabrica-resumo-bar { display: flex; border-bottom: 1px solid var(--factory-border); overflow-x: auto; }
+.fab-stat { flex: 1; min-width: 80px; padding: 10px 8px; text-align: center; border-right: 1px solid var(--factory-border); }
+.fab-stat:last-child { border-right: none; }
+.fab-stat span { display: block; font-size: 9px; color: #555; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
+.fab-stat b { color: var(--purple); font-size: 15px; font-weight: 900; }
+.fab-stat b.green { color: var(--green); }
+.fab-stat b.red { color: var(--red); }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #271d3b;
-            border-top: 5px solid #8949ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+/* GRID LINHAS */
+.linhas-grid { padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; }
+@media(min-width:1200px){ .linhas-grid{ grid-template-columns: repeat(3,1fr); } }
+@media(min-width:900px) and (max-width:1199px){ .linhas-grid{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width:899px){ .linhas-grid{ grid-template-columns: 1fr; } }
 
-        .splash-text {
-            color: #ffffff;
-            font-size: 16px;
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 1px;
-            animation: pulse 1.5s infinite;
-        }
+/* CARD LINHA */
+.container-tabela { background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(137,73,255,.08); display: flex; flex-direction: column; }
+.titulo-linha { padding: 12px 14px; background: var(--purple); color: #fff; font-weight: 800; font-size: 14px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+table { width: 100%; background: var(--card-bg); border-collapse: collapse; }
+th { background: var(--purple-light); color: var(--purple); font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 10px 4px; border-bottom: 2px solid var(--purple-border); }
+td { background: var(--card-bg); padding: 7px 5px; vertical-align: middle; border-bottom: 1px solid #f4f5f7; }
+tr:last-child td { border-bottom: none; }
+td.resumo { border-left: 2px dashed #f0f0f0; }
+td.resumo.necessidade, td.resumo.eficiencia { color: var(--purple); font-size: 14px; font-weight: 900; text-align: center; }
+select, .ativos, .pares {
+    width: 100%; height: 38px; text-align: center; font-size: 12px; font-weight: 800;
+    background: #f4f6f8; border: 2px solid transparent; border-radius: 8px; color: #222; transition: all .2s;
+}
+select { appearance: none; background-color: #f4f6f8; cursor: pointer; text-align: left; padding-left: 6px; font-size: 11px; }
+select:focus, .ativos:focus, .pares:focus { background: #fff; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(137,73,255,.15); }
+.total-linha { padding: 12px 14px; background: #fafafa; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-around; align-items: center; }
+.badge-total { font-size: 11px; color: #666; font-weight: 800; text-transform: uppercase; }
+.badge-total b { font-size: 14px; color: var(--purple); font-weight: 900; margin-left: 3px; }
+.badge-total.difer b { color: var(--red-dark); }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+/* RESUMO CARDS */
+.resumo-grid { display: flex; justify-content: space-between; gap: 10px; }
+.resumo-card {
+    flex: 1; background: #fff; border-radius: 12px; padding: 12px 6px; text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15); border-bottom: 3px solid var(--purple);
+    display: flex; flex-direction: column; justify-content: center;
+}
+.resumo-card.potencial { border-bottom-color: var(--green); }
+.resumo-card.potencial b { color: var(--green); font-size: 22px; }
+.resumo-card span { display: block; font-size: 10px; color: #666; text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+.resumo-card b { display: block; font-size: 18px; color: #000; font-weight: 900; }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        /* ------------------------------- */
+/* MENU */
+#menu {
+    display: flex; justify-content: center; align-items: flex-end; width: 100%;
+    position: fixed; bottom: 0; left: 0;
+    background: linear-gradient(to top, #000 85%, transparent);
+    z-index: 100; padding: 0 24px 20px; height: var(--menu-h);
+}
+.btn-options { display: flex; justify-content: center; width: 100%; max-width: 440px; gap: 12px; }
+.btn-menu {
+    flex: 1; height: 52px; border-radius: 14px; border: 2px solid var(--purple);
+    background: #fff; cursor: pointer; font-weight: 800; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--purple);
+    transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn-menu:active { transform: scale(.95); }
+.btn-menu.primary { background: var(--purple); color: #fff; }
+.btn-menu.danger-btn { background: #fff; color: var(--red); border-color: var(--red); }
 
-        .app-container {
-            width: 100%;
-            max-width: 480px; 
-            padding: 24px;
-            min-height: 100vh;
-            position: relative; 
-            display: none; 
-            animation: scaleInApp 0.5s ease;
-        }
+/* MODAIS BASE */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    display: none; justify-content: center; align-items: center;
+    z-index: 9999; backdrop-filter: blur(4px); padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; padding: 28px 24px; border-radius: 24px; width: 100%; max-width: 400px; text-align: center; }
+.modal h3 { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+.modal p { font-size: 13px; color: #666; }
+.modal input, .modal-select {
+    width: 100%; padding: 12px; margin: 14px 0 0;
+    border: 2px solid #cecbff; border-radius: 12px;
+    text-align: center; font-weight: 800; font-size: 14px; background: #f8f7ff; appearance: none;
+}
+.modal input:focus, .modal-select:focus { border-color: var(--purple); background: #fff; }
+.modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+.modal-btns button { flex: 1; height: 48px; border: none; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all .15s; }
+.modal-btns button:active { transform: scale(.95); }
+.btn-confirm { background: var(--purple); color: #fff; }
+.btn-cancel { background: #f0f0f0; color: #666; }
 
-        @keyframes scaleInApp {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
+/* MODAL SELECIONAR LINHAS */
+.modal-fab-label {
+    display: flex; align-items: center; gap: 8px;
+    background: #f4f0ff; border-radius: 10px; padding: 10px 12px; margin-top: 14px;
+}
+.modal-fab-label span { font-size: 12px; color: #666; font-weight: 800; text-transform: uppercase; }
+.modal-fab-label b { color: var(--purple); font-size: 14px; font-weight: 900; }
+.linha-checklist {
+    margin-top: 14px; max-height: 280px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px; text-align: left;
+}
+.linha-check-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+    border-radius: 12px; cursor: pointer; border: 2px solid #eee; transition: all .15s; background: #fafafa;
+}
+.linha-check-item:hover:not(.disabled) { border-color: var(--purple); background: var(--purple-light); }
+.linha-check-item.selected { border-color: var(--purple); background: var(--purple-light); }
+.linha-check-item.disabled { opacity: .4; cursor: not-allowed; }
+.linha-check-item input[type=checkbox] { width: 18px; height: 18px; margin: 0; flex-shrink: 0; accent-color: var(--purple); cursor: pointer; }
+.linha-check-label { font-size: 14px; font-weight: 800; color: #222; flex: 1; }
+.linha-check-tag { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; }
+.linha-check-tag.used { background: #ffe4e0; color: var(--red); }
+.linha-check-tag.free { background: #e8f8ef; color: var(--green); }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-        }
+/* MODAL NOTIFICAÇÕES */
+#modalNotificacoes .modal { max-width: 560px; background: #111114; padding: 24px 20px; text-align: left; }
+#modalNotificacoes .modal h3 { color: #fff; font-size: 16px; font-weight: 900; text-align: center; margin-bottom: 16px; }
+.notif-list { display: flex; flex-direction: column; gap: 12px; max-height: 68vh; overflow-y: auto; }
+.notif-card { border-radius: 14px; padding: 16px 14px; }
+.notif-card.danger { background: #1f1414; border: 2px solid #3a1c1c; }
+.notif-card.highlight { background: #14101f; border: 2px solid #271d3b; }
+.notif-titulo { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .8px; display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.notif-titulo.danger-text { color: var(--red); }
+.notif-titulo.highlight-text { color: #a77bff; }
+.notif-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.notif-grid + .notif-grid { margin-top: 10px; }
+.notif-item {
+    flex: 1; min-width: 90px; background: #fff; border-radius: 10px; padding: 10px 8px;
+    text-align: center; border-bottom: 3px solid var(--purple);
+}
+.notif-item span { display: block; font-size: 9px; color: #666; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+.notif-item b { display: block; font-size: 15px; font-weight: 900; }
+.notif-item.action { cursor: pointer; background: #f4f0ff; transition: all .15s; border-bottom-color: var(--purple); }
+.notif-item.action:active { transform: scale(.95); }
+.notif-item.action b { color: var(--purple); }
+.notif-item.action-red { background: #fff5f5; border-bottom-color: var(--red); }
+.notif-item.action-red b { color: var(--red); }
+.notif-item.action-red span { color: var(--red-dark); }
+.notif-item.info-card { border-bottom-color: #bca1ff; }
+.notif-empty { text-align: center; padding: 40px 20px; color: #555; font-size: 14px; font-weight: 800; }
+.notif-close-btn { width: 100%; margin-top: 14px; height: 44px; border: none; border-radius: 12px; background: #222; color: #888; font-weight: 800; font-size: 13px; cursor: pointer; transition: all .15s; }
+.notif-close-btn:active { transform: scale(.95); }
 
-        .logo-box {
-            width: 56px;
-            height: 56px;
-            border: 2px solid #8949ff;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: url(src/logo/manufacturing.png) center center/32px no-repeat;
-        }
+/* ESTADO VAZIO */
+#estado-vazio { text-align: center; padding: 60px 24px; display: none; }
+#estado-vazio.show { display: block; }
+#estado-vazio .empty-icon { font-size: 52px; margin-bottom: 16px; opacity: .5; }
+#estado-vazio h2 { color: #333; font-size: 18px; margin-bottom: 8px; font-weight: 900; }
+#estado-vazio p { color: #666; font-size: 13px; }
 
-        .menu-box {
-            width: 56px;
-            height: 56px;
-            border: 2px solid #E0E5F0;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: transparent;
-            cursor: pointer;
-            z-index: 100;
-        }
+/* TOAST */
+.toast {
+    position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
+    padding: 13px 26px; border-radius: 12px; color: #fff; font-weight: 800; font-size: 13px;
+    z-index: 10001; transition: all .4s cubic-bezier(.175,.885,.32,1.275); white-space: nowrap;
+}
+.toast.show { top: 14px; }
+.toast-success { background: var(--green); }
+.toast-error { background: var(--red); }
 
-        .menu-box svg {
-            width: 24px;
-            height: 24px;
-            stroke: #7A869A;
-        }
+/* RESUMO GLOBAL */
+#resumoGlobal { margin-top: 28px; }
+.resumo-global-card { background: #111114; border: 2px solid #222228; border-radius: 16px; padding: 18px; margin-bottom: 20px; }
+.resumo-global-titulo { color: #fff; text-align: center; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-        .floating-menu {
-            position: absolute;
-            top: 96px;
-            right: 24px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            padding: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            z-index: 100;
-            display: none;
-            transform-origin: top right;
-            animation: scaleIn 0.3s ease;
-        }
-
-        @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .floating-menu.active {
-            display: block;
-        }
-
-        .floating-menu-item {
-            display: flex;
-            align-items: center;
-            width: 240px;
-            gap: 12px;
-            padding: 12px;
-            cursor: pointer;
-            text-decoration: none;
-            color: #111111;
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: 12px;
-        }
-
-        .floating-menu-item:hover {
-            background-color: #F8F9FA;
-        }
-
-        .floating-menu-item svg {
-            width: 20px;
-            height: 20px;
-            stroke: #7A869A;
-            fill: none;
-        }
-
-        .tabs {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 0px;
-        }
-        
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab-btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            background-color: #8949ff;
-            color: #ffffff;
-        }
-
-        .tab-btn:not(.active) {
-            background-color: #EFEFEF;
-            color: #271d3b;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: #14101f;
-            border: 2px solid #48356d;
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            font-size: 24px;
-            color: #ffffff;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-
-        #ia {
-            color: transparent;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #5f616e, #565657);
-        }
-
-        #fast {
-            font-size: 24px;
-            color: transparent;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #ff7e5f, #ff755d);
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-
-        .card p {
-            font-size: 14.5px;
-            color: #979797;
-            line-height: 1.4;
-            margin-bottom: 28px;
-        }
-
-        /* Permite que o conteúdo do rodapé do card se adapte */
-        .card-footer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .stat {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-
-        .stat-value {
-            font-size: 26px;
-            font-weight: 800;
-            color: #000000;
-        }
-
-        .turn-select {
-            appearance: none;
-            -webkit-appearance: none;
-            background-color: #ffffff;
-            border: 2px solid #E0E5F0;
-            border-radius: 12px;
-            padding: 10px 24px 10px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #111111;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-
-        .turn-select:focus {
-            border-color: #8949ff;
-        }
-
-        .action-btn {
-            background-color: #8949ff;
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.3s ease;
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .action-btn:hover {
-            background-color: #333333;
-        }
-
-
-        .offline-select {
-            display: none;
-        }
-
-        .footer-creator {
-            position: absolute;
-            bottom: 32px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0.8;
-            transition: opacity 0.2s ease;
-        }
-
-        .footer-creator:hover {
-            opacity: 1;
-        }
-
-        .creator-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: #27272a;
-            border: 1px solid #3f3f46;
-        }
-
-        .creator-info {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-
-        .creator-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .creator-role {
-            font-size: 12px;
-            color: #a1a1aa;
-        }
-
-        /* --- MEDIA QUERY PARA TELAS PEQUENAS --- */
-        @media (max-width: 400px) {
-            .app-container {
-                padding: 16px;
-            }
-
-            .tab-btn {
-                padding: 12px 14px;
-                font-size: 13px;
-            }
-
-            .card-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .stat {
-                width: 100%;
-            }
-
-            .turn-select, .action-btn {
-                width: 100%;
-            }
-        }
-
-    </style>
+/* RESPONSIVO */
+@media(max-width:600px){
+    #app{ padding: 16px 14px 0; }
+    .header-stats{ width: 100%; }
+    .header-stat{ flex: 1; }
+    .fabrica-header{ padding: 12px 14px; }
+    .linhas-grid{ padding: 12px; gap: 12px; }
+    .btn-menu{ font-size: 10px; height: 48px; }
+    .notif-item{ min-width: calc(50% - 5px); }
+}
+@media(min-width:601px) and (max-width:1024px){ .btn-options{ max-width: 500px; } }
+@media(min-width:1025px){ .btn-options{ max-width: 480px; } }
+</style>
 </head>
 <body>
 
-<div id="splash-screen">
-    <div id="icon-logo"></div>
-    <div class="spinner"></div>
-    <p class="splash-text">verificando<br>conexão</p>
-
-    <footer class="footer-creator">
-    <img src="src/dev/user-dev.jpg" alt="Foto de Perfil" class="creator-photo">
-    <div class="creator-info">
-        <span class="creator-name">Deuzimar Souza</span>
-        <span class="creator-role">Desenvolvedor</span>
+<!-- MODAL: NOVA FÁBRICA -->
+<div id="modalNovaFabrica" class="modal-overlay">
+    <div class="modal">
+        <h3>🏭 Nova Fábrica</h3>
+        <p>Informe o nome da nova fábrica</p>
+        <input type="text" id="inputNomeFabrica" placeholder="EX: FÁBRICA 01" maxlength="30">
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalNovaFabrica')">Cancelar</button>
+            <button class="btn-confirm" onclick="confirmarNovaFabrica()">Criar</button>
+        </div>
     </div>
-    </footer>
 </div>
 
-<div class="app-container" id="app-container">
-    <header>
-        <div class="logo-box"></div>
+<!-- MODAL: SELECIONAR LINHAS -->
+<div id="modalSelecionarLinha" class="modal-overlay">
+    <div class="modal">
+        <h3>⚡ Selecionar Linhas</h3>
+        <p>Marque as linhas para adicionar à:</p>
+        <div class="modal-fab-label">
+            <span>🏭</span>
+            <b id="labelFabricaAlvo">—</b>
+        </div>
+        <div class="linha-checklist" id="linhaChecklist"></div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalSelecionarLinha')">Cancelar</button>
+            <button class="btn-confirm" onclick="confirmarSelecionarLinhas()">Adicionar</button>
+        </div>
+    </div>
+</div>
 
-        <button id="menuBtn" class="menu-box">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </header>
+<!-- MODAL: REMOVER LINHA -->
+<div id="modalRemoverLinha" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:#e74c3c;">🗑️ Remover Linha</h3>
+        <p>Selecione a fábrica para remover a última linha:</p>
+        <select id="selectFabricaRemover" class="modal-select" style="text-align:left;padding-left:10px;"></select>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalRemoverLinha')">Cancelar</button>
+            <button class="btn-confirm" style="background:#e74c3c;" onclick="confirmarRemoverLinha()">Remover</button>
+        </div>
+    </div>
+</div>
 
-    <div id="floatingMenu" class="floating-menu">
-        <a href="#" class="floating-menu-item">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 16V12M12 8H12.01" stroke-width="2" stroke-linecap="round"/></svg>
-            Sobre
-        </a>
-        <a href="#" class="floating-menu-item">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Ajuda
-        </a>
-        <a href="#" class="floating-menu-item">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="2"/><path d="M11 10.5l1.5-1.5 1.5 1.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Feedback
-        </a>
+<!-- MODAL: CONFIRMAR REMOVER FÁBRICA -->
+<div id="modalConfirmFab" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color:#e74c3c;">⚠️ Remover Fábrica?</h3>
+        <p id="textConfirmFab">Esta ação irá apagar a fábrica e todas as suas linhas.</p>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal('modalConfirmFab')">Cancelar</button>
+            <button class="btn-confirm" id="btnConfirmFab" style="background:#e74c3c;">Remover</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: NOTIFICAÇÕES (SINO) -->
+<div id="modalNotificacoes" class="modal-overlay">
+    <div class="modal">
+        <h3>🔔 Alertas &amp; Otimizações</h3>
+        <div class="notif-list" id="notifList"></div>
+        <button class="notif-close-btn" onclick="fecharModal('modalNotificacoes')">Fechar</button>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+    <div id="header">
+        <h1>🏭 Eficiência <span>de Linha</span></h1>
+        <div class="header-right">
+            <div class="header-stats">
+                <div class="header-stat"><span>Fábricas</span><b id="statFabricas">0</b></div>
+                <div class="header-stat"><span>Linhas</span><b id="statLinhas">0</b></div>
+                <div class="header-stat"><span>Total Pares</span><b id="statPares">0</b></div>
+            </div>
+            <button class="btn-bell" id="btnBell" onclick="abrirModalNotificacoes()" title="Alertas e Otimizações">
+                🔔
+                <div class="bell-badge" id="bellBadge">0</div>
+            </button>
+        </div>
     </div>
 
-    <nav class="tabs">
-        <button class="tab-btn active" data-target="producao">Produção</button>
-        <button class="tab-btn" data-target="mao-obra">Mão de Obra</button>
-        <button class="tab-btn" data-target="area-tecnica">Área Técnica</button>
-    </nav>
+    <div id="estado-vazio">
+        <div class="empty-icon">🏭</div>
+        <h2>Nenhuma fábrica criada</h2>
+        <p>Clique em "🏭 Fábrica" para começar</p>
+    </div>
 
-    <main>
-        <div id="producao" class="tab-content active">
+    <div id="fabricas-container"></div>
+    <div id="resumoGlobal"></div>
+</div>
 
-            <div class="card">
-                <h2>Projeção <span id="ia">Beta</span></h2>
-                <p>Calcule a capacidade produtiva das linhas baseando-se no tempo do modelo e mão de obra ativa diariamente.</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <select id="turnoSelect" class="turn-select">
-                            <option value="1">1º TURNO</option>
-                            <option value="2">2º TURNO</option>
-                            <option value="3">3º TURNO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="fazerProjecao()">PROJETAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Calculo de <span id="fast">Diferença</span></h2>
-                <p>Calcule e verifique o ganho e perda de uma linha em produção sem modificar na projeção diaria e com calculo rapido veja o resultado por linha.</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/potencial-rapido.html')">PROJETAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Calculadora de Eficiência</h2>
-                <p>Calcule o resultado geral produzido pelas linhas de preparação de forma rápida e intuitiva</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/calculadora-de-eficiencia.html')">CALCULAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="mao-obra" class="tab-content">
-            <div class="card">
-                <h2>#valor</h2>
-                <p>#valor</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <span class="stat-label">#valor</span>
-                        <span class="stat-value">0</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">#valor</span>
-                        <span class="stat-value">0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="area-tecnica" class="tab-content">
-            <div class="card">
-                <h2>Apontamento de Produção</h2>
-                <p>Consulte informações basicas dos modelos e distruição de pares por numerações.<br> EM DESENVOLVIMENTO</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/apotamento.html')">CALCULAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<div id="menu">
+    <div class="btn-options">
+        <button class="btn-menu" onclick="salvarDados()">💾 Salvar</button>
+        <button class="btn-menu primary" onclick="abrirModalNovaFabrica()">🏭 Fábrica</button>
+        <button class="btn-menu danger-btn" onclick="abrirModalRemoverLinhaGlobal()">🗑️ Linha</button>
+    </div>
 </div>
 
 <script>
-    // --- LÓGICA DA TELA SPLASH ---
-    document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-            const splashScreen = document.getElementById('splash-screen');
-            const appContainer = document.getElementById('app-container');
-            
-            // Oculta o splash screen
-            splashScreen.style.opacity = '0';
-            
-            setTimeout(() => {
-                splashScreen.style.display = 'none';
-                // Exibe o aplicativo principal
-                appContainer.style.display = 'block';
-            }, 100); // tempo para o fade out concluir
-        }, 1000); // 1 segundo de espera (estava como 5 nos comentários)
-    });
-    // -----------------------------
+// ═══════════ CONSTANTES ═══════════
+const STORAGE_KEY = "eficiencia_fab_v3";
+const CAPACIDADE_LINHA = 365.2;
+const CARGA_PESSOA = 380;
 
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+const LINHAS_DISPONIVEIS = [
+    "LINHA 01","LINHA 02","LINHA 03","LINHA 04","LINHA 05",
+    "LINHA 06","LINHA 07","LINHA 08","LINHA 09","LINHA 10",
+    "LINHA 11","LINHA 12","LINHA 13","LINHA 14","LINHA 15",
+    "LINHA 16","LINHA 17","LINHA 18","LINHA 19","LINHA 20",
+    "LINHA A","LINHA B","LINHA C","LINHA D","LINHA E","LINHA F","LINHA G","LINHA H",
+    "TURNO 1","TURNO 2","TURNO 3",
+    "MONTAGEM 01","MONTAGEM 02","MONTAGEM 03",
+    "COSTURA 01","COSTURA 02","COSTURA 03",
+    "ACABAMENTO 01","ACABAMENTO 02","ACABAMENTO 03",
+    "INJETADO 01","INJETADO 02",
+    "COLAGEM 01","COLAGEM 02",
+    "PESPONTO 01","PESPONTO 02","PESPONTO 03",
+];
 
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
+const MODELOS_DB = [
+  {nome:"130G",tempo:4.477},{nome:"ACQUA",tempo:4.185},{nome:"ACQUA INF.",tempo:4.184},{nome:"ADRENA",tempo:5.657},{nome:"ADRENA 2",tempo:5.449},
+  {nome:"ASFALTO",tempo:6.056},{nome:"ATMOS",tempo:5.056},{nome:"CHALLENGER 6",tempo:8.183},{nome:"CIRCUITO",tempo:7.241},{nome:"CITRUS 2",tempo:4.792},
+  {nome:"CLIC",tempo:2.290},{nome:"CLIMA",tempo:4.511},{nome:"CORRE 4",tempo:20.933},{nome:"CORRE 4 50 ANOS",tempo:21.872},{nome:"CORRE 5",tempo:13.963},
+  {nome:"CORRE GRAFENO 3",tempo:17.811},{nome:"CORRE MAX",tempo:10.342},{nome:"CORRE S",tempo:10.932},{nome:"CORRE SUPRA 2",tempo:20.996},{nome:"CORRE TRILHA 3",tempo:11.356},
+  {nome:"CORRE TURBO",tempo:13.136},{nome:"CORRE VENTO 3",tempo:9.282},{nome:"EASY 2",tempo:5.304},{nome:"ERA",tempo:3.931},{nome:"ESSENTIAL 3",tempo:4.608},
+  {nome:"INVERSE",tempo:8.044},{nome:"LANCE",tempo:5.066},{nome:"NEBLINA",tempo:8.954},{nome:"NYX",tempo:4.901},{nome:"ORBITA",tempo:4.540},
+  {nome:"PIXEL INF.",tempo:3.655},{nome:"PLAZA",tempo:4.186},{nome:"PRIDE 4",tempo:4.906},{nome:"PRIDE 4 INF.",tempo:4.914},{nome:"PURPURA",tempo:5.555},
+  {nome:"QU4DRA 2",tempo:9.317},{nome:"QU4DRA BR1",tempo:13.324},{nome:"REFLECT",tempo:6.354},{nome:"REVERSO 2",tempo:8.748},{nome:"REVERSO 3",tempo:10.328},
+  {nome:"RITMO",tempo:7.959},{nome:"RUSH",tempo:3.837},{nome:"SAGAZ",tempo:5.582},{nome:"SONORO 3",tempo:8.488},{nome:"SUBVERSE",tempo:7.938},
+  {nome:"SUBVERSE 2",tempo:7.906},{nome:"SWIFT 5",tempo:4.516},{nome:"TREINO",tempo:7.525},{nome:"TRIUNFO",tempo:4.553},{nome:"VEST",tempo:4.292},
+  {nome:"VIRTUOSE",tempo:5.308},{nome:"VOA 2",tempo:4.908},{nome:"VOA 3",tempo:4.988},{nome:"VOLCAN 2",tempo:4.531},{nome:"VOLTA",tempo:7.641},
+  {nome:"-",tempo:0},
+  {nome:"ACTION 4",tempo:8.756},{nome:"ATLANTIS 2",tempo:7.618},{nome:"BASE ONE",tempo:15.676},{nome:"BASE PRIME",tempo:12.318},{nome:"BASE RIDE",tempo:9.917},{nome:"CDS SPORT",tempo:13.612},
+  {nome:"COOL RIDE 3",tempo:12.167},{nome:"COOL RIDE 3 INF.",tempo:12.166},{nome:"CREATION",tempo:12.373},{nome:"DYNASTY 5",tempo:9.037},{nome:"DYNASTY 7",tempo:11.924},{nome:"DYNASTY 8",tempo:6.391},
+  {nome:"EDO CROSS",tempo:10.384},{nome:"ENDEAVOR 3",tempo:7.656},{nome:"ENIGMA 2",tempo:8.128},{nome:"ENIGMA 3",tempo:7.148},{nome:"FALCON 5",tempo:8.058},
+  {nome:"FRONTIER 15",tempo:8.281},{nome:"GLOW 2",tempo:7.722},{nome:"GLOW 3",tempo:6.516},{nome:"GOYA",tempo:5.672},{nome:"GOYA 2",tempo:5.703},{nome:"GOYA 3",tempo:6.243},
+  {nome:"HAWK 5",tempo:6.253},{nome:"HAWK 6",tempo:9.255},{nome:"INVICTUS 4",tempo:8.601},{nome:"LEGEND 4",tempo:9.827},{nome:"LEGEND 5",tempo:8.818},{nome:"LIVELY",tempo:5.273},
+  {nome:"MIRAI 7",tempo:7.068},{nome:"MIRAI 8",tempo:6.646},{nome:"NEO AURA",tempo:8.229},{nome:"NEO AURA 2",tempo:8.229},{nome:"NEO AURA KINT",tempo:11.690},{nome:"NEO PRYSMA",tempo:6.690},
+  {nome:"NEO VORTEX",tempo:8.324},{nome:"ORACLE",tempo:11.477},{nome:"REGENT AS",tempo:4.754},{nome:"REGENT AS JUNIOR",tempo:4.778},{nome:"REGENT IN",tempo:4.755},{nome:"REGENT IN JR",tempo:4.753},
+  {nome:"REGENT MD",tempo:7.756},{nome:"SKYWAY",tempo:6.687},{nome:"STRATOS 3",tempo:6.486},{nome:"SUNRISE",tempo:10.966},{nome:"VICTORY",tempo:12.015},{nome:"VIRTUE",tempo:5.935},
+  {nome:"VIRTUE 2",tempo:6.416},{nome:"VITALITY 5",tempo:6.634},{nome:"VITALITY 6",tempo:6.700},{nome:"VITALITY 7",tempo:6.809},{nome:"WAY 4",tempo:7.346},{nome:"WAY 5",tempo:5.933},
+  {nome:"ZEST 2",tempo:7.649}
+];
 
-            button.classList.add('active');
+// ═══════════ ESTADO ═══════════
+let fabricas = [];
+let _idCounter = Date.now();
+function uid(){ return 'f'+(++_idCounter); }
 
-            const targetId = button.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
+function linhasEmUso(){
+    const s = new Set();
+    fabricas.forEach(f => f.linhas.forEach(l => s.add(l.querySelector('.titulo-linha').innerText.trim())));
+    return s;
+}
+
+// ═══════════ TOAST ═══════════
+function notify(msg, type='info'){
+    const old = document.querySelector('.toast'); if(old) old.remove();
+    const t = document.createElement('div');
+    t.className = `toast toast-${type}`; t.innerText = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.classList.add('show'),50);
+    setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),500); },2500);
+}
+
+// ═══════════ MODAIS ═══════════
+function abrirModal(id){ document.getElementById(id).classList.add('show'); }
+function fecharModal(id){ document.getElementById(id).classList.remove('show'); }
+
+// ═══════════ NOVA FÁBRICA ═══════════
+function abrirModalNovaFabrica(){
+    document.getElementById('inputNomeFabrica').value = '';
+    abrirModal('modalNovaFabrica');
+    setTimeout(()=>document.getElementById('inputNomeFabrica').focus(),100);
+}
+function confirmarNovaFabrica(){
+    const nome = document.getElementById('inputNomeFabrica').value.trim();
+    if(!nome){ notify('NOME OBRIGATÓRIO!','error'); return; }
+    criarFabrica({nome:nome.toUpperCase()});
+    fecharModal('modalNovaFabrica');
+    salvarDados(true);
+}
+
+// ═══════════ SELECIONAR LINHAS ═══════════
+let _fabAlvoId = null;
+
+function abrirSelecionarLinhas(fabId){
+    const fab = fabricas.find(f=>f.id===fabId);
+    if(!fab) return;
+    _fabAlvoId = fabId;
+    document.getElementById('labelFabricaAlvo').innerText = fab.nome;
+    const emUso = linhasEmUso();
+    const list = document.getElementById('linhaChecklist');
+    list.innerHTML = LINHAS_DISPONIVEIS.map(nome => {
+        const usada = emUso.has(nome);
+        return `<label class="linha-check-item${usada?' disabled':''}" data-nome="${nome}" data-usada="${usada}">
+            <input type="checkbox" value="${nome}"${usada?' disabled':''}>
+            <span class="linha-check-label">${nome}</span>
+            <span class="linha-check-tag ${usada?'used':'free'}">${usada?'Em Uso':'Livre'}</span>
+        </label>`;
+    }).join('');
+    list.querySelectorAll('.linha-check-item').forEach(el=>{
+        el.addEventListener('click',function(e){
+            if(this.dataset.usada==='true') return;
+            const cb = this.querySelector('input[type=checkbox]');
+            if(e.target !== cb) cb.checked = !cb.checked;
+            this.classList.toggle('selected', cb.checked);
         });
     });
+    abrirModal('modalSelecionarLinha');
+}
 
-    const menuBtn = document.getElementById('menuBtn');
-    const floatingMenu = document.getElementById('floatingMenu');
+function confirmarSelecionarLinhas(){
+    const fab = fabricas.find(f=>f.id===_fabAlvoId);
+    if(!fab) return;
+    const checks = document.querySelectorAll('#linhaChecklist input[type=checkbox]:checked');
+    if(checks.length===0){ notify('SELECIONE AO MENOS 1 LINHA!','error'); return; }
+    checks.forEach(cb=>{ criarLinhaNaFabrica(fab,{titulo:cb.value}); });
+    fecharModal('modalSelecionarLinha');
+    salvarDados(true);
+    notify(`${checks.length} LINHA${checks.length>1?'S':''} ADICIONADA${checks.length>1?'S':''}!`,'success');
+}
 
-    menuBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        floatingMenu.classList.toggle('active');
+// ═══════════ REMOVER LINHA ═══════════
+function abrirModalRemoverLinhaGlobal(){
+    const comLinhas = fabricas.filter(f=>f.linhas.length>0);
+    if(comLinhas.length===0){ notify('SEM LINHAS PARA REMOVER!','error'); return; }
+    const sel = document.getElementById('selectFabricaRemover');
+    sel.innerHTML = comLinhas.map(f=>`<option value="${f.id}">${f.nome} (${f.linhas.length} linha${f.linhas.length!==1?'s':''})</option>`).join('');
+    abrirModal('modalRemoverLinha');
+}
+function confirmarRemoverLinha(){
+    const fabId = document.getElementById('selectFabricaRemover').value;
+    const fab = fabricas.find(f=>f.id===fabId);
+    if(!fab||fab.linhas.length===0) return;
+    fab.linhas[fab.linhas.length-1].remove();
+    fab.linhas.pop();
+    atualizarResumoFabrica(fab); atualizarResumoGlobal();
+    fecharModal('modalRemoverLinha'); salvarDados(true); atualizarEstado();
+    notify('LINHA REMOVIDA!','success');
+}
+
+// ═══════════ REMOVER FÁBRICA ═══════════
+function pedirRemoverFabrica(fabId, fabNome){
+    document.getElementById('textConfirmFab').innerText = `Remover "${fabNome}" e todas as suas linhas?`;
+    document.getElementById('btnConfirmFab').onclick = ()=>confirmarRemoverFabrica(fabId);
+    abrirModal('modalConfirmFab');
+}
+function confirmarRemoverFabrica(fabId){
+    const fab = fabricas.find(f=>f.id===fabId);
+    if(!fab) return;
+    fab.wrapper.remove();
+    fabricas = fabricas.filter(f=>f.id!==fabId);
+    atualizarResumoGlobal(); atualizarEstado(); salvarDados(true);
+    fecharModal('modalConfirmFab');
+    notify('FÁBRICA REMOVIDA!','success');
+}
+
+// ═══════════ SINO / NOTIFICAÇÕES ═══════════
+function proxMultiplo4(num){ if(num<=0)return 0; return Math.ceil(num/4)*4; }
+
+function coletarAlerts(){
+    const alerts = [];
+    fabricas.forEach(fab=>{
+        fab.linhas.forEach((container,idx)=>{
+            const t = container.querySelector('table');
+            const titulo = container.querySelector('.titulo-linha').innerText;
+            const a = parseFloat(t.dataset.ativos)||0;
+            const temp = parseFloat(t.dataset.tempo)||0;
+            const necessidade = temp ? Math.round(temp/CAPACIDADE_LINHA):0;
+            const ociosos = a - necessidade;
+            const efici = a?(temp/(a*CARGA_PESSOA)):0;
+
+            if(ociosos >= 2){
+                let maiorT=0, melhorM='', idxM=0;
+                container.querySelectorAll('.modelo').forEach((sel,si)=>{
+                    if(sel.value && parseFloat(sel.value)>maiorT){ maiorT=parseFloat(sel.value); melhorM=sel.options[sel.selectedIndex].text; idxM=si; }
+                });
+                if(melhorM){
+                    const pCompletar = proxMultiplo4(Math.ceil((ociosos*CAPACIDADE_LINHA)/maiorT));
+                    alerts.push({type:'danger',fabId:fab.id,fabNome:fab.nome,titulo,idx,idxM,pCompletar,ociosos,melhorM,eficiStr:Math.round(efici*100)+'%'});
+                }
+            } else if(efici>0 && efici<0.85){
+                let maiorT=0, melhorM='', idxM=0;
+                container.querySelectorAll('.modelo').forEach((sel,si)=>{
+                    if(sel.value && parseFloat(sel.value)>maiorT){ maiorT=parseFloat(sel.value); melhorM=sel.options[sel.selectedIndex].text; idxM=si; }
+                });
+                if(melhorM){
+                    const f80=(a*CARGA_PESSOA*.80)-temp; const f85=(a*CARGA_PESSOA*.85)-temp;
+                    const p80=f80>0?proxMultiplo4(Math.ceil(f80/maiorT)):0;
+                    const p85=f85>0?proxMultiplo4(Math.ceil(f85/maiorT)):0;
+                    alerts.push({type:'highlight',fabId:fab.id,fabNome:fab.nome,titulo,idx,idxM,melhorM,eficiStr:Math.round(efici*100)+'%',p80,p85});
+                }
+            }
+        });
     });
+    return alerts;
+}
 
-    document.addEventListener('click', (event) => {
-        const isClickInsideMenu = floatingMenu.contains(event.target);
-        const isClickOnMenuBtn = menuBtn.contains(event.target);
+function atualizarBadgeBell(){
+    const n = coletarAlerts().length;
+    const badge = document.getElementById('bellBadge');
+    const btn = document.getElementById('btnBell');
+    badge.innerText = n;
+    if(n>0){ badge.classList.add('show'); btn.classList.add('has-alerts'); }
+    else { badge.classList.remove('show'); btn.classList.remove('has-alerts'); }
+}
 
-        if (!isClickInsideMenu && !isClickOnMenuBtn) {
-            floatingMenu.classList.remove('active');
-        }
+function abrirModalNotificacoes(){
+    const alerts = coletarAlerts();
+    const list = document.getElementById('notifList');
+    if(alerts.length===0){
+        list.innerHTML = `<div class="notif-empty">✅ Nenhum alerta no momento!<br><span style="font-size:12px;color:#444;font-weight:400;display:block;margin-top:6px;">Todas as linhas estão dentro do esperado.</span></div>`;
+    } else {
+        list.innerHTML = alerts.map(a=>{
+            if(a.type==='danger'){
+                return `<div class="notif-card danger">
+                    <div class="notif-titulo danger-text">⚠️ OCIOSIDADE — ${a.titulo}</div>
+                    <p style="color:#666;font-size:11px;margin-bottom:10px;font-weight:700;">🏭 ${a.fabNome}</p>
+                    <div class="notif-grid">
+                        <div class="notif-item" style="border-bottom-color:var(--red)"><span>Sobra na Linha</span><b style="color:var(--red)">${a.ociosos} pess.</b></div>
+                        <div class="notif-item" style="border-bottom-color:var(--red)"><span>Foco</span><b style="color:var(--red);font-size:12px">${a.melhorM}</b></div>
+                        <div class="notif-item" style="border-bottom-color:var(--red)"><span>Eficiência</span><b style="color:var(--red)">${a.eficiStr}</b></div>
+                    </div>
+                    <div class="notif-grid">
+                        <div class="notif-item action action-red" onclick="notifAcao('pares','${a.fabId}',${a.idx},${a.idxM},${a.pCompletar})">
+                            <span>Preencher c/ Pares</span><b>+${a.pCompletar} prs</b>
+                        </div>
+                        <div class="notif-item action action-red" onclick="notifAcao('cortar','${a.fabId}',${a.idx},0,${a.ociosos})">
+                            <span>Cortar Mão de Obra</span><b>-${a.ociosos} func.</b>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                return `<div class="notif-card highlight">
+                    <div class="notif-titulo highlight-text">💡 OTIMIZAÇÃO — ${a.titulo}</div>
+                    <p style="color:#666;font-size:11px;margin-bottom:10px;font-weight:700;">🏭 ${a.fabNome}</p>
+                    <div class="notif-grid">
+                        <div class="notif-item info-card"><span>Foco de Produção</span><b style="font-size:12px">${a.melhorM}</b></div>
+                        <div class="notif-item info-card"><span>Efic. Atual</span><b>${a.eficiStr}</b></div>
+                    </div>
+                    <div class="notif-grid">
+                        <div class="notif-item action" onclick="notifAcao('pares','${a.fabId}',${a.idx},${a.idxM},${a.p80})">
+                            <span>Aplicar 80%</span><b>+${a.p80} prs</b>
+                        </div>
+                        <div class="notif-item action" onclick="notifAcao('pares','${a.fabId}',${a.idx},${a.idxM},${a.p85})">
+                            <span>Aplicar 85%</span><b>+${a.p85} prs</b>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }).join('');
+    }
+    abrirModal('modalNotificacoes');
+}
+
+function notifAcao(tipo, fabId, idx, idxM, qtd){
+    if(tipo==='pares') aplicarOtimizacaoFab(fabId,idx,idxM,qtd);
+    else if(tipo==='cortar') removerTrabalhadoresFab(fabId,idx,qtd);
+    fecharModal('modalNotificacoes');
+    setTimeout(abrirModalNotificacoes, 500);
+}
+
+// ═══════════ CRIAR FÁBRICA ═══════════
+function criarFabrica(dados={}){
+    const id = dados.id||uid();
+    const nome = dados.nome||'FÁBRICA';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'fabrica-wrapper';
+    wrapper.dataset.fabId = id;
+    wrapper.innerHTML = `
+    <div class="fabrica-header">
+        <div class="fabrica-titulo">
+            <div class="fabrica-titulo-icon">🏭</div>
+            <div class="fabrica-titulo-text">${nome}</div>
+        </div>
+        <div class="fabrica-actions">
+            <button class="btn-fabrica btn-add-linha" onclick="abrirSelecionarLinhas('${id}')">+ Linhas</button>
+            <button class="btn-fabrica btn-remove-fabrica" onclick="pedirRemoverFabrica('${id}','${nome.replace(/'/g,"\\'")}')">✕ Remover</button>
+        </div>
+    </div>
+    <div class="fabrica-resumo-bar">
+        <div class="fab-stat"><span>Mão de Obra</span><b id="fab-mo-${id}">0</b></div>
+        <div class="fab-stat"><span>Pares</span><b id="fab-pares-${id}" class="green">0</b></div>
+        <div class="fab-stat"><span>Eficiência</span><b id="fab-ef-${id}">-</b></div>
+        <div class="fab-stat"><span>Linhas</span><b id="fab-nlinhas-${id}">0</b></div>
+    </div>
+    <div class="linhas-grid" id="linhas-${id}"></div>`;
+    document.getElementById('fabricas-container').appendChild(wrapper);
+    const fabObj = {id,nome,wrapper,linhas:[]};
+    fabricas.push(fabObj);
+    if(dados.linhas&&dados.linhas.length>0) dados.linhas.forEach(l=>criarLinhaNaFabrica(fabObj,l));
+    atualizarEstado(); atualizarHeaderStats();
+    return fabObj;
+}
+
+// ═══════════ CRIAR LINHA ═══════════
+function criarSelectModelos(valor=''){
+    let html = `<select class="modelo"><option value="">-</option>`;
+    MODELOS_DB.forEach(m=>{ html+=`<option value="${m.tempo}"${valor==m.tempo?' selected':''}>${m.nome}</option>`; });
+    return html+`</select>`;
+}
+
+function criarLinhaNaFabrica(fab, dadosLinha={}){
+    const titulo = dadosLinha?.titulo||'LINHA';
+    const grid = document.getElementById(`linhas-${fab.id}`);
+    const div = document.createElement('div');
+    div.className = 'container-tabela';
+    div.innerHTML = `
+    <div class="titulo-linha">${titulo}</div>
+    <table data-tempo="0" data-ativos="0" data-pares="0">
+        <thead>
+            <tr><th style="width:38%">Modelo</th><th style="width:17%">Pares</th><th style="width:15%">N</th><th style="width:15%">A</th><th style="width:15%">E</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${criarSelectModelos(dadosLinha?.linhas?.[0]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosLinha?.linhas?.[0]?.pares||''}"></td>
+                <td rowspan="3" class="resumo necessidade">-</td>
+                <td rowspan="3" class="resumo"><input type="number" class="ativos" value="${dadosLinha?.linhas?.[0]?.ativos||''}"></td>
+                <td rowspan="3" class="resumo eficiencia">-</td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosLinha?.linhas?.[1]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosLinha?.linhas?.[1]?.pares||''}"></td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosLinha?.linhas?.[2]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosLinha?.linhas?.[2]?.pares||''}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-linha">
+        <span class="badge-total">PARES: <b>0</b></span>
+        <span class="badge-total difer">DIFER.: <b>0</b></span>
+    </div>`;
+    grid.appendChild(div);
+    fab.linhas.push(div);
+    div.querySelectorAll('select,input').forEach(el=>{
+        el.addEventListener('input',()=>{ calcularTabela(div); atualizarResumoFabrica(fab); atualizarResumoGlobal(); });
     });
+    calcularTabela(div); atualizarResumoFabrica(fab); atualizarResumoGlobal(); atualizarHeaderStats();
+}
 
-    // Função de redirecionamento dinâmico baseado no select
-    function fazerProjecao() {
-        const turnoSelecionado = document.getElementById('turnoSelect').value;
-        const paginaDestino = `pages/potencial-turno${turnoSelecionado}.html`;
-        
-        setTimeout(() => {
-            window.location.href = paginaDestino;
-        }, 150);
-    }
+// ═══════════ CÁLCULOS ═══════════
+function calcularTabela(container){
+    const tabela = container.querySelector('table');
+    let tempoT=0, paresT=0;
+    const modelos = tabela.querySelectorAll('.modelo');
+    const pares = tabela.querySelectorAll('.pares');
+    modelos.forEach((m,i)=>{
+        const t=parseFloat(m.value), p=parseFloat(pares[i].value);
+        if(p) paresT+=p; if(t&&p) tempoT+=t*p;
+    });
+    const ativos = parseFloat(tabela.querySelector('.ativos').value)||0;
+    tabela.dataset.pares=paresT; tabela.dataset.tempo=tempoT; tabela.dataset.ativos=ativos;
+    const necessidade = tempoT?Math.round(tempoT/CAPACIDADE_LINHA):0;
+    const eficiencia = ativos?Math.round((tempoT/(ativos*CARGA_PESSOA))*100):0;
+    tabela.querySelector('.necessidade').innerText = necessidade||'-';
+    tabela.querySelector('.eficiencia').innerText = ativos?eficiencia+'%':'-';
+    container.querySelector('.total-linha').innerHTML = `
+        <span class="badge-total">PARES: <b>${paresT}</b></span>
+        <span class="badge-total difer">DIFER.: <b>${ativos-necessidade}</b></span>`;
+}
 
-    function fazerProjecaoRapida() {
-        const turnoSelecionadoRapido = document.getElementById('turnoSelectRapido').value;
-        const paginaDestinoRapido = `pages/potencial-rapido${turnoSelecionadoRapido}.html`;
-        
-        setTimeout(() => {
-            window.location.href = paginaDestinoRapido;
-        }, 150);
-    }
+function atualizarResumoFabrica(fab){
+    let tPares=0, tAtivos=0, tTempo=0;
+    fab.linhas.forEach(c=>{ const t=c.querySelector('table'); tPares+=parseFloat(t.dataset.pares)||0; tAtivos+=parseFloat(t.dataset.ativos)||0; tTempo+=parseFloat(t.dataset.tempo)||0; });
+    document.getElementById(`fab-mo-${fab.id}`).innerText = tAtivos;
+    document.getElementById(`fab-pares-${fab.id}`).innerText = tPares;
+    document.getElementById(`fab-nlinhas-${fab.id}`).innerText = fab.linhas.length;
+    const ef = tAtivos?Math.round((tTempo/(tAtivos*CARGA_PESSOA))*100):null;
+    const efEl = document.getElementById(`fab-ef-${fab.id}`);
+    if(ef!==null){ efEl.innerText=ef+'%'; efEl.className=ef>=85?'green':ef>=70?'':'red'; }
+    else { efEl.innerText='-'; efEl.className=''; }
+    atualizarBadgeBell();
+}
 
-    function goTo(page) {
-        setTimeout(() => {
-            window.location.href = page;
-        }, 150);
-    }
+function aplicarOtimizacaoFab(fabId, indexLinha, indexModelo, quantidade){
+    if(quantidade<=0) return;
+    const fab = fabricas.find(f=>f.id===fabId); if(!fab) return;
+    const container = fab.linhas[indexLinha]; if(!container) return;
+    const inputPares = container.querySelectorAll('.pares')[indexModelo];
+    inputPares.value = (parseFloat(inputPares.value)||0)+quantidade;
+    calcularTabela(container); atualizarResumoFabrica(fab); atualizarResumoGlobal();
+    notify(`+${quantidade} PARES ADICIONADOS!`,'success');
+}
 
+function removerTrabalhadoresFab(fabId, indexLinha, quantidade){
+    if(quantidade<=0) return;
+    const fab = fabricas.find(f=>f.id===fabId); if(!fab) return;
+    const container = fab.linhas[indexLinha]; if(!container) return;
+    const inputAtivos = container.querySelector('.ativos');
+    inputAtivos.value = Math.max(0,(parseFloat(inputAtivos.value)||0)-quantidade);
+    calcularTabela(container); atualizarResumoFabrica(fab); atualizarResumoGlobal();
+    notify(`-${quantidade} PESSOAS REMOVIDAS!`,'success');
+}
+
+// ═══════════ RESUMO GLOBAL ═══════════
+function atualizarResumoGlobal(){
+    let gPares=0, gAtivos=0, gTempo=0;
+    fabricas.forEach(fab=>{ fab.linhas.forEach(c=>{ const t=c.querySelector('table'); gPares+=parseFloat(t.dataset.pares)||0; gAtivos+=parseFloat(t.dataset.ativos)||0; gTempo+=parseFloat(t.dataset.tempo)||0; }); });
+    atualizarHeaderStats(gPares);
+    if(!gPares&&!gAtivos){ document.getElementById('resumoGlobal').innerHTML=''; return; }
+    const efG = gAtivos?Math.round((gTempo/(gAtivos*CARGA_PESSOA))*100):null;
+    document.getElementById('resumoGlobal').innerHTML = `
+    <div class="resumo-global-card">
+        <div class="resumo-global-titulo">🌐 Resumo Global — Todas as Fábricas</div>
+        <div class="resumo-grid">
+            <div class="resumo-card"><span>Mão de Obra</span><b>${gAtivos}</b></div>
+            <div class="resumo-card potencial"><span>Total de Pares</span><b>${gPares}</b></div>
+            <div class="resumo-card"><span>Eficiência Geral</span><b>${efG!==null?efG+'%':'-'}</b></div>
+        </div>
+    </div>`;
+}
+
+function atualizarHeaderStats(gPares){
+    const totalLinhas = fabricas.reduce((a,f)=>a+f.linhas.length,0);
+    document.getElementById('statFabricas').innerText = fabricas.length;
+    document.getElementById('statLinhas').innerText = totalLinhas;
+    if(gPares!==undefined) document.getElementById('statPares').innerText = gPares;
+}
+
+function atualizarEstado(){
+    const v = document.getElementById('estado-vazio');
+    fabricas.length===0 ? v.classList.add('show') : v.classList.remove('show');
+    atualizarHeaderStats();
+}
+
+// ═══════════ PERSISTÊNCIA ═══════════
+function salvarDados(silencioso=false){
+    const dados = fabricas.map(fab=>({
+        id:fab.id, nome:fab.nome,
+        linhas:fab.linhas.map(c=>{
+            const titulo = c.querySelector('.titulo-linha').innerText;
+            const tabela = c.querySelector('table');
+            const modelos = tabela.querySelectorAll('.modelo');
+            const pares = tabela.querySelectorAll('.pares');
+            const ativos = tabela.querySelector('.ativos').value;
+            const linhasData = [];
+            modelos.forEach((m,i)=>{ linhasData.push({modelo:m.value,pares:pares[i].value,ativos:i===0?ativos:''}); });
+            return {titulo,linhas:linhasData};
+        })
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    if(!silencioso) notify('DADOS SALVOS!','success');
+}
+
+function carregarDados(){
+    const dados = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    dados.forEach(d=>criarFabrica(d));
+    atualizarResumoGlobal(); atualizarEstado(); atualizarBadgeBell();
+}
+
+// ═══════════ INIT ═══════════
+carregarDados();
+
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+    overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('show'); });
+});
+document.getElementById('inputNomeFabrica').addEventListener('keydown',e=>{ if(e.key==='Enter') confirmarNovaFabrica(); });
 </script>
-
 </body>
 </html>
