@@ -7,34 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Paleta Dark Mode Solicitada */
-            --bg-color: #000000; 
-            --surface-color: #0f0f0f; /* Fundo dos cards (levemente mais claro que o preto absoluto para dar profundidade) */
-            --surface-hover: #141414;
-            --border-color: #262626; 
-            --border-hover: #3a3a3a;
+            /* Paleta Light Mode Clean & Modern */
+            --bg-color: #F8F9FA; 
+            --surface-color: #FFFFFF; 
+            --surface-hover: #F9FAFB;
+            --border-color: #E5E7EB; 
+            --border-hover: #D1D5DB;
             
-            --text-main: #ffffff; 
-            --text-muted: #a3a3a3; /* Cinza claro para subtítulos e labels */
+            --text-main: #111827; 
+            --text-muted: #6B7280; 
             
             --primary: #8949ff; 
-            --primary-hover: #9b66ff; 
-            --primary-glow: rgba(137, 73, 255, 0.15); /* Efeito de brilho */
+            --primary-hover: #7A3BE5; 
+            --primary-glow: rgba(137, 73, 255, 0.15); 
             
-            /* Cores de Status adaptadas para Dark Mode */
-            --success-bg: rgba(16, 185, 129, 0.15);
-            --success-text: #34d399;
-            --error-bg: rgba(239, 68, 68, 0.15);
-            --error-text: #f87171;
-            --warning-bg: rgba(245, 158, 11, 0.1);
-            --warning-text: #fbbf24;
+            /* Cores de Status adaptadas para Light Mode */
+            --success-bg: #ECFDF5;
+            --success-text: #059669;
+            --success-border: #A7F3D0;
             
-            --pill-bg: #1a1a1a;
+            --error-bg: #FEF2F2;
+            --error-text: #DC2626;
+            --error-border: #FECACA;
+            
+            --warning-bg: #FFFBEB;
+            --warning-text: #D97706;
+            --warning-border: #FDE68A;
+            
+            --pill-bg: #F3F4F6;
             --radius-md: 12px;
             --radius-lg: 20px;
             
-            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.5);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 32px rgba(0, 0, 0, 0.05);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -56,14 +61,14 @@
             max-width: 1100px;
             display: flex;
             flex-direction: column;
-            gap: 32px; /* Maior espaçamento entre a busca e os resultados */
+            gap: 32px; 
         }
 
         .search-section {
             background-color: var(--surface-color);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            padding: 48px 40px; /* Mais respiro interno */
+            padding: 48px 40px; 
             border: 1px solid var(--border-color);
             position: relative;
         }
@@ -79,14 +84,15 @@
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
-            background-color: #1a1a1a;
+            background-color: #FFFFFF;
             color: var(--text-muted);
             transition: var(--transition);
             border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        .status-badge.connected { background-color: var(--success-bg); color: var(--success-text); border-color: rgba(52, 211, 153, 0.2); }
-        .status-badge.error { background-color: var(--error-bg); color: var(--error-text); border-color: rgba(248, 113, 113, 0.2); }
+        .status-badge.connected { background-color: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+        .status-badge.error { background-color: var(--error-bg); color: var(--error-text); border-color: var(--error-border); }
         .status-indicator { width: 8px; height: 8px; border-radius: 50%; background-color: currentColor; box-shadow: 0 0 8px currentColor; }
 
         .header {
@@ -94,7 +100,7 @@
             margin-bottom: 40px;
         }
 
-        h1 { font-size: 28px; font-weight: 700; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
+        h1 { font-size: 28px; font-weight: 800; margin: 0; color: var(--text-main); letter-spacing: -0.5px; }
         p.subtitle { color: var(--text-muted); font-size: 16px; margin: 12px 0 0 0; }
 
         .toolbar {
@@ -114,13 +120,13 @@
         .btn-primary { 
             background-color: var(--primary); 
             color: #ffffff; 
-            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.3); 
+            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2); 
         }
         
         .btn-primary:hover { 
             background-color: var(--primary-hover); 
             transform: translateY(-2px); 
-            box-shadow: 0 6px 16px rgba(137, 73, 255, 0.5); 
+            box-shadow: 0 6px 16px rgba(137, 73, 255, 0.3); 
         }
 
         .input-group { display: flex; position: relative; }
@@ -133,24 +139,25 @@
             font-family: inherit; 
             outline: none; 
             transition: var(--transition);
-            background-color: var(--bg-color); 
+            background-color: var(--surface-hover); 
             color: var(--text-main); 
             font-weight: 500;
         }
         
         input[type="text"] { width: 300px; }
-        input[type="text"]::placeholder { color: #525252; font-weight: 400; }
-        input[type="text"]:focus, select:focus { 
+        input[type="text"]::placeholder { color: #9CA3AF; font-weight: 400; }
+        input[type="text"]:focus, select:focus, input[type="text"]:hover, select:hover { 
             border-color: var(--primary); 
+            background-color: var(--surface-color);
             box-shadow: 0 0 0 3px var(--primary-glow); 
         }
         
-        /* Ajuste do ícone do select para ficar visível no fundo preto */
+        /* Ajuste do ícone do select para ficar visível no fundo claro */
         select { 
             cursor: pointer; 
             min-width: 160px; 
             appearance: none; 
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a3a3a3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
             background-repeat: no-repeat; 
             background-position: right 16px center; 
             background-size: 16px; 
@@ -161,7 +168,6 @@
 
         #resultado { display: flex; flex-direction: column; gap: 32px; }
 
-        /* Melhoria no design do Card */
         .card {
             background-color: var(--surface-color); 
             border-radius: var(--radius-lg);
@@ -175,8 +181,7 @@
         }
         
         .card:hover { 
-            border-color: var(--primary);
-            box-shadow: 0 8px 30px var(--primary-glow);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
             transform: translateY(-2px);
         }
 
@@ -193,13 +198,13 @@
             text-transform: uppercase; 
             letter-spacing: 0.05em; 
             color: var(--text-muted); 
-            font-weight: 600; 
+            font-weight: 700; 
         }
         
         .info-value { 
             font-size: 16px; 
             color: var(--text-main); 
-            font-weight: 500; 
+            font-weight: 600; 
         }
 
         .sizes-section { 
@@ -225,7 +230,6 @@
             color: var(--primary); 
         }
 
-        /* Mantendo o Grid de 4x4 para telas menores */
         .sizes-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -239,14 +243,15 @@
             display: flex; 
             flex-direction: column; 
             overflow: hidden; 
-            background-color: var(--bg-color); /* Fundo preto puro para contraste */
+            background-color: var(--surface-color); 
             width: 100%;
             transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
 
         .size-box:hover {
             border-color: var(--border-hover);
-            background-color: var(--surface-hover);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
         .size-number { 
@@ -263,7 +268,7 @@
             text-align: center; 
             padding: 16px 0; 
             font-size: 18px; 
-            font-weight: 700; 
+            font-weight: 800; 
             color: var(--text-main); 
         }
 
@@ -272,7 +277,7 @@
             grid-template-columns: 1fr 1fr; 
             gap: 8px; 
             padding: 12px 10px; 
-            background-color: var(--pill-bg); 
+            background-color: var(--surface-hover); 
             border-top: 1px solid var(--border-color); 
             align-items: center; 
         }
@@ -287,14 +292,15 @@
             text-align: center; 
             width: 100%; 
             box-sizing: border-box; 
+            box-shadow: 0 2px 4px rgba(137, 73, 255, 0.2);
         }
         
         .split-pill.partial { 
-            background-color: #262626; 
-            color: var(--text-muted); 
+            background-color: #E5E7EB; 
+            color: #4B5563; 
+            box-shadow: none;
         }
 
-        /* Estilização para o estado vazio (sem busca ou não encontrado) */
         .empty-state {
             text-align: center; 
             padding: 80px 20px; 
@@ -306,20 +312,18 @@
             gap: 20px;
             background: var(--surface-color); 
             border-radius: var(--radius-lg); 
-            border: 1px dashed var(--border-color);
+            border: 1px dashed var(--border-hover);
         }
 
         .empty-state svg {
-            color: var(--border-hover);
+            color: #9CA3AF;
         }
 
-        /* Customização da Barra de Rolagem para o Dark Mode */
         ::-webkit-scrollbar { height: 10px; width: 10px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 6px; border: 2px solid var(--bg-color); }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 6px; border: 2px solid var(--bg-color); }
+        ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
 
-        /* Comportamento lado a lado para telas maiores (Computador) */
         @media (min-width: 768px) {
             .sizes-grid {
                 display: flex;
@@ -404,11 +408,10 @@
             statusBadge.className = 'status-badge error';
             spanText.textContent = 'Erro de Conexão';
 
-            // Cores ajustadas para Dark Mode na mensagem de erro
             document.getElementById('resultado').innerHTML = `
-                <div class="empty-state" style="border-color: #7f1d1d; background-color: rgba(239, 68, 68, 0.05);">
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    <span style="color: #f87171; font-weight: 500; text-align: center; max-width: 550px; line-height: 1.6;">
+                <div class="empty-state" style="border-color: var(--error-border); background-color: var(--error-bg);">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--error-text)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span style="color: var(--error-text); font-weight: 500; text-align: center; max-width: 550px; line-height: 1.6;">
                         Não foi possível carregar o <strong>dados.txt</strong> automaticamente.<br><br>
                         O navegador bloqueia leitura direta de arquivos locais. Você precisa abrir este sistema usando um Servidor Local (ex: extensão "Live Server" no VS Code).
                     </span>
@@ -441,10 +444,9 @@
         if (tableData.length === 0) return; 
 
         if (!ofBusca) {
-            // Cores ajustadas para Dark Mode na mensagem de aviso
             resultadoDiv.innerHTML = `
-                <div class="empty-state" style="border-color: #92400e; background-color: rgba(245, 158, 11, 0.05);">
-                    <span style="color: #fbbf24; font-weight: 500;">Digite o número de uma OF para pesquisar.</span>
+                <div class="empty-state" style="border-color: var(--warning-border); background-color: var(--warning-bg);">
+                    <span style="color: var(--warning-text); font-weight: 500;">Digite o número de uma OF para pesquisar.</span>
                 </div>`;
             return;
         }
