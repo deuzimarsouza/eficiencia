@@ -20,11 +20,11 @@
     user-select: none;
     scrollbar-width: none;
     outline: none;
-    color: #000000;
 }
 
 body {
-    background: #000000;
+    background-color: #F8F9FA;
+    color: #111827;
     width: 100%;
     max-width: 480px; 
     padding: 24px;
@@ -45,30 +45,37 @@ button {
     outline: none;
     cursor: pointer;
     border-radius: 14px;
-    transition: transform 0.1s;
-    font-weight: 600;
+    transition: all 0.2s ease;
+    font-weight: 700;
     font-size: 14px;
 }
 
-button:active { transform: scale(0.95); }
+button:active { transform: scale(0.96); }
 
 /* =========================================
    DESIGN: TABELAS (CARDS)
    ========================================= */
 
 .container-tabela {
-    background: #ffffff;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-radius: 20px;
     margin-bottom: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(137, 73, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.container-tabela:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .titulo-linha {
     width: 100%;
-    padding: 14px;
+    padding: 16px;
     background: #8949ff;
     color: #ffffff;
     font-weight: 800;
@@ -85,32 +92,33 @@ table {
 }
 
 th {
-    background: #f4f0ff;
-    color: #8949ff;
+    background: #F9FAFB;
+    color: #6B7280;
     font-size: 11px;
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
     padding: 12px 4px;
-    border-bottom: 2px solid #eae0ff;
+    border-bottom: 1px solid #E5E7EB;
     text-align: center;
+    letter-spacing: 0.5px;
 }
 
 td { 
     background: #ffffff; 
-    padding: 8px 6px;
+    padding: 10px 6px;
     vertical-align: middle;
-    border-bottom: 1px solid #f4f5f7;
+    border-bottom: 1px solid #F3F4F6;
     text-align: center;
 }
 
 tr:last-child td { border-bottom: none; }
 
-td.resumo { border-left: 2px dashed #f0f0f0; }
+td.resumo { border-left: 1px dashed #E5E7EB; }
 
 td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     color: #8949ff;
     font-size: 15px;
-    font-weight: 900;
+    font-weight: 800;
     text-align: center;
 }
 
@@ -118,51 +126,54 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     width: 100%;
     height: 42px;
     text-align: center;
-    font-size: 13px;
-    font-weight: 800;
-    background: #f4f6f8; 
-    border: 2px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    background: #F9FAFB; 
+    border: 1px solid #E5E7EB;
     border-radius: 10px;
-    color: #222;
+    color: #374151;
     transition: all 0.2s ease;
 }
 
 .linha-select {
     text-align: left;
     padding-left: 8px;
+    color: #4B5563;
+    font-weight: 700;
 }
 
-.input-tabela:focus {
-    background: #ffffff;
+.input-tabela:focus, .input-tabela:hover {
+    background: #FFFFFF;
     border-color: #8949ff;
     box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
 }
 
 .total-linha {
     width: 100%;
-    padding: 14px;
-    background: #fafafa;
-    border-top: 1px solid #f0f0f0;
+    padding: 16px;
+    background: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
     display: flex;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
 }
 
 .badge-total {
     font-size: 12px;
-    color: #666;
-    font-weight: 800;
+    color: #6B7280;
+    font-weight: 700;
     text-transform: uppercase;
 }
 
-.badge-total b { font-size: 16px; color: #8949ff; font-weight: 900; margin-left: 4px; }
-.badge-total.difer b { color: #d32f2f; }
-.badge-total.positivo b { color: #10b981; }
+.badge-total b { font-size: 16px; color: #111827; font-weight: 800; margin-left: 4px; }
+.badge-total.difer b { color: #DC2626; }
+.badge-total.positivo b { color: #059669; }
+.badge-total.perc-badge b { color: #8949ff; }
 
-.text-red { color: #ef4444 !important; font-weight: 900; }
-.text-green { color: #10b981 !important; font-weight: 900; }
+.text-red { color: #DC2626 !important; font-weight: 800; }
+.text-green { color: #059669 !important; font-weight: 800; }
 
 /* =========================================
    BOTOES INFERIORES
@@ -182,39 +193,56 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 .btn-outline-red {
-    background: #ffffff;
-    color: #ef4444;
-    border: 1px solid #fee2e2;
+    background: #FFFFFF;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+.btn-outline-red:hover {
+    background: #FEF2F2;
 }
 
 .btn-purple {
     background: #8949ff;
     color: #ffffff;
     border: none;
+    box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2);
+}
+
+.btn-purple:hover {
+    background: #7A3BE5;
+    box-shadow: 0 6px 16px rgba(137, 73, 255, 0.3);
 }
 
 .btn-green {
-    background: #10b981;
+    background: #10B981;
     color: #ffffff;
     border: none;
     grid-column: span 2;
     font-size: 15px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-green:hover {
+    background: #059669;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
 .btn-limpar {
     grid-column: span 2;
-    background: #fff5f5;
-    color: #d32f2f;
-    border: 2px solid #ffcdcd;
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px dashed #FECACA;
     margin-top: 4px;
 }
 
 .btn-limpar:hover, .btn-limpar:active {
-    background: #ffebeb;
+    background: #FEE2E2;
+    border-style: solid;
 }
 
 /* =========================================
@@ -224,9 +252,11 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     z-index: 9999;
-    display: none; /* Fica flex quando ativo */
+    display: none; 
     justify-content: center;
     align-items: center;
     opacity: 0;
@@ -239,15 +269,16 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 }
 
 .modal-box {
-    background: #ffffff;
+    background: #FFFFFF;
     border-radius: 20px;
-    padding: 24px;
+    padding: 32px 24px;
     width: 100%;
     max-width: 320px;
     text-align: center;
     transform: translateY(20px) scale(0.95);
     transition: transform 0.2s ease;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid #E5E7EB;
 }
 
 .modal-overlay.ativo .modal-box {
@@ -255,16 +286,16 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 }
 
 .modal-icone {
-    font-size: 40px;
-    margin-bottom: 12px;
+    font-size: 48px;
+    margin-bottom: 16px;
 }
 
 .modal-mensagem {
-    font-size: 15px;
-    font-weight: 800;
-    color: #333;
-    margin-bottom: 24px;
-    line-height: 1.4;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 28px;
+    line-height: 1.5;
 }
 
 .modal-botoes {
@@ -275,7 +306,7 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 .modal-botoes button {
     flex: 1;
     height: 48px;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 </style>
@@ -303,14 +334,14 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
             <span class="badge-total">PROJ.: <b id="total-proj">0</b></span>
             <span class="badge-total">REAL: <b id="total-real">0</b></span>
             <span class="badge-total difer">DIF.: <b id="total-dif">0</b></span>
-            <span class="badge-total positivo">%: <b id="total-perc">0%</b></span>
+            <span class="badge-total perc-badge">%: <b id="total-perc">0%</b></span>
         </div>
     </div>
 </div>
 
 <div class="botoes-acao">
-    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">&#10005; Remover Linha</button>
-    <button class="btn-purple" onclick="adicionarLinhaResumo()">&#10010; Adicionar Linha</button>
+    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">&#10005; Remover</button>
+    <button class="btn-purple" onclick="adicionarLinhaResumo()">&#10010; Adicionar</button>
     <button class="btn-green" onclick="salvarDados()">&#128190; SALVAR DADOS NO DISPOSITIVO</button>
     <button class="btn-limpar" onclick="limparDados()">LIMPAR TODOS OS DADOS</button>
 </div>
