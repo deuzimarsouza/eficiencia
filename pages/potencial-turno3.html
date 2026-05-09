@@ -11,6 +11,26 @@
     src: url("../src/fonts/LufgaRegular.ttf");
 }
 
+:root {
+    --bg-color: #F8F9FA;
+    --surface-color: #FFFFFF;
+    --surface-hover: #F9FAFB;
+    --border-color: #E5E7EB;
+    --border-hover: #D1D5DB;
+    
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    
+    --primary: #8949ff;
+    --primary-hover: #7A3BE5;
+    
+    --success: #059669;
+    --success-bg: #ECFDF5;
+    --danger: #DC2626;
+    --danger-bg: #FEF2F2;
+}
+
 * {
     font-family: "LufgaRegular", sans-serif;
     box-sizing: border-box;
@@ -20,12 +40,11 @@
     user-select: none;
     scrollbar-width: none;
     outline: none;
-    color: #000000;
+    color: var(--text-primary);
 }
 
-/* Aplicando a responsividade exigida */
 body {
-    background: #000000;
+    background: var(--bg-color);
     width: 100%;
     max-width: 480px; 
     padding: 24px;
@@ -38,6 +57,7 @@ select {
     appearance: none;
     text-indent: 4px;
     background-color: transparent;
+    cursor: pointer;
 }
 
 button {
@@ -46,30 +66,37 @@ button {
     outline: none;
     cursor: pointer;
     border-radius: 14px;
-    transition: transform 0.1s;
-    font-weight: 600;
+    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+    font-weight: 700;
 }
 
-button:active { transform: scale(0.95); }
+button:active { transform: scale(0.96); }
 
 /* =========================================
    DESIGN: TABELAS (CARDS)
    ========================================= */
 
 .container-tabela {
-    background: #ffffff;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     margin-bottom: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(137, 73, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.container-tabela:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .titulo-linha {
     width: 100%;
-    padding: 14px;
-    background: #8949ff;
+    padding: 16px;
+    background: var(--primary);
     color: #ffffff;
     font-weight: 800;
     font-size: 16px;
@@ -80,35 +107,36 @@ button:active { transform: scale(0.95); }
 
 table {
     width: 100%;
-    background: #ffffff;
+    background: var(--surface-color);
     border-collapse: collapse;
 }
 
 th {
-    background: #f4f0ff;
-    color: #8949ff;
+    background: var(--surface-hover);
+    color: var(--text-secondary);
     font-size: 11px;
-    font-weight: 900;
+    font-weight: 800;
     text-transform: uppercase;
     padding: 12px 4px;
-    border-bottom: 2px solid #eae0ff;
+    border-bottom: 1px solid var(--border-color);
+    letter-spacing: 0.5px;
 }
 
 td { 
-    background: #ffffff; 
-    padding: 8px 6px;
+    background: var(--surface-color); 
+    padding: 10px 6px;
     vertical-align: middle;
-    border-bottom: 1px solid #f4f5f7;
+    border-bottom: 1px solid #F3F4F6;
 }
 
 tr:last-child td { border-bottom: none; }
 
-td.resumo { border-left: 2px dashed #f0f0f0; }
+td.resumo { border-left: 1px dashed var(--border-color); }
 
 td.resumo.necessidade, td.resumo.eficiencia {
-    color: #8949ff;
+    color: var(--primary);
     font-size: 15px;
-    font-weight: 900;
+    font-weight: 800;
     text-align: center;
 }
 
@@ -116,12 +144,12 @@ td.resumo.necessidade, td.resumo.eficiencia {
     width: 100%;
     height: 42px;
     text-align: center;
-    font-size: 13px;
-    font-weight: 800;
-    background: #f4f6f8; 
-    border: 2px solid transparent;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--surface-hover); 
+    border: 1px solid var(--border-color);
     border-radius: 10px;
-    color: #222;
+    color: var(--text-primary);
     transition: all 0.2s ease;
 }
 
@@ -129,19 +157,24 @@ td.resumo.necessidade, td.resumo.eficiencia {
     text-align: left;
     padding-left: 8px;
     cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    padding-right: 24px;
 }
 
-.ativos:focus, .pares:focus, .modelo:focus {
-    background: #ffffff;
-    border-color: #8949ff;
+.ativos:focus, .pares:focus, .modelo:focus, .ativos:hover, .pares:hover, .modelo:hover {
+    background: var(--surface-color);
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
 }
 
 .total-linha {
     width: 100%;
-    padding: 14px;
-    background: #fafafa;
-    border-top: 1px solid #f0f0f0;
+    padding: 16px;
+    background: var(--surface-hover);
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -149,43 +182,28 @@ td.resumo.necessidade, td.resumo.eficiencia {
 
 .badge-total {
     font-size: 12px;
-    color: #666;
-    font-weight: 800;
+    color: var(--text-secondary);
+    font-weight: 700;
     text-transform: uppercase;
 }
 
-.badge-total b { font-size: 16px; color: #8949ff; font-weight: 900; margin-left: 4px; }
-.badge-total.difer b { color: #d32f2f; }
+.badge-total b { font-size: 16px; color: var(--text-primary); font-weight: 800; margin-left: 4px; }
+.badge-total.difer b { color: var(--danger); }
 
 /* =========================================
-   DESIGN UNIFICADO: RESUMO, OCIOSOS E OTIMIZAÇÃO
+   DESIGN UNIFICADO: RESUMO
    ========================================= */
 .resumo-fabrica-container {
-    background: #1a1a1c;
-    border: 2px solid #2a2a2e;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 18px 14px;
+    padding: 20px 16px;
     margin-top: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.02);
 }
-
-/* Variação Perigo (Ociosos) */
-.resumo-fabrica-container.danger {
-    background: #1f1414; 
-    border-color: #3a1c1c;
-    margin-top: 16px;
-}
-.resumo-fabrica-titulo.danger-text { color: #ff4e3a; }
-
-/* Variação Destaque (Otimização) */
-.resumo-fabrica-container.highlight {
-    background: #14101f; 
-    border-color: #271d3b;
-    margin-top: 16px;
-}
-.resumo-fabrica-titulo.highlight-text { color: #a77bff; }
 
 .resumo-fabrica-titulo {
-    color: #ffffff;
+    color: var(--text-primary);
     text-align: center;
     font-weight: 800;
     font-size: 15px;
@@ -201,59 +219,41 @@ td.resumo.necessidade, td.resumo.eficiencia {
 .resumo-grid {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
 }
 
 .resumo-card {
     flex: 1;
-    background: #ffffff;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 14px 8px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border-bottom: 4px solid #8949ff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    border-bottom: 4px solid var(--primary);
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.resumo-card.potencial { border-bottom-color: #2ecc71; }
-.resumo-card.potencial b { color: #2ecc71; font-size: 24px; }
-
-.resumo-card.danger { border-bottom-color: #ff4e3a; }
-.resumo-card.danger b { color: #ff4e3a; }
-
-.resumo-card.info { border-bottom-color: #bca1ff; }
+.resumo-card.potencial { border-bottom-color: var(--success); }
+.resumo-card.potencial b { color: var(--success); font-size: 24px; }
 
 .resumo-card span {
     display: block;
     font-size: 11px;
-    color: #666;
+    color: var(--text-secondary);
     text-transform: uppercase;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 6px;
 }
 
 .resumo-card b {
     display: block;
     font-size: 20px;
-    color: #000000;
-    font-weight: 900;
+    color: var(--text-primary);
+    font-weight: 800;
 }
-
-/* Estilo para cartões que funcionam como botões */
-.resumo-card.action-card {
-    cursor: pointer;
-    background: #f4f0ff;
-    transition: all 0.2s ease;
-}
-
-.resumo-card.action-card:active {
-    transform: scale(0.95);
-    background: #e2d4ff;
-}
-
-.resumo-card.action-card b { color: #8949ff; font-size: 22px; }
 
 /* ========================================= */
 
@@ -267,7 +267,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(to top, #000000 85%, transparent);
+    background: linear-gradient(to top, var(--bg-color) 80%, transparent);
     z-index: 100;
     padding: 0 24px 24px 24px;
     height: 100px;
@@ -280,9 +280,24 @@ td.resumo.necessidade, td.resumo.eficiencia {
     gap: 12px; 
 }
 
-.create { background: #fff url('../src/icons/magic-wand.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
-.salvar { background: #fff url('../src/icons/disk.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
-.delete { background: #fff url('../src/icons/trash.png') center/28px no-repeat; border: 2px solid #8949ff; font-size: 0; }
+.btn-options button {
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+}
+
+.btn-options button:hover {
+    border-color: var(--border-hover);
+    background-color: var(--surface-hover);
+}
+
+.create { background-image: url('../src/icons/magic-wand.png'); font-size: 0; border: 1px solid var(--primary) !important; box-shadow: 0 4px 12px rgba(137, 73, 255, 0.15) !important;}
+.salvar { background-image: url('../src/icons/disk.png'); font-size: 0; }
+.delete { background-image: url('../src/icons/trash.png'); font-size: 0; }
 
 .toast {
     position: fixed;
@@ -295,28 +310,61 @@ td.resumo.necessidade, td.resumo.eficiencia {
     font-weight: bold;
     z-index: 10000;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-.toast.show { top: 12px; }
-.toast-success { background: #2ecc71; }
-.toast-error { background: #e74c3c; }
+.toast.show { top: 16px; }
+.toast-success { background: var(--success); }
+.toast-error { background: var(--danger); }
 
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(17, 24, 39, 0.6);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
-.modal { background: white; padding: 25px; border-radius: 24px; width: 320px; text-align: center; }
-.modal input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #cecbff; border-radius: 12px; text-align: center; font-weight: bold; }
-.modal-btns { display: flex; gap: 10px; }
-.modal-btns button { flex: 1; height: 48px; border: none; }
-.btn-confirm { background: #8949ff; color: white; }
-.btn-cancel { background: #f0f0f0; color: #666; }
+.modal { 
+    background: var(--surface-color); 
+    padding: 32px 24px; 
+    border-radius: 24px; 
+    width: 320px; 
+    text-align: center; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+.modal h3 { color: var(--text-primary); font-weight: 800; margin-bottom: 8px; }
+.modal p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;}
+.modal select { 
+    width: 100%; 
+    padding: 14px; 
+    margin: 10px 0 24px 0; 
+    border: 1px solid var(--border-color); 
+    background: var(--surface-hover);
+    border-radius: 12px; 
+    text-align: center; 
+    font-weight: bold; 
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: all 0.2s;
+    appearance: none;
+    cursor: pointer;
+}
+.modal select:focus {
+    background: var(--surface-color);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+}
+.modal-btns { display: flex; gap: 12px; }
+.modal-btns button { flex: 1; height: 48px; border: none; border-radius: 12px; font-size: 14px;}
+.btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2); }
+.btn-confirm:hover { background: var(--primary-hover); }
+.btn-cancel { background: var(--surface-hover); color: var(--text-secondary); border: 1px solid var(--border-color) !important; }
+.btn-cancel:hover { background: #F3F4F6; }
 
 #space-data { width: 100%; height: 120px; } 
 </style>
@@ -327,8 +375,10 @@ td.resumo.necessidade, td.resumo.eficiencia {
 <div id="modalCriar" class="modal-overlay">
     <div class="modal">
         <h3>Nova Linha</h3>
-        <p>Insira o nome da linha de produção</p>
-        <input type="text" id="inputNomeTabela" placeholder="EX: LINHA 01" maxlength="20">
+        <p>Selecione a linha de produção</p>
+        <select id="selectNomeTabela">
+            <!-- Opções preenchidas pelo JS -->
+        </select>
         <div class="modal-btns">
             <button class="btn-cancel" onclick="fecharModal('modalCriar')">Sair</button>
             <button class="btn-confirm" onclick="confirmarCriacao()">Adicionar</button>
@@ -338,18 +388,17 @@ td.resumo.necessidade, td.resumo.eficiencia {
 
 <div id="modalRemover" class="modal-overlay">
     <div class="modal">
-        <h3 style="color: #e74c3c;">REMOVER LINHA?</h3>
+        <h3 style="color: var(--danger);">REMOVER LINHA?</h3>
         <p>Deseja apagar a última linha criada?</p>
         <div class="modal-btns">
             <button class="btn-cancel" onclick="fecharModal('modalRemover')">Não</button>
-            <button class="btn-confirm" style="background:#e74c3c; color:white;" onclick="confirmarRemocao()">Sim, apagar</button>
+            <button class="btn-confirm" style="background:var(--danger); color:white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);" onclick="confirmarRemocao()">Sim, apagar</button>
         </div>
     </div>
 </div>
 
 <div id="tabelas"></div>
 <div id="resumoGeral"></div>
-<div id="sugestoesInteligentes"></div>
 
 <div id="menu">
     <div class="btn-options">
@@ -408,14 +457,33 @@ function notify(msg, type = 'info') {
     }, 2500);
 }
 
+function getLinhasDisponiveis() {
+    const linhasCriadas = Array.from(document.querySelectorAll(".titulo-linha")).map(el => el.innerText.trim());
+    const disponiveis = [];
+    for (let i = 1; i <= 20; i++) {
+        const nomeLinha = `LINHA ${i.toString().padStart(2, '0')}`;
+        if (!linhasCriadas.includes(nomeLinha)) {
+            disponiveis.push(nomeLinha);
+        }
+    }
+    return disponiveis;
+}
+
 function abrirModal(id) {
+    if(id === 'modalCriar') {
+        const disponiveis = getLinhasDisponiveis();
+        if(disponiveis.length === 0) {
+            notify("TODAS AS LINHAS JÁ FORAM CRIADAS!", "error");
+            return;
+        }
+        const select = document.getElementById("selectNomeTabela");
+        select.innerHTML = disponiveis.map(l => `<option value="${l}">${l}</option>`).join('');
+    }
     document.getElementById(id).style.display = "flex";
-    if(id === 'modalCriar') document.getElementById("inputNomeTabela").focus();
 }
 
 function fecharModal(id) {
     document.getElementById(id).style.display = "none";
-    document.getElementById("inputNomeTabela").value = "";
 }
 
 function abrirModalRemover() {
@@ -427,12 +495,13 @@ function abrirModalRemover() {
 }
 
 function confirmarCriacao() {
-    const nome = document.getElementById("inputNomeTabela").value.trim();
+    const select = document.getElementById("selectNomeTabela");
+    const nome = select.value;
     if (!nome) {
-        notify("NOME OBRIGATÓRIO! ⚠️", "error");
+        notify("SELECIONE UMA LINHA! ⚠️", "error");
         return;
     }
-    criarTabela({ titulo: nome.toUpperCase() });
+    criarTabela({ titulo: nome });
     fecharModal('modalCriar');
 }
 
@@ -455,7 +524,7 @@ function criarSelectModelos(valor = "") {
 function criarTabela(dadosTabela = null) {
     const div = document.createElement("div");
     div.className = "container-tabela";
-    const titulo = dadosTabela?.titulo || "LINHA";
+    const titulo = dadosTabela?.titulo || "LINHA 01";
 
     div.innerHTML = `
     <div class="titulo-linha">${titulo}</div>
@@ -524,161 +593,22 @@ function calcularTabela(container) {
     `;
 }
 
-function proxMultiplo4(num) {
-    if (num <= 0) return 0;
-    return Math.ceil(num / 4) * 4;
-}
-
-function aplicarOtimizacao(indexTabela, indexLinha, quantidade) {
-    if (quantidade <= 0) return;
-
-    const containers = document.querySelectorAll(".container-tabela");
-    const containerAlvo = containers[indexTabela];
-    
-    if (containerAlvo) {
-        const inputsPares = containerAlvo.querySelectorAll(".pares");
-        const inputAlvo = inputsPares[indexLinha];
-        
-        const valorAtual = parseFloat(inputAlvo.value) || 0;
-        inputAlvo.value = valorAtual + quantidade;
-
-        // Recalcular e atualizar UI
-        calcularTabela(containerAlvo);
-        atualizarResumoGeral();
-        notify(`ADICIONADO +${quantidade} PARES!`, "success");
-    }
-}
-
-function removerTrabalhadores(indexTabela, quantidade) {
-    if (quantidade <= 0) return;
-    const containers = document.querySelectorAll(".container-tabela");
-    const containerAlvo = containers[indexTabela];
-    
-    if (containerAlvo) {
-        const inputAtivos = containerAlvo.querySelector(".ativos");
-        const valorAtual = parseFloat(inputAtivos.value) || 0;
-        inputAtivos.value = Math.max(0, valorAtual - quantidade);
-
-        // Recalcular e atualizar UI
-        calcularTabela(containerAlvo);
-        atualizarResumoGeral();
-        notify(`REMOVIDO -${quantidade} PESSOAS!`, "success");
-    }
-}
-
 function atualizarResumoGeral() {
     let tPares = 0, tAtivos = 0, tTempo = 0;
-    let sugestoesHtml = "";
 
     const containers = document.querySelectorAll(".container-tabela");
     
-    containers.forEach((container, containerIndex) => {
+    containers.forEach((container) => {
         const t = container.querySelector("table");
-        const titulo = container.querySelector(".titulo-linha").innerText;
         const p = parseFloat(t.dataset.pares) || 0;
         const a = parseFloat(t.dataset.ativos) || 0;
         const temp = parseFloat(t.dataset.tempo) || 0;
 
         tPares += p; tAtivos += a; tTempo += temp;
-
-        const necessidade = temp ? Math.round(temp / CAPACIDADE_LINHA) : 0;
-        const ociosos = a - necessidade;
-
-        const efici = a ? (temp / (a * CARGA_PESSOA)) : 0;
-        
-        // Se tiver 2 ou mais ociosos, mostra card de ação para COMPLETAR
-        if (ociosos >= 2) {
-            let maiorT = 0, melhorM = "", indexModeloAlvo = 0;
-            container.querySelectorAll(".modelo").forEach((sel, selIndex) => {
-                if(sel.value && parseFloat(sel.value) > maiorT) {
-                    maiorT = parseFloat(sel.value);
-                    melhorM = sel.options[sel.selectedIndex].text;
-                    indexModeloAlvo = selIndex;
-                }
-            });
-
-            if (melhorM) {
-                const pCompletar = proxMultiplo4(Math.ceil((ociosos * CAPACIDADE_LINHA) / maiorT));
-
-                sugestoesHtml += `
-                <div class="resumo-fabrica-container danger">
-                    <div class="resumo-fabrica-titulo danger-text">⚠️ COMPLETAR OCIOSIDADE: ${titulo}</div>
-                    
-                    <div class="resumo-grid" style="margin-bottom: 12px;">
-                        <div class="resumo-card danger">
-                            <span>Sobra na Linha</span>
-                            <b style="font-size: 16px;">${ociosos} Pessoas</b>
-                        </div>
-                        <div class="resumo-card danger">
-                            <span>Foco p/ Completar</span>
-                            <b style="font-size: 16px;">${melhorM}</b>
-                        </div>
-                    </div>
-
-                    <div class="resumo-grid">
-                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${pCompletar})" style="background: #fff5f5; border-bottom-color: #ff4e3a;">
-                            <span style="color: #d32f2f;">Preencher c/ Pares</span>
-                            <b style="color: #ff4e3a;">+${pCompletar} prs</b>
-                        </div>
-                        <div class="resumo-card action-card" onclick="removerTrabalhadores(${containerIndex}, ${ociosos})" style="background: #fff5f5; border-bottom-color: #ff4e3a;">
-                            <span style="color: #d32f2f;">Cortar Mão de Obra</span>
-                            <b style="color: #ff4e3a;">-${ociosos} func.</b>
-                        </div>
-                    </div>
-                </div>`;
-            }
-        } 
-        // OTIMIZAÇÃO NORMAL: Se a eficiência estiver baixa
-        else if(efici > 0 && efici < 0.85) {
-            let maiorT = 0, melhorM = "", indexModeloAlvo = 0;
-            container.querySelectorAll(".modelo").forEach((sel, selIndex) => {
-                if(sel.value && parseFloat(sel.value) > maiorT) {
-                    maiorT = parseFloat(sel.value);
-                    melhorM = sel.options[sel.selectedIndex].text;
-                    indexModeloAlvo = selIndex;
-                }
-            });
-
-            if(melhorM) {
-                const f80 = (a * CARGA_PESSOA * 0.80) - temp;
-                const f85 = (a * CARGA_PESSOA * 0.85) - temp;
-
-                const p80 = f80 > 0 ? proxMultiplo4(Math.ceil(f80 / maiorT)) : 0;
-                const p85 = f85 > 0 ? proxMultiplo4(Math.ceil(f85 / maiorT)) : 0;
-
-                sugestoesHtml += `
-                <div class="resumo-fabrica-container highlight">
-                    <div class="resumo-fabrica-titulo highlight-text">💡 OTIMIZAÇÃO: ${titulo}</div>
-                    
-                    <div class="resumo-grid" style="margin-bottom: 12px;">
-                        <div class="resumo-card info">
-                            <span>Foco de Produção</span>
-                            <b style="font-size: 16px;">${melhorM}</b>
-                        </div>
-                        <div class="resumo-card info">
-                            <span>Efic. Atual</span>
-                            <b>${Math.round(efici*100)}%</b>
-                        </div>
-                    </div>
-
-                    <div class="resumo-grid">
-                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${p80})">
-                            <span>Aplicar 80%</span>
-                            <b>+${p80} prs</b>
-                        </div>
-                        <div class="resumo-card action-card" onclick="aplicarOtimizacao(${containerIndex}, ${indexModeloAlvo}, ${p85})">
-                            <span>Aplicar 85%</span>
-                            <b>+${p85} prs</b>
-                        </div>
-                    </div>
-                </div>`;
-            }
-        }
     });
 
     if (!tPares && !tAtivos) {
         document.getElementById("resumoGeral").innerHTML = "";
-        document.getElementById("sugestoesInteligentes").innerHTML = "";
         return;
     }
 
@@ -700,8 +630,6 @@ function atualizarResumoGeral() {
             </div>
         </div>
     </div>`;
-
-    document.getElementById("sugestoesInteligentes").innerHTML = sugestoesHtml;
 }
 
 function salvarDados(silencioso = false) {
