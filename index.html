@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Dashboard App</title>
     <style>
         @font-face{
@@ -20,15 +20,17 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
-            font-family: "LufgaRegular";
+            font-family: "LufgaRegular", sans-serif;
             outline: none;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #000000;
+            /* Fundo levemente acinzentado para destacar os cards brancos */
+            background-color: #F8F9FA; 
             display: flex;
             justify-content: center;
+            color: #111111;
         }
 
         /* --- ESTILOS DA TELA SPLASH --- */
@@ -38,7 +40,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #000000;
+            background-color: #FFFFFF;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -57,7 +59,7 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid #271d3b;
+            border: 5px solid #F3F4F6;
             border-top: 5px solid #8949ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -65,7 +67,7 @@
         }
 
         .splash-text {
-            color: #ffffff;
+            color: #4B5563;
             font-size: 16px;
             text-align: center;
             font-weight: 700;
@@ -115,25 +117,34 @@
             justify-content: center;
             align-items: center;
             background: url(src/logo/manufacturing.png) center center/32px no-repeat;
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.15);
         }
 
         .menu-box {
             width: 56px;
             height: 56px;
-            border: 2px solid #E0E5F0;
+            border: 1px solid #E5E7EB;
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: transparent;
+            background: #FFFFFF;
             cursor: pointer;
             z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .menu-box:hover {
+            border-color: #D1D5DB;
+            background: #F9FAFB;
         }
 
         .menu-box svg {
             width: 24px;
             height: 24px;
-            stroke: #7A869A;
+            stroke: #4B5563;
         }
 
         .floating-menu {
@@ -143,7 +154,8 @@
             background-color: #ffffff;
             border-radius: 20px;
             padding: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #F3F4F6;
             z-index: 100;
             display: none;
             transform-origin: top right;
@@ -167,20 +179,21 @@
             padding: 12px;
             cursor: pointer;
             text-decoration: none;
-            color: #111111;
+            color: #1F2937;
             font-size: 16px;
             font-weight: 500;
             border-radius: 12px;
+            transition: background-color 0.2s;
         }
 
         .floating-menu-item:hover {
-            background-color: #F8F9FA;
+            background-color: #F3F4F6;
         }
 
         .floating-menu-item svg {
             width: 20px;
             height: 20px;
-            stroke: #7A869A;
+            stroke: #6B7280;
             fill: none;
         }
 
@@ -190,6 +203,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 24px 0px;
+            gap: 8px;
         }
         
         .tabs::-webkit-scrollbar {
@@ -197,10 +211,11 @@
         }
 
         .tab-btn {
-            padding: 14px 20px;
+            flex: 1;
+            padding: 14px 16px;
             border: none;
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
@@ -210,11 +225,18 @@
         .tab-btn.active {
             background-color: #8949ff;
             color: #ffffff;
+            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.25);
         }
 
         .tab-btn:not(.active) {
-            background-color: #EFEFEF;
-            color: #271d3b;
+            background-color: #FFFFFF;
+            color: #6B7280;
+            border: 1px solid #E5E7EB;
+        }
+
+        .tab-btn:not(.active):hover {
+            background-color: #F9FAFB;
+            color: #374151;
         }
 
         .tab-content {
@@ -232,51 +254,61 @@
         }
 
         .card {
-            background: #14101f;
-            border: 2px solid #48356d;
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
             border-radius: 20px;
             padding: 24px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
         .card h2 {
-            font-size: 24px;
-            color: #ffffff;
-            margin-bottom: 12px;
-            font-weight: 700;
+            font-size: 22px;
+            color: #111827;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
         #ia {
             color: transparent;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #5f616e, #565657);
+            background-image: linear-gradient(to right, #8949ff, #6b21a8);
         }
 
         #fast {
-            font-size: 24px;
+            font-size: 22px;
             color: transparent;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             background-image: linear-gradient(to right, #ff7e5f, #ff755d);
             margin-bottom: 12px;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
         .card p {
             font-size: 14.5px;
-            color: #979797;
-            line-height: 1.4;
-            margin-bottom: 28px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 24px;
         }
 
-        /* Permite que o conteúdo do rodapé do card se adapte */
         .card-footer {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
+            border-top: 1px solid #F3F4F6;
+            padding-top: 20px;
         }
 
         .stat {
@@ -288,33 +320,36 @@
         .stat-label {
             font-size: 11px;
             font-weight: 700;
-            color: #ffffff;
+            color: #9CA3AF;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-value {
             font-size: 26px;
             font-weight: 800;
-            color: #000000;
+            color: #111827;
         }
 
         .turn-select {
             appearance: none;
             -webkit-appearance: none;
-            background-color: #ffffff;
-            border: 2px solid #E0E5F0;
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
             border-radius: 12px;
             padding: 10px 24px 10px 24px;
             font-size: 14px;
             font-weight: 600;
-            color: #111111;
+            color: #374151;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .turn-select:focus {
+        .turn-select:focus, .turn-select:hover {
             border-color: #8949ff;
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.1);
         }
 
         .action-btn {
@@ -322,21 +357,22 @@
             color: #ffffff;
             border: none;
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 12px 20px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.3s ease;
+            transition: transform 0.1s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2);
         }
 
         .action-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
         
         .action-btn:hover {
-            background-color: #333333;
+            background-color: #7A3BE5;
+            box-shadow: 0 6px 16px rgba(137, 73, 255, 0.3);
         }
-
 
         .offline-select {
             display: none;
@@ -361,8 +397,9 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            background-color: #27272a;
-            border: 1px solid #3f3f46;
+            background-color: #F3F4F6;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .creator-info {
@@ -373,13 +410,14 @@
 
         .creator-name {
             font-size: 14px;
-            font-weight: 600;
-            color: #ffffff;
+            font-weight: 700;
+            color: #111827;
         }
 
         .creator-role {
             font-size: 12px;
-            color: #a1a1aa;
+            color: #6B7280;
+            font-weight: 500;
         }
 
         /* --- MEDIA QUERY PARA TELAS PEQUENAS --- */
@@ -389,7 +427,7 @@
             }
 
             .tab-btn {
-                padding: 12px 14px;
+                padding: 12px 10px;
                 font-size: 13px;
             }
 
@@ -528,7 +566,7 @@
         <div id="area-tecnica" class="tab-content">
             <div class="card">
                 <h2>Apontamento de Produção</h2>
-                <p>Consulte informações basicas dos modelos e distruição de pares por numerações.<br> EM DESENVOLVIMENTO</p>
+                <p>Consulte informações basicas dos modelos e distruição de pares por numerações.<br><br> EM DESENVOLVIMENTO</p>
                 <div class="card-footer">
                     <div class="stat">
                         <select id="turnoSelectCalculadora" class="turn-select offline-select">
@@ -536,7 +574,22 @@
                         </select>
                     </div>
                     <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/apotamento.html')">CALCULAR &#10140;</button>
+                        <button class="action-btn" onclick="goTo('pages/apotamento.html')">CONSULTAR &#10140;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Modelos</h2>
+                <p>Consulte informações basicas dos modelos, componentes e suas respectivas areas de preparação.<br><br> EM DESENVOLVIMENTO</p>
+                <div class="card-footer">
+                    <div class="stat">
+                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
+                            <option>SEM FUNÇÃO</option>
+                        </select>
+                    </div>
+                    <div class="stat">
+                        <button class="action-btn" onclick="goTo('pages/modelos.html')">CONSULTAR &#10140;</button>
                     </div>
                 </div>
             </div>
@@ -559,7 +612,7 @@
                 // Exibe o aplicativo principal
                 appContainer.style.display = 'block';
             }, 100); // tempo para o fade out concluir
-        }, 1000); // 1 segundo de espera (estava como 5 nos comentários)
+        }, 1000); 
     });
     // -----------------------------
 
