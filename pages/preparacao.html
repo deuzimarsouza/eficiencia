@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Relatório de Produção</title>
+<style>
+    @font-face {
+        font-family: "LufgaRegular";
+        src: url("../src/fonts/LufgaRegular.ttf");
+    }
+
+    :root {
+        /* TEMA DARK (Padrão) */
+        --bg-color: #000000;
+        --bg-gradient: radial-gradient(circle at 50% -20%, #1a1a1a, #000000);
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --input-bg: rgba(255, 255, 255, 0.05);
+        --border-color: rgba(255, 255, 255, 0.1);
+        
+        --text-primary: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        
+        --accent: #5C9AFF;
+        
+        --success: #10B981;
+        --danger: #F87171;
+        --danger-bg: rgba(248, 113, 113, 0.1);
+        --danger-border: rgba(248, 113, 113, 0.3);
+
+        --total-bg: rgba(92, 154, 255, 0.15);
+        --total-border: rgba(92, 154, 255, 0.2);
+
+        --option-bg: #111111;
+        --select-icon: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        --calendar-invert: invert(1);
+    }
+
+    [data-theme="light"] {
+        /* TEMA CLEAN (Light) */
+        --bg-color: #F8F9FA;
+        --bg-gradient: none;
+        --card-bg: #FFFFFF;
+        --input-bg: #FFFFFF;
+        --border-color: #E5E7EB;
+        
+        --text-primary: #111827;
+        --text-secondary: #6B7280;
+        
+        --accent: #2563EB; /* Azul mais forte para contraste no branco */
+        
+        --success: #059669;
+        --danger: #DC2626;
+        --danger-bg: #FEF2F2;
+        --danger-border: #FECACA;
+
+        --total-bg: #EFF6FF;
+        --total-border: #BFDBFE;
+
+        --option-bg: #FFFFFF;
+        --select-icon: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        --calendar-invert: invert(0);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "LufgaRegular", system-ui, -apple-system, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        background-image: var(--bg-gradient);
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 24px 16px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app-container {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 24px; /* Espaço para o botão de tema */
+    }
+
+    /* =========================================
+       BOTÃO DE TEMA
+       ========================================= */
+    .theme-toggle-btn {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1000;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+        transform: scale(1.05);
+        border-color: var(--accent);
+    }
+
+    /* =========================================
+       CARD PRINCIPAL (GLASSMORPHISM)
+       ========================================= */
+    .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 32px 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .header {
+        text-align: center;
+    }
+
+    .header h2 {
+        color: var(--accent);
+        font-size: 22px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .header p {
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* =========================================
+       FILTROS (TURNO E DATA)
+       ========================================= */
+    .filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-group label {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    select, input {
+        width: 100%;
+        height: 48px;
+        padding: 0 16px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        appearance: none;
+    }
+
+    select option {
+        background-color: var(--option-bg);
+        color: var(--text-primary);
+    }
+
+    select {
+        background-image: var(--select-icon);
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        cursor: pointer;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: var(--calendar-invert);
+        opacity: 0.6;
+        cursor: pointer;
+    }
+
+    select:focus, input:focus, select:hover, input:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.15);
+    }
+
+    .divider {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: 4px 0;
+    }
+
+    /* =========================================
+       LINHAS DE MODELOS
+       ========================================= */
+    #linhas-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .linha-modelo {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 12px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================
+       TOTAL GERAL
+       ========================================= */
+    .total-box {
+        background: var(--total-bg);
+        border: 1px solid var(--total-border);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .total-box span:first-child {
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .total-box span:last-child {
+        color: var(--accent);
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    /* =========================================
+       BOTÕES DE AÇÃO
+       ========================================= */
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    button {
+        width: 100%;
+        height: 56px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    .btn-add {
+        background: var(--input-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-add:hover {
+        border-color: var(--accent);
+    }
+
+    .btn-remove {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border: 1px solid var(--danger-border);
+    }
+
+    .btn-save {
+        background: var(--success);
+        color: #FFFFFF;
+        border: none;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-save:hover {
+        opacity: 0.9;
+    }
+
+</style>
+
+<script>
+    (function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+</script>
+
+</head>
+<body>
+
+<button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar Tema"></button>
+
+<div class="app-container">
+    <div class="card">
+        <div class="header">
+            <h2>RELATÓRIO DE PRODUÇÃO</h2>
+            <p>PREPARAÇÃO E CORDÃO • LEIDIANE</p>
+        </div>
+
+        <div class="filters">
+            <div class="input-group">
+                <label>TURNO</label>
+                <select id="turnoSelect">
+                    <option>1º TURNO</option>
+                    <option>2º TURNO</option>
+                    <option>3º TURNO</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>DATA</label>
+                <input type="date" id="dataInput">
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div id="linhas-container">
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="OLK. CORRE 5" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="2040" placeholder="0" oninput="calcularTotal()">
+            </div>
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="MIZ. TITAN 3" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="384" placeholder="0" oninput="calcularTotal()">
+            </div>
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="OLK.CORRE TURBO" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="120" placeholder="0" oninput="calcularTotal()">
+            </div>
+        </div>
+
+        <div class="total-box">
+            <span>TOTAL GERAL</span>
+            <span id="total-geral">2544</span>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-add" onclick="adicionarLinha()">+ ADICIONAR MODELO</button>
+        <button class="btn-remove" onclick="removerLinha()">&#10005; REMOVER ÚLTIMA LINHA</button>
+        <button class="btn-save" onclick="salvarAlteracao()">&#128190; SALVAR ALTERAÇÃO</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Inicializa ícone do botão de tema
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        atualizarIconeBotao(currentTheme);
+
+        // Configura a data de hoje
+        const dataInput = document.getElementById('dataInput');
+        if(!dataInput.value) {
+            const hoje = new Date().toISOString().split('T')[0];
+            dataInput.value = hoje;
+        }
+        calcularTotal();
+    });
+
+    // Lógica do Tema
+    function toggleTheme() {
+        const root = document.documentElement;
+        const currentTheme = root.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        atualizarIconeBotao(newTheme);
+    }
+
+    function atualizarIconeBotao(theme) {
+        const btn = document.getElementById('theme-toggle');
+        btn.innerHTML = theme === 'light' ? '🌙' : '☀️';
+    }
+
+    // Lógica de Negócio
+    function calcularTotal() {
+        const inputsQtd = document.querySelectorAll('.qtd-input');
+        let total = 0;
+        
+        inputsQtd.forEach(input => {
+            const valor = parseInt(input.value) || 0;
+            total += valor;
+        });
+
+        document.getElementById('total-geral').innerText = total;
+    }
+
+    function adicionarLinha() {
+        const container = document.getElementById('linhas-container');
+        
+        const novaLinha = document.createElement('div');
+        novaLinha.className = 'linha-modelo';
+        novaLinha.innerHTML = `
+            <input type="text" class="nome-input" placeholder="Nome do modelo">
+            <input type="number" class="qtd-input" placeholder="0" oninput="calcularTotal()">
+        `;
+        
+        container.appendChild(novaLinha);
+    }
+
+    function removerLinha() {
+        const container = document.getElementById('linhas-container');
+        if (container.children.length > 0) {
+            container.removeChild(container.lastElementChild);
+            calcularTotal();
+        }
+    }
+
+    function salvarAlteracao() {
+        const btn = document.querySelector('.btn-save');
+        const originalText = btn.innerHTML;
+        const rootStyle = getComputedStyle(document.documentElement);
+        const successColor = rootStyle.getPropertyValue('--success').trim();
+        
+        btn.innerHTML = '&#10003; SALVO COM SUCESSO';
+        btn.style.background = successColor;
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
