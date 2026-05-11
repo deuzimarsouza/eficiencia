@@ -23,8 +23,8 @@
 }
 
 body {
-    background-color: #F8F9FA;
-    color: #111827;
+    background-color: #000000;
+    color: #F9FAFB;
     width: 100%;
     max-width: 480px; 
     padding: 24px;
@@ -40,6 +40,11 @@ select {
     cursor: pointer;
 }
 
+select option {
+    background-color: #111111;
+    color: #FFFFFF;
+}
+
 button {
     height: 60px;
     outline: none;
@@ -53,31 +58,37 @@ button {
 button:active { transform: scale(0.96); }
 
 /* =========================================
-   DESIGN: TABELAS (CARDS)
+   DESIGN: TABELAS (CARDS) COM GLASSMORPHISM
    ========================================= */
 
 .container-tabela {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     margin-bottom: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .container-tabela:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .titulo-linha {
     width: 100%;
     padding: 16px;
-    background: #8949ff;
-    color: #ffffff;
+    background: rgba(92, 154, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #5C9AFF; /* Azul suave */
+    border-bottom: 1px solid rgba(92, 154, 255, 0.2);
     font-weight: 800;
     font-size: 16px;
     text-align: center;
@@ -87,36 +98,36 @@ button:active { transform: scale(0.96); }
 
 table {
     width: 100%;
-    background: #ffffff;
+    background: transparent;
     border-collapse: collapse;
 }
 
 th {
-    background: #F9FAFB;
-    color: #6B7280;
+    background: rgba(255, 255, 255, 0.05);
+    color: #9CA3AF;
     font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
     padding: 12px 4px;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
     letter-spacing: 0.5px;
 }
 
 td { 
-    background: #ffffff; 
+    background: transparent; 
     padding: 10px 6px;
     vertical-align: middle;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
 }
 
 tr:last-child td { border-bottom: none; }
 
-td.resumo { border-left: 1px dashed #E5E7EB; }
+td.resumo { border-left: 1px dashed rgba(255, 255, 255, 0.1); }
 
 td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
-    color: #8949ff;
+    color: #5C9AFF; /* Azul Suave */
     font-size: 15px;
     font-weight: 800;
     text-align: center;
@@ -128,31 +139,31 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     text-align: center;
     font-size: 14px;
     font-weight: 600;
-    background: #F9FAFB; 
-    border: 1px solid #E5E7EB;
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
-    color: #374151;
+    color: #F9FAFB;
     transition: all 0.2s ease;
 }
 
 .linha-select {
     text-align: left;
     padding-left: 8px;
-    color: #4B5563;
+    color: #E5E7EB;
     font-weight: 700;
 }
 
 .input-tabela:focus, .input-tabela:hover {
-    background: #FFFFFF;
-    border-color: #8949ff;
-    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #5C9AFF;
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
 }
 
 .total-linha {
     width: 100%;
     padding: 16px;
-    background: #F9FAFB;
-    border-top: 1px solid #E5E7EB;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -162,18 +173,18 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 
 .badge-total {
     font-size: 12px;
-    color: #6B7280;
+    color: #9CA3AF;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-.badge-total b { font-size: 16px; color: #111827; font-weight: 800; margin-left: 4px; }
-.badge-total.difer b { color: #DC2626; }
-.badge-total.positivo b { color: #059669; }
-.badge-total.perc-badge b { color: #8949ff; }
+.badge-total b { font-size: 16px; color: #F9FAFB; font-weight: 800; margin-left: 4px; }
+.badge-total.difer b { color: #F87171; }
+.badge-total.positivo b { color: #34D399; }
+.badge-total.perc-badge b { color: #5C9AFF; }
 
-.text-red { color: #DC2626 !important; font-weight: 800; }
-.text-green { color: #059669 !important; font-weight: 800; }
+.text-red { color: #F87171 !important; font-weight: 800; }
+.text-green { color: #34D399 !important; font-weight: 800; }
 
 /* =========================================
    BOTOES INFERIORES
@@ -197,25 +208,26 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 }
 
 .btn-outline-red {
-    background: #FFFFFF;
-    color: #DC2626;
-    border: 1px solid #FECACA;
+    background: rgba(248, 113, 113, 0.1);
+    color: #F87171;
+    border: 1px solid rgba(248, 113, 113, 0.3);
 }
 
 .btn-outline-red:hover {
-    background: #FEF2F2;
+    background: rgba(248, 113, 113, 0.2);
 }
 
+/* Mantive o nome da classe como btn-purple para evitar quebrar o JS, mas a cor agora é Azul Suave */
 .btn-purple {
-    background: #8949ff;
+    background: #5C9AFF; 
     color: #ffffff;
     border: none;
-    box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(92, 154, 255, 0.25);
 }
 
 .btn-purple:hover {
-    background: #7A3BE5;
-    box-shadow: 0 6px 16px rgba(137, 73, 255, 0.3);
+    background: #4A83E5;
+    box-shadow: 0 6px 16px rgba(92, 154, 255, 0.4);
 }
 
 .btn-green {
@@ -234,27 +246,27 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 
 .btn-limpar {
     grid-column: span 2;
-    background: #FEF2F2;
-    color: #DC2626;
-    border: 1px dashed #FECACA;
+    background: rgba(248, 113, 113, 0.05);
+    color: #F87171;
+    border: 1px dashed rgba(248, 113, 113, 0.3);
     margin-top: 4px;
 }
 
 .btn-limpar:hover, .btn-limpar:active {
-    background: #FEE2E2;
+    background: rgba(248, 113, 113, 0.1);
     border-style: solid;
 }
 
 /* =========================================
-   MODAL PERSONALIZADO
+   MODAL PERSONALIZADO (GLASSMORPHISM)
    ========================================= */
 
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(17, 24, 39, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 9999;
     display: none; 
     justify-content: center;
@@ -269,7 +281,10 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 }
 
 .modal-box {
-    background: #FFFFFF;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 32px 24px;
     width: 100%;
@@ -277,8 +292,7 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     text-align: center;
     transform: translateY(20px) scale(0.95);
     transition: transform 0.2s ease;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    border: 1px solid #E5E7EB;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
 }
 
 .modal-overlay.ativo .modal-box {
@@ -293,7 +307,7 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 .modal-mensagem {
     font-size: 16px;
     font-weight: 700;
-    color: #111827;
+    color: #F9FAFB;
     margin-bottom: 28px;
     line-height: 1.5;
 }
