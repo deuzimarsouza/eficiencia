@@ -12,23 +12,24 @@
 }
 
 :root {
-    --bg-color: #F8F9FA;
-    --surface-color: #FFFFFF;
-    --surface-hover: #F9FAFB;
-    --border-color: #E5E7EB;
-    --border-hover: #D1D5DB;
+    /* Tema Escuro e Azul Suave */
+    --bg-color: #000000;
+    --surface-color: rgba(255, 255, 255, 0.04);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.2);
     
-    --text-primary: #111827;
-    --text-secondary: #6B7280;
-    --text-muted: #9CA3AF;
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
     
-    --primary: #8949ff;
-    --primary-hover: #7A3BE5;
+    --primary: #5C9AFF;
+    --primary-hover: #4A83E5;
     
-    --success: #059669;
-    --success-bg: #ECFDF5;
-    --danger: #DC2626;
-    --danger-bg: #FEF2F2;
+    --success: #34D399;
+    --success-bg: rgba(52, 211, 153, 0.1);
+    --danger: #F87171;
+    --danger-bg: rgba(248, 113, 113, 0.1);
 }
 
 * {
@@ -44,7 +45,8 @@
 }
 
 body {
-    background: var(--bg-color);
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 50% -20%, #1a1a1a, #000000);
     width: 100%;
     max-width: 480px; 
     padding: 24px;
@@ -60,44 +62,55 @@ select {
     cursor: pointer;
 }
 
+select option {
+    background-color: #111111;
+    color: #FFFFFF;
+}
+
 button {
     flex: 1; 
     height: 60px;
     outline: none;
     cursor: pointer;
     border-radius: 14px;
-    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s, border-color 0.2s;
     font-weight: 700;
 }
 
 button:active { transform: scale(0.96); }
 
 /* =========================================
-   DESIGN: TABELAS (CARDS)
+   DESIGN: TABELAS (CARDS) COM GLASSMORPHISM
    ========================================= */
 
 .container-tabela {
     background: var(--surface-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     margin-bottom: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .container-tabela:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .titulo-linha {
     width: 100%;
     padding: 16px;
-    background: var(--primary);
-    color: #ffffff;
+    background: rgba(92, 154, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--primary);
+    border-bottom: 1px solid rgba(92, 154, 255, 0.2);
     font-weight: 800;
     font-size: 16px;
     text-align: center;
@@ -107,7 +120,7 @@ button:active { transform: scale(0.96); }
 
 table {
     width: 100%;
-    background: var(--surface-color);
+    background: transparent;
     border-collapse: collapse;
 }
 
@@ -123,10 +136,10 @@ th {
 }
 
 td { 
-    background: var(--surface-color); 
+    background: transparent; 
     padding: 10px 6px;
     vertical-align: middle;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 tr:last-child td { border-bottom: none; }
@@ -157,7 +170,8 @@ td.resumo.necessidade, td.resumo.eficiencia {
     text-align: left;
     padding-left: 8px;
     cursor: pointer;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    /* Ajustado para tom de cinza claro compatível com dark mode */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 14px;
@@ -165,9 +179,9 @@ td.resumo.necessidade, td.resumo.eficiencia {
 }
 
 .ativos:focus, .pares:focus, .modelo:focus, .ativos:hover, .pares:hover, .modelo:hover {
-    background: var(--surface-color);
+    background: rgba(255, 255, 255, 0.1);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
 }
 
 .total-linha {
@@ -191,15 +205,17 @@ td.resumo.necessidade, td.resumo.eficiencia {
 .badge-total.difer b { color: var(--danger); }
 
 /* =========================================
-   DESIGN UNIFICADO: RESUMO
+   DESIGN UNIFICADO: RESUMO (GLASSMORPHISM)
    ========================================= */
 .resumo-fabrica-container {
     background: var(--surface-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 20px 16px;
     margin-top: 24px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 .resumo-fabrica-titulo {
@@ -229,11 +245,17 @@ td.resumo.necessidade, td.resumo.eficiencia {
     border-radius: 14px;
     padding: 14px 8px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     border-bottom: 4px solid var(--primary);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.resumo-card:hover {
+    transform: translateY(-2px);
+    background: var(--surface-hover);
 }
 
 .resumo-card.potencial { border-bottom-color: var(--success); }
@@ -267,7 +289,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(to top, var(--bg-color) 80%, transparent);
+    background: linear-gradient(to top, #000000 70%, transparent);
     z-index: 100;
     padding: 0 24px 24px 24px;
     height: 100px;
@@ -282,20 +304,23 @@ td.resumo.necessidade, td.resumo.eficiencia {
 
 .btn-options button {
     border: 1px solid var(--border-color);
-    background-color: var(--surface-color);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 16px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 24px;
 }
 
+/* Se os seus ícones forem escuros, ative a linha abaixo para invertê-los e ficarem visíveis no fundo escuro */
+.btn-options button { filter: brightness(0) invert(1); }
+/* Importante: Revertendo o filtro para a borda manter o efeito desejado, ou aplique o ícone diretamente no HTML se preferir mais controle */
+
 .btn-options button:hover {
-    border-color: var(--border-hover);
-    background-color: var(--surface-hover);
+    border-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.create { background-image: url('../src/icons/magic-wand.png'); font-size: 0; border: 1px solid var(--primary) !important; box-shadow: 0 4px 12px rgba(137, 73, 255, 0.15) !important;}
+.create { background-image: url('../src/icons/magic-wand.png'); font-size: 0;}
 .salvar { background-image: url('../src/icons/disk.png'); font-size: 0; }
 .delete { background-image: url('../src/icons/trash.png'); font-size: 0; }
 
@@ -310,7 +335,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     font-weight: bold;
     z-index: 10000;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
 .toast.show { top: 16px; }
 .toast-success { background: var(--success); }
@@ -319,22 +344,24 @@ td.resumo.necessidade, td.resumo.eficiencia {
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(17, 24, 39, 0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .modal { 
     background: var(--surface-color); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: 32px 24px; 
     border-radius: 24px; 
     width: 320px; 
     text-align: center; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
     border: 1px solid var(--border-color);
 }
 .modal h3 { color: var(--text-primary); font-weight: 800; margin-bottom: 8px; }
@@ -355,16 +382,16 @@ td.resumo.necessidade, td.resumo.eficiencia {
     cursor: pointer;
 }
 .modal select:focus {
-    background: var(--surface-color);
+    background: rgba(255, 255, 255, 0.1);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
 }
 .modal-btns { display: flex; gap: 12px; }
 .modal-btns button { flex: 1; height: 48px; border: none; border-radius: 12px; font-size: 14px;}
-.btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2); }
+.btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(92, 154, 255, 0.3); }
 .btn-confirm:hover { background: var(--primary-hover); }
-.btn-cancel { background: var(--surface-hover); color: var(--text-secondary); border: 1px solid var(--border-color) !important; }
-.btn-cancel:hover { background: #F3F4F6; }
+.btn-cancel { background: var(--surface-hover); color: var(--text-primary); border: 1px solid var(--border-color) !important; }
+.btn-cancel:hover { background: rgba(255, 255, 255, 0.1); }
 
 #space-data { width: 100%; height: 120px; } 
 </style>
@@ -392,7 +419,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
         <p>Deseja apagar a última linha criada?</p>
         <div class="modal-btns">
             <button class="btn-cancel" onclick="fecharModal('modalRemover')">Não</button>
-            <button class="btn-confirm" style="background:var(--danger); color:white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);" onclick="confirmarRemocao()">Sim, apagar</button>
+            <button class="btn-confirm" style="background:var(--danger); color:white; box-shadow: 0 4px 12px rgba(248, 113, 113, 0.2);" onclick="confirmarRemocao()">Sim, apagar</button>
         </div>
     </div>
 </div>
