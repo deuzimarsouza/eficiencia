@@ -26,11 +26,10 @@
         }
 
         body {
-            /* Fundo levemente acinzentado para destacar os cards brancos */
-            background-color: #F8F9FA; 
+            background-color: #000000; 
             display: flex;
             justify-content: center;
-            color: #111111;
+            color: #FFFFFF;
         }
 
         /* --- ESTILOS DA TELA SPLASH --- */
@@ -40,7 +39,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #FFFFFF;
+            background-color: #000000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -52,22 +51,24 @@
         #icon-logo {
             width: 96px;
             height: 96px;
+            /* Se necessário, você pode adicionar um filtro para inverter a cor da logo original */
             background: url(src/logo/manufacturing.png) center center/72px no-repeat;
+            filter: brightness(0) invert(1);
             margin-bottom: 120px;
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid #F3F4F6;
-            border-top: 5px solid #8949ff;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid #5C9AFF; /* Azul Suave */
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
         }
 
         .splash-text {
-            color: #4B5563;
+            color: #9CA3AF;
             font-size: 16px;
             text-align: center;
             font-weight: 700;
@@ -111,51 +112,58 @@
         .logo-box {
             width: 56px;
             height: 56px;
-            border: 2px solid #8949ff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             background: url(src/logo/manufacturing.png) center center/32px no-repeat;
-            background-color: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.15);
+            /* Efeito Glassmorphism no logo box */
+            background-color: rgba(255, 255, 255, 0.05);
+            filter: brightness(0) invert(1);
         }
 
         .menu-box {
             width: 56px;
             height: 56px;
-            border: 1px solid #E5E7EB;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #FFFFFF;
+            /* Efeito Glassmorphism no botão de menu */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             cursor: pointer;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
         }
 
         .menu-box:hover {
-            border-color: #D1D5DB;
-            background: #F9FAFB;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .menu-box svg {
             width: 24px;
             height: 24px;
-            stroke: #4B5563;
+            stroke: #FFFFFF;
         }
 
         .floating-menu {
             position: absolute;
             top: 96px;
             right: 24px;
-            background-color: #ffffff;
+            /* Efeito Glassmorphism no menu flutuante */
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 16px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid #F3F4F6;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
             display: none;
             transform-origin: top right;
@@ -179,7 +187,7 @@
             padding: 12px;
             cursor: pointer;
             text-decoration: none;
-            color: #1F2937;
+            color: #E5E7EB;
             font-size: 16px;
             font-weight: 500;
             border-radius: 12px;
@@ -187,13 +195,13 @@
         }
 
         .floating-menu-item:hover {
-            background-color: #F3F4F6;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .floating-menu-item svg {
             width: 20px;
             height: 20px;
-            stroke: #6B7280;
+            stroke: #9CA3AF;
             fill: none;
         }
 
@@ -223,20 +231,22 @@
         }
 
         .tab-btn.active {
-            background-color: #8949ff;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.25);
+            background-color: #5C9AFF; /* Azul Suave */
+            color: #FFFFFF;
+
         }
 
         .tab-btn:not(.active) {
-            background-color: #FFFFFF;
-            color: #6B7280;
-            border: 1px solid #E5E7EB;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #9CA3AF;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .tab-btn:not(.active):hover {
-            background-color: #F9FAFB;
-            color: #374151;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #E5E7EB;
         }
 
         .tab-content {
@@ -254,33 +264,30 @@
         }
 
         .card {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
+            /* Efeito Glassmorphism nos cards */
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
 
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .card h2 {
             font-size: 22px;
-            color: #111827;
+            color: #F9FAFB;
             margin-bottom: 8px;
             font-weight: 800;
             letter-spacing: -0.5px;
-        }
-
-        #ia {
-            color: transparent;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #8949ff, #6b21a8);
         }
 
         #fast {
@@ -288,7 +295,7 @@
             color: transparent;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(to right, #ff7e5f, #ff755d);
+            background-image: linear-gradient(to right, #FF8A65, #FFB74D);
             margin-bottom: 12px;
             font-weight: 800;
             letter-spacing: -0.5px;
@@ -296,7 +303,7 @@
 
         .card p {
             font-size: 14.5px;
-            color: #6B7280;
+            color: #9CA3AF;
             line-height: 1.5;
             margin-bottom: 24px;
         }
@@ -307,7 +314,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            border-top: 1px solid #F3F4F6;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding-top: 20px;
         }
 
@@ -320,7 +327,7 @@
         .stat-label {
             font-size: 11px;
             font-weight: 700;
-            color: #9CA3AF;
+            color: #6B7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -328,32 +335,38 @@
         .stat-value {
             font-size: 26px;
             font-weight: 800;
-            color: #111827;
+            color: #F9FAFB;
         }
 
         .turn-select {
             appearance: none;
             -webkit-appearance: none;
-            background-color: #F9FAFB;
-            border: 1px solid #E5E7EB;
+            /* Glassmorphism no seletor */
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 10px 24px 10px 24px;
             font-size: 14px;
             font-weight: 600;
-            color: #374151;
+            color: #E5E7EB;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
+        /* Opções do Select precisam de fundo sólido para leitura legível no mobile */
+        .turn-select option {
+            background-color: #111111;
+            color: #FFFFFF;
+        }
+
         .turn-select:focus, .turn-select:hover {
-            border-color: #8949ff;
-            background-color: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(137, 73, 255, 0.1);
+            border-color: #5C9AFF;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .action-btn {
-            background-color: #8949ff;
+            background-color: #5C9AFF; /* Azul Suave */
             color: #ffffff;
             border: none;
             border-radius: 12px;
@@ -361,8 +374,6 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 12px rgba(137, 73, 255, 0.2);
         }
 
         .action-btn:active {
@@ -370,8 +381,7 @@
         }
         
         .action-btn:hover {
-            background-color: #7A3BE5;
-            box-shadow: 0 6px 16px rgba(137, 73, 255, 0.3);
+            background-color: #4A83E5; /* Tom ligeiramente mais escuro no hover */
         }
 
         .offline-select {
@@ -397,9 +407,9 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            background-color: #F3F4F6;
-            border: 2px solid #FFFFFF;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #1F2937;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
         .creator-info {
@@ -411,12 +421,12 @@
         .creator-name {
             font-size: 14px;
             font-weight: 700;
-            color: #111827;
+            color: #F9FAFB;
         }
 
         .creator-role {
             font-size: 12px;
-            color: #6B7280;
+            color: #9CA3AF;
             font-weight: 500;
         }
 
@@ -499,7 +509,7 @@
         <div id="producao" class="tab-content active">
 
             <div class="card">
-                <h2>Projeção <span id="ia">Beta</span></h2>
+                <h2>Projeção</h2>
                 <p>Calcule a capacidade produtiva das linhas baseando-se no tempo do modelo e mão de obra ativa diariamente.</p>
                 <div class="card-footer">
                     <div class="stat">
