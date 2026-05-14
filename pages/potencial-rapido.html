@@ -27,7 +27,7 @@ body {
     color: #F9FAFB;
     width: 100%;
     max-width: 480px; 
-    padding: 24px;
+    padding: 24px 24px 100px 24px;
     min-height: 100vh;
     position: relative;
     margin: 0 auto;
@@ -45,14 +45,17 @@ select option {
     color: #FFFFFF;
 }
 
+select option:disabled {
+    color: #4B5563; /* Cor mais escura para opções desabilitadas */
+    font-style: italic;
+}
+
 button {
-    height: 60px;
     outline: none;
     cursor: pointer;
     border-radius: 14px;
     transition: all 0.2s ease;
     font-weight: 700;
-    font-size: 14px;
 }
 
 button:active { transform: scale(0.96); }
@@ -75,19 +78,13 @@ button:active { transform: scale(0.96); }
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.container-tabela:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
 .titulo-linha {
     width: 100%;
     padding: 16px;
     background: rgba(92, 154, 255, 0.15);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    color: #5C9AFF; /* Azul suave */
+    color: #5C9AFF; 
     border-bottom: 1px solid rgba(92, 154, 255, 0.2);
     font-weight: 800;
     font-size: 16px;
@@ -127,7 +124,7 @@ tr:last-child td { border-bottom: none; }
 td.resumo { border-left: 1px dashed rgba(255, 255, 255, 0.1); }
 
 td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
-    color: #5C9AFF; /* Azul Suave */
+    color: #5C9AFF; 
     font-size: 15px;
     font-weight: 800;
     text-align: center;
@@ -187,24 +184,45 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 .text-green { color: #34D399 !important; font-weight: 800; }
 
 /* =========================================
-   BOTOES INFERIORES
+   BOTOES INFERIORES (FIXOS NO BOTTOM)
    ========================================= */
 
 .botoes-acao {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding-bottom: 24px;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 16px 20px 16px;
+    z-index: 100;
 }
 
 .botoes-acao button {
-    height: 48px;
-    font-size: 13px;
+    flex: 1;
+    height: 56px;
+    font-size: 11px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     border-radius: 12px;
+    padding: 4px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.btn-icon {
+    font-size: 18px;
 }
 
 .btn-outline-red {
@@ -217,7 +235,6 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     background: rgba(248, 113, 113, 0.2);
 }
 
-/* Mantive o nome da classe como btn-purple para evitar quebrar o JS, mas a cor agora é Azul Suave */
 .btn-purple {
     background: #5C9AFF; 
     color: #ffffff;
@@ -234,8 +251,6 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     background: #10B981;
     color: #ffffff;
     border: none;
-    grid-column: span 2;
-    font-size: 15px;
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
@@ -245,11 +260,9 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 }
 
 .btn-limpar {
-    grid-column: span 2;
     background: rgba(248, 113, 113, 0.05);
     color: #F87171;
     border: 1px dashed rgba(248, 113, 113, 0.3);
-    margin-top: 4px;
 }
 
 .btn-limpar:hover, .btn-limpar:active {
@@ -354,10 +367,22 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 </div>
 
 <div class="botoes-acao">
-    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">&#10005; Remover</button>
-    <button class="btn-purple" onclick="adicionarLinhaResumo()">&#10010; Adicionar</button>
-    <button class="btn-green" onclick="salvarDados()">&#128190; SALVAR DADOS NO DISPOSITIVO</button>
-    <button class="btn-limpar" onclick="limparDados()">LIMPAR TODOS OS DADOS</button>
+    <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">
+        <span class="btn-icon">&#10005;</span>
+        Remover
+    </button>
+    <button class="btn-purple" onclick="adicionarLinhaResumo()">
+        <span class="btn-icon">&#10010;</span>
+        Adicionar
+    </button>
+    <button class="btn-green" onclick="salvarDados()">
+        <span class="btn-icon">&#128190;</span>
+        Salvar
+    </button>
+    <button class="btn-limpar" onclick="limparDados()">
+        <span class="btn-icon">🗑️</span>
+        Limpar
+    </button>
 </div>
 
 <div id="modal-overlay" class="modal-overlay">
@@ -421,12 +446,17 @@ function mostrarConfirmacao(icone, mensagem, onConfirm) {
    ========================================= */
 
 function criarSelectLinhas(valorAtual) {
+    const linhasEmUso = dadosResumo.map(item => item.linha);
     let html = `<select class="input-tabela linha-select">`;
     for (let i = 1; i <= 20; i++) {
         let numFormatado = i < 10 ? `0${i}` : i;
         let nomeLinha = `Linha ${numFormatado}`;
         let selecionado = nomeLinha === valorAtual ? "selected" : "";
-        html += `<option value="${nomeLinha}" ${selecionado}>${nomeLinha}</option>`;
+        
+        // Desabilita opções que já estão sendo usadas (exceto a da própria linha)
+        let desabilitado = (linhasEmUso.includes(nomeLinha) && nomeLinha !== valorAtual) ? "disabled" : "";
+        
+        html += `<option value="${nomeLinha}" ${selecionado} ${desabilitado}>${nomeLinha}</option>`;
     }
     html += `</select>`;
     return html;
@@ -449,11 +479,28 @@ function renderizarTabelaResumo() {
         tbody.appendChild(tr);
     });
 
-    document.querySelectorAll('.proj-input, .real-input, .linha-select').forEach(input => {
-        input.addEventListener('input', calcularResumo);
+    // Adiciona os eventos para calcular na hora e reordenar ao mudar a linha
+    const linhasRenderizadas = document.querySelectorAll('.linha-item');
+    linhasRenderizadas.forEach((tr, index) => {
+        const select = tr.querySelector('.linha-select');
+        select.addEventListener('change', (e) => alterarLinha(e, index));
+
+        const inputs = tr.querySelectorAll('.proj-input, .real-input');
+        inputs.forEach(input => input.addEventListener('input', calcularResumo));
     });
 
     calcularResumo();
+}
+
+function alterarLinha(event, index) {
+    // Atualiza a linha selecionada
+    dadosResumo[index].linha = event.target.value;
+    
+    // Reordena o array para manter ordem crescente
+    dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
+    
+    // Renderiza novamente a tabela
+    renderizarTabelaResumo();
 }
 
 function calcularResumo() {
@@ -461,14 +508,13 @@ function calcularResumo() {
     let totalProj = 0, totalReal = 0;
 
     linhas.forEach((tr, index) => {
-        const linhaSelect = tr.querySelector('.linha-select').value;
         const projInput = tr.querySelector('.proj-input').value;
         const realInput = tr.querySelector('.real-input').value;
         
         const proj = parseFloat(projInput) || 0;
         const real = parseFloat(realInput) || 0;
         
-        dadosResumo[index].linha = linhaSelect;
+        // Atualiza os dados apenas do proj/real (não atualiza o select para não piscar a tela)
         dadosResumo[index].proj = projInput;
         dadosResumo[index].real = realInput;
 
@@ -506,14 +552,38 @@ function calcularResumo() {
 }
 
 function adicionarLinhaResumo() {
-    const num = dadosResumo.length + 1;
-    const linhaNome = `Linha ${num < 10 ? '0' + num : num}`;
+    // Validação de limite máximo de 20
+    if (dadosResumo.length >= 20) {
+        mostrarAlerta("⚠️", "Limite máximo de 20 linhas atingido.");
+        return;
+    }
+
+    // Acha a primeira linha disponível que não está na lista
+    let novaLinhaNum = 1;
+    const linhasUsadas = dadosResumo.map(item => item.linha);
+    for (let i = 1; i <= 20; i++) {
+        let numFormatado = i < 10 ? `0${i}` : i;
+        let nomeTeste = `Linha ${numFormatado}`;
+        if (!linhasUsadas.includes(nomeTeste)) {
+            novaLinhaNum = i;
+            break;
+        }
+    }
+
+    let numFormatado = novaLinhaNum < 10 ? `0${novaLinhaNum}` : novaLinhaNum;
+    let linhaNome = `Linha ${numFormatado}`;
+    
     dadosResumo.push({ linha: linhaNome, proj: "", real: "" });
+    
+    // Ordena as linhas para manter a ordem crescente
+    dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
+    
     renderizarTabelaResumo();
 }
 
 function removerUltimaLinhaResumo() {
     if (dadosResumo.length > 0) {
+        // Pelo fato de estar sempre ordenado, isso remove a linha de numeração mais alta inserida
         dadosResumo.pop();
         renderizarTabelaResumo();
     }
@@ -522,12 +592,16 @@ function removerUltimaLinhaResumo() {
 function limparDados() {
     mostrarConfirmacao("🗑️", "Tem certeza que deseja limpar TODOS os dados inseridos?", () => {
         
+        // Ao invés de deletar tudo, ele limpa e reinicia sequencialmente mantendo a quantidade atual ou voltando ao padrão
         dadosResumo.forEach((item, index) => {
             let num = index + 1;
             item.linha = `Linha ${num < 10 ? '0' + num : num}`;
             item.proj = "";
             item.real = "";
         });
+        
+        // Garante a ordenação novamente
+        dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
         renderizarTabelaResumo();
         
         localStorage.removeItem('relatorio_eficiencia');
@@ -557,6 +631,8 @@ function carregarDados() {
             
             if (data.resumo && data.resumo.length > 0) {
                 dadosResumo = data.resumo;
+                // Ao carregar, ordena para garantir que os dados antigos entrem organizados
+                dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
             }
         } catch (e) {
             console.error("Erro ao carregar dados salvos.", e);
