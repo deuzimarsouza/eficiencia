@@ -501,7 +501,7 @@
 
     <nav class="tabs">
         <button class="tab-btn active" data-target="producao">Produção</button>
-        <button class="tab-btn" data-target="mao-obra">Mão de Obra</button>
+        <button class="tab-btn" data-target="mao-obra">Ferramentas</button>
         <button class="tab-btn" data-target="area-tecnica">Área Técnica</button>
     </nav>
 
@@ -510,7 +510,7 @@
 
             <div class="card">
                 <h2>Projeção</h2>
-                <p>Calcule a capacidade produtiva das linhas baseando-se no tempo do modelo e mão de obra ativa diariamente.</p>
+                <p>Determine a capacidade de produção das linhas levando em consideração o tempo exigido pelo modelo e a mão de obra ativa diariamente.</p>
                 <div class="card-footer">
                     <div class="stat">
                         <select id="turnoSelect" class="turn-select">
@@ -554,7 +554,9 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div id="mao-obra" class="tab-content">
             <div class="card">
                 <h2>Calculadora de Eficiência</h2>
                 <p>Verifique a eficiência do modelo por quantidade de M.O e Pares do Hora</p>
@@ -566,23 +568,6 @@
                     </div>
                     <div class="stat">
                         <button class="action-btn" onclick="goTo('pages/calculadora-de-eficiencia.html')">VERIFICAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="mao-obra" class="tab-content">
-            <div class="card">
-                <h2>#valor</h2>
-                <p>#valor</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <span class="stat-label">#valor</span>
-                        <span class="stat-value">0</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">#valor</span>
-                        <span class="stat-value">0</span>
                     </div>
                 </div>
             </div>
@@ -605,8 +590,8 @@
             </div>
 
             <div class="card">
-                <h2>Produção Final</h2>
-                <p>Resultado de Produção Geral.<br><br> EM DESENVOLVIMENTO</p>
+                <h2>Modelos</h2>
+                <p>Consulte informações basicas dos modelos, componentes e suas respectivas areas de preparação.<br><br> EM DESENVOLVIMENTO</p>
                 <div class="card-footer">
                     <div class="stat">
                         <select id="turnoSelectCalculadora" class="turn-select offline-select">
@@ -614,7 +599,7 @@
                         </select>
                     </div>
                     <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/relatorioproducao.html')">CONSULTAR &#10140;</button>
+                        <button class="action-btn" onclick="goTo('pages/modelos.html')">CONSULTAR &#10140;</button>
                     </div>
                 </div>
             </div>
