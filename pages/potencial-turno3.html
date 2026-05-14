@@ -169,7 +169,6 @@ td.resumo.necessidade, td.resumo.eficiencia {
     text-align: left;
     padding-left: 8px;
     cursor: pointer;
-    /* Ajustado para tom de cinza claro compatível com dark mode */
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 8px center;
@@ -218,6 +217,9 @@ td.resumo.necessidade, td.resumo.eficiencia {
 }
 
 .resumo-fabrica-titulo {
+    background: rgba(92, 154, 255, 0.15);
+    padding: 20px;
+    border-radius: 16px;
     color: var(--text-primary);
     text-align: center;
     font-weight: 800;
@@ -245,7 +247,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     padding: 14px 8px;
     text-align: center;
     box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-    border-bottom: 4px solid var(--primary);
+    border: 2px solid var(--primary);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -257,7 +259,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     background: var(--surface-hover);
 }
 
-.resumo-card.potencial { border-bottom-color: var(--success); }
+.resumo-card.potencial { border-color: var(--success); }
 .resumo-card.potencial b { color: var(--success); font-size: 24px; }
 
 .resumo-card span {
@@ -310,9 +312,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     background-size: 24px;
 }
 
-/* Se os seus ícones forem escuros, ative a linha abaixo para invertê-los e ficarem visíveis no fundo escuro */
 .btn-options button { filter: brightness(0) invert(1); }
-/* Importante: Revertendo o filtro para a borda manter o efeito desejado, ou aplique o ícone diretamente no HTML se preferir mais controle */
 
 .btn-options button:hover {
     border-color: rgba(255, 255, 255, 0.3);
@@ -336,7 +336,7 @@ td.resumo.necessidade, td.resumo.eficiencia {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 8px 24px rgba(0,0,0,0.4);
 }
-.toast.show { top: 16px; }
+.toast.show { top: 24px; }
 .toast-success { background: var(--success); }
 .toast-error { background: var(--danger); }
 
@@ -415,9 +415,12 @@ td.resumo.necessidade, td.resumo.eficiencia {
 <div id="modalRemover" class="modal-overlay">
     <div class="modal">
         <h3 style="color: var(--danger);">REMOVER LINHA?</h3>
-        <p>Deseja apagar a última linha criada?</p>
+        <p>Selecione a linha que deseja apagar</p>
+        <select id="selectRemoverTabela">
+            <!-- Opções preenchidas pelo JS -->
+        </select>
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal('modalRemover')">Não</button>
+            <button class="btn-cancel" onclick="fecharModal('modalRemover')">Cancelar</button>
             <button class="btn-confirm" style="background:var(--danger); color:white; box-shadow: 0 4px 12px rgba(248, 113, 113, 0.2);" onclick="confirmarRemocao()">Sim, apagar</button>
         </div>
     </div>
@@ -513,10 +516,13 @@ function fecharModal(id) {
 }
 
 function abrirModalRemover() {
-    if (document.querySelectorAll(".container-tabela").length === 0) {
+    const linhasCriadas = Array.from(document.querySelectorAll(".titulo-linha")).map(el => el.innerText.trim());
+    if (linhasCriadas.length === 0) {
         notify("SEM LINHAS!", "error");
         return;
     }
+    const select = document.getElementById("selectRemoverTabela");
+    select.innerHTML = linhasCriadas.map(l => `<option value="${l}">${l}</option>`).join('');
     abrirModal('modalRemover');
 }
 
@@ -532,8 +538,18 @@ function confirmarCriacao() {
 }
 
 function confirmarRemocao() {
+    const select = document.getElementById("selectRemoverTabela");
+    const nomeParaRemover = select.value;
+    
+    if (!nomeParaRemover) return;
+    
     const tabelas = document.querySelectorAll(".container-tabela");
-    tabelas[tabelas.length - 1].remove();
+    tabelas.forEach(tabela => {
+        if (tabela.querySelector(".titulo-linha").innerText.trim() === nomeParaRemover) {
+            tabela.remove();
+        }
+    });
+    
     salvarDados(true);
     atualizarResumoGeral();
     fecharModal('modalRemover');
@@ -545,6 +561,19 @@ function criarSelectModelos(valor = "") {
         html += `<option value="${m.tempo}" ${valor == m.tempo ? "selected" : ""}>${m.nome}</option>`;
     });
     return html + `</select>`;
+}
+
+function ordenarTabelas() {
+    const containerTabelas = document.getElementById("tabelas");
+    const tabelas = Array.from(containerTabelas.querySelectorAll(".container-tabela"));
+    
+    tabelas.sort((a, b) => {
+        const tituloA = a.querySelector(".titulo-linha").innerText.trim();
+        const tituloB = b.querySelector(".titulo-linha").innerText.trim();
+        return tituloA.localeCompare(tituloB);
+    });
+    
+    tabelas.forEach(tabela => containerTabelas.appendChild(tabela));
 }
 
 function criarTabela(dadosTabela = null) {
@@ -587,6 +616,7 @@ function criarTabela(dadosTabela = null) {
     });
     calcularTabela(div);
     atualizarResumoGeral();
+    ordenarTabelas(); 
 }
 
 function calcularTabela(container) {
@@ -640,7 +670,7 @@ function atualizarResumoGeral() {
 
     document.getElementById("resumoGeral").innerHTML = `
     <div class="resumo-fabrica-container">
-        <div class="resumo-fabrica-titulo">🏭 Resumo da Fábrica</div>
+        <div class="resumo-fabrica-titulo">Resumo da Fábrica</div>
         <div class="resumo-grid">
             <div class="resumo-card">
                 <span>Mão de Obra</span>
