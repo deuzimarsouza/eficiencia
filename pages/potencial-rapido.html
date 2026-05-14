@@ -46,7 +46,7 @@ select option {
 }
 
 select option:disabled {
-    color: #4B5563; /* Cor mais escura para opções desabilitadas */
+    color: #4B5563; 
     font-style: italic;
 }
 
@@ -194,7 +194,7 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     transform: translateX(-50%);
     width: 100%;
     max-width: 480px;
-    background: rgba(10, 10, 10, 0.85);
+    background: #000000;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -221,125 +221,82 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
     text-transform: uppercase;
 }
 
-.btn-icon {
-    font-size: 18px;
-}
+.btn-icon { font-size: 0; }
 
 .btn-outline-red {
-    background: rgba(248, 113, 113, 0.1);
+    background: #000000;
+    background: url(../src/icons/trash.png) center center/24px no-repeat;
     color: #F87171;
-    border: 1px solid rgba(248, 113, 113, 0.3);
-}
-
-.btn-outline-red:hover {
-    background: rgba(248, 113, 113, 0.2);
+    border: 1px solid #1b1b1b;
+    filter: brightness(0) invert(1);
 }
 
 .btn-purple {
-    background: #5C9AFF; 
+    background: #000; 
+    background: url(../src/icons/magic-wand.png) center center/24px no-repeat;
     color: #ffffff;
-    border: none;
-    box-shadow: 0 4px 12px rgba(92, 154, 255, 0.25);
-}
-
-.btn-purple:hover {
-    background: #4A83E5;
-    box-shadow: 0 6px 16px rgba(92, 154, 255, 0.4);
+    border: 1px solid #1b1b1b;
+    filter: brightness(0) invert(1);
 }
 
 .btn-green {
-    background: #10B981;
+    background: #000000;
+    background: url(../src/icons/disk.png) center center/24px no-repeat;
     color: #ffffff;
     border: none;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-}
-
-.btn-green:hover {
-    background: #059669;
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    border: 1px solid #1b1b1b;
+    filter: brightness(0) invert(1);
 }
 
 .btn-limpar {
-    background: rgba(248, 113, 113, 0.05);
+    background: #000000;
     color: #F87171;
-    border: 1px dashed rgba(248, 113, 113, 0.3);
-}
-
-.btn-limpar:hover, .btn-limpar:active {
-    background: rgba(248, 113, 113, 0.1);
-    border-style: solid;
+    border: 1px solid #1b1b1b;
+    background: url(../src/icons/mop.png) center center/24px no-repeat;
+    filter: brightness(0) invert(1);
 }
 
 /* =========================================
-   MODAL PERSONALIZADO (GLASSMORPHISM)
+   TOAST NOTIFICATION NO TOPO
    ========================================= */
 
-.modal-overlay {
+.toast-msg {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 9999;
-    display: none; 
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    padding: 24px;
-}
-
-.modal-overlay.ativo {
-    opacity: 1;
-}
-
-.modal-box {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 32px 24px;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-    transform: translateY(20px) scale(0.95);
-    transition: transform 0.2s ease;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-}
-
-.modal-overlay.ativo .modal-box {
-    transform: translateY(0) scale(1);
-}
-
-.modal-icone {
-    font-size: 48px;
-    margin-bottom: 16px;
-}
-
-.modal-mensagem {
-    font-size: 16px;
-    font-weight: 700;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #F9FAFB;
-    margin-bottom: 28px;
-    line-height: 1.5;
-}
-
-.modal-botoes {
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease;
+    opacity: 0;
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    max-width: 90%;
 }
 
-.modal-botoes button {
-    flex: 1;
-    height: 48px;
-    border-radius: 12px;
+.toast-msg.show {
+    top: 24px;
+    opacity: 1;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- Div do Toast -->
+<div id="toast" class="toast-msg"></div>
 
 <div id="tabela-resumo-wrapper">
     <div class="container-tabela">
@@ -368,29 +325,17 @@ td.resumo.necessidade, td.resumo.eficiencia, .texto-destaque {
 
 <div class="botoes-acao">
     <button class="btn-outline-red" onclick="removerUltimaLinhaResumo()">
-        <span class="btn-icon">&#10005;</span>
-        Remover
+        <span class="btn-icon"></span>
     </button>
     <button class="btn-purple" onclick="adicionarLinhaResumo()">
-        <span class="btn-icon">&#10010;</span>
-        Adicionar
+        <span class="btn-icon"></span>
     </button>
     <button class="btn-green" onclick="salvarDados()">
-        <span class="btn-icon">&#128190;</span>
-        Salvar
+        <span class="btn-icon"></span>
     </button>
     <button class="btn-limpar" onclick="limparDados()">
-        <span class="btn-icon">🗑️</span>
-        Limpar
+        <span class="btn-icon"></span>
     </button>
-</div>
-
-<div id="modal-overlay" class="modal-overlay">
-    <div class="modal-box">
-        <div id="modal-icone" class="modal-icone"></div>
-        <div id="modal-mensagem" class="modal-mensagem"></div>
-        <div id="modal-botoes" class="modal-botoes"></div>
-    </div>
 </div>
 
 <script>
@@ -401,44 +346,18 @@ let dadosResumo = [
 ];
 
 /* =========================================
-   FUNÇÕES DO MODAL
+   FUNÇÃO DO TOAST NO TOPO DA PÁGINA
    ========================================= */
-function fecharModal() {
-    const overlay = document.getElementById('modal-overlay');
-    overlay.classList.remove('ativo');
-    setTimeout(() => { overlay.style.display = 'none'; }, 200);
-}
-
-function mostrarAlerta(icone, mensagem) {
-    const overlay = document.getElementById('modal-overlay');
-    document.getElementById('modal-icone').innerHTML = icone;
-    document.getElementById('modal-mensagem').innerHTML = mensagem;
+let toastTimer;
+function mostrarToast(mensagem) {
+    const toast = document.getElementById('toast');
+    toast.innerHTML = mensagem;
+    toast.classList.add('show');
     
-    document.getElementById('modal-botoes').innerHTML = `
-        <button class="btn-purple" onclick="fecharModal()" style="width: 100%">OK</button>
-    `;
-    
-    overlay.style.display = 'flex';
-    setTimeout(() => overlay.classList.add('ativo'), 10);
-}
-
-function mostrarConfirmacao(icone, mensagem, onConfirm) {
-    const overlay = document.getElementById('modal-overlay');
-    document.getElementById('modal-icone').innerHTML = icone;
-    document.getElementById('modal-mensagem').innerHTML = mensagem;
-    
-    window.acaoConfirmada = () => {
-        fecharModal();
-        onConfirm();
-    };
-
-    document.getElementById('modal-botoes').innerHTML = `
-        <button class="btn-outline-red" onclick="fecharModal()">Cancelar</button>
-        <button class="btn-green" onclick="window.acaoConfirmada()">Sim, Limpar</button>
-    `;
-    
-    overlay.style.display = 'flex';
-    setTimeout(() => overlay.classList.add('ativo'), 10);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000); // Fica na tela por 3 segundos
 }
 
 /* =========================================
@@ -479,7 +398,6 @@ function renderizarTabelaResumo() {
         tbody.appendChild(tr);
     });
 
-    // Adiciona os eventos para calcular na hora e reordenar ao mudar a linha
     const linhasRenderizadas = document.querySelectorAll('.linha-item');
     linhasRenderizadas.forEach((tr, index) => {
         const select = tr.querySelector('.linha-select');
@@ -493,13 +411,8 @@ function renderizarTabelaResumo() {
 }
 
 function alterarLinha(event, index) {
-    // Atualiza a linha selecionada
     dadosResumo[index].linha = event.target.value;
-    
-    // Reordena o array para manter ordem crescente
     dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
-    
-    // Renderiza novamente a tabela
     renderizarTabelaResumo();
 }
 
@@ -514,7 +427,6 @@ function calcularResumo() {
         const proj = parseFloat(projInput) || 0;
         const real = parseFloat(realInput) || 0;
         
-        // Atualiza os dados apenas do proj/real (não atualiza o select para não piscar a tela)
         dadosResumo[index].proj = projInput;
         dadosResumo[index].real = realInput;
 
@@ -552,13 +464,11 @@ function calcularResumo() {
 }
 
 function adicionarLinhaResumo() {
-    // Validação de limite máximo de 20
     if (dadosResumo.length >= 20) {
-        mostrarAlerta("⚠️", "Limite máximo de 20 linhas atingido.");
+        mostrarToast("⚠️ Limite máximo de 20 linhas atingido.");
         return;
     }
 
-    // Acha a primeira linha disponível que não está na lista
     let novaLinhaNum = 1;
     const linhasUsadas = dadosResumo.map(item => item.linha);
     for (let i = 1; i <= 20; i++) {
@@ -574,8 +484,6 @@ function adicionarLinhaResumo() {
     let linhaNome = `Linha ${numFormatado}`;
     
     dadosResumo.push({ linha: linhaNome, proj: "", real: "" });
-    
-    // Ordena as linhas para manter a ordem crescente
     dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
     
     renderizarTabelaResumo();
@@ -583,34 +491,25 @@ function adicionarLinhaResumo() {
 
 function removerUltimaLinhaResumo() {
     if (dadosResumo.length > 0) {
-        // Pelo fato de estar sempre ordenado, isso remove a linha de numeração mais alta inserida
         dadosResumo.pop();
         renderizarTabelaResumo();
     }
 }
 
 function limparDados() {
-    mostrarConfirmacao("🗑️", "Tem certeza que deseja limpar TODOS os dados inseridos?", () => {
-        
-        // Ao invés de deletar tudo, ele limpa e reinicia sequencialmente mantendo a quantidade atual ou voltando ao padrão
-        dadosResumo.forEach((item, index) => {
-            let num = index + 1;
-            item.linha = `Linha ${num < 10 ? '0' + num : num}`;
-            item.proj = "";
-            item.real = "";
-        });
-        
-        // Garante a ordenação novamente
-        dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
-        renderizarTabelaResumo();
-        
-        localStorage.removeItem('relatorio_eficiencia');
-        
-        setTimeout(() => {
-            mostrarAlerta("✨", "Dados limpos com sucesso!");
-        }, 300); 
-        
+    dadosResumo.forEach((item, index) => {
+        let num = index + 1;
+        item.linha = `Linha ${num < 10 ? '0' + num : num}`;
+        item.proj = "";
+        item.real = "";
     });
+    
+    dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
+    renderizarTabelaResumo();
+    
+    localStorage.removeItem('relatorio_eficiencia');
+    
+    mostrarToast("✨ Dados limpos com sucesso!");
 }
 
 function salvarDados() {
@@ -620,7 +519,7 @@ function salvarDados() {
     
     localStorage.setItem('relatorio_eficiencia', JSON.stringify(data));
     
-    mostrarAlerta('💾', 'Dados salvos com sucesso no dispositivo!');
+    mostrarToast("💾 Dados salvos com sucesso!");
 }
 
 function carregarDados() {
@@ -631,7 +530,6 @@ function carregarDados() {
             
             if (data.resumo && data.resumo.length > 0) {
                 dadosResumo = data.resumo;
-                // Ao carregar, ordena para garantir que os dados antigos entrem organizados
                 dadosResumo.sort((a, b) => a.linha.localeCompare(b.linha));
             }
         } catch (e) {
