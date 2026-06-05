@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projeção de Produção - 3º Turno</title>
+
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="../src/icons/app-icon-192.png">
+<script defer src="../src/app-pwa.js"></script>
+<style>
+@font-face{
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+
+:root {
+    /* Tema Escuro e Azul Suave */
+    --bg-color: #000000;
+    --surface-color: rgba(255, 255, 255, 0.04);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
+    
+    --primary: #5C9AFF;
+    --primary-hover: #4A83E5;
+    
+    --success: #34D399;
+    --success-bg: rgba(52, 211, 153, 0.1);
+    --danger: #F87171;
+    --danger-bg: rgba(248, 113, 113, 0.1);
+}
+
+* {
+    font-family: "LufgaRegular", sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    scrollbar-width: none;
+    outline: none;
+    color: var(--text-primary);
+}
+
+body {
+    background-color: var(--bg-color);
+    width: 100%;
+    max-width: 480px; 
+    padding: 24px;
+    min-height: 100vh;
+    position: relative;
+    margin: 0 auto;
+}
+
+select {
+    appearance: none;
+    text-indent: 4px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+select option {
+    background-color: #111111;
+    color: #FFFFFF;
+}
+
+button {
+    flex: 1; 
+    height: 60px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s, border-color 0.2s;
+    font-weight: 700;
+}
+
+button:active { transform: scale(0.96); }
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.page-title {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.page-title span {
+    color: var(--text-primary);
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.page-title small {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.home-link {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+}
+
+.home-link:active {
+    transform: scale(0.96);
+}
+
+.home-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-primary);
+}
+
+/* =========================================
+   DESIGN: TABELAS (CARDS) COM GLASSMORPHISM
+   ========================================= */
+
+.container-tabela {
+    background: var(--surface-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.container-tabela:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.titulo-linha {
+    width: 100%;
+    padding: 16px;
+    background: rgba(92, 154, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--primary);
+    border-bottom: 1px solid rgba(92, 154, 255, 0.2);
+    font-weight: 800;
+    font-size: 16px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+table {
+    width: 100%;
+    background: transparent;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border-color);
+    letter-spacing: 0.5px;
+}
+
+td { 
+    background: transparent; 
+    padding: 10px 6px;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:last-child td { border-bottom: none; }
+
+td.resumo { border-left: 1px dashed var(--border-color); }
+
+td.resumo.necessidade, td.resumo.eficiencia {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.ativos, .pares, .modelo {
+    width: 100%;
+    height: 42px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--surface-hover); 
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.modelo {
+    text-align: left;
+    padding-left: 8px;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    padding-right: 24px;
+}
+
+.ativos:focus, .pares:focus, .modelo:focus, .ativos:hover, .pares:hover, .modelo:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
+}
+
+.total-linha {
+    width: 100%;
+    padding: 16px;
+    background: var(--surface-hover);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.badge-total {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-total b { font-size: 16px; color: var(--text-primary); font-weight: 800; margin-left: 4px; }
+.badge-total.difer b { color: var(--danger); }
+
+/* =========================================
+   DESIGN UNIFICADO: RESUMO (GLASSMORPHISM)
+   ========================================= */
+.resumo-fabrica-container {
+    background: var(--surface-color);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin-top: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.resumo-fabrica-titulo {
+    background: rgba(92, 154, 255, 0.15);
+    padding: 20px;
+    border-radius: 16px;
+    color: var(--text-primary);
+    text-align: center;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.resumo-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.resumo-card {
+    flex: 1;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    border: 2px solid var(--primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.resumo-card:hover {
+    transform: translateY(-2px);
+    background: var(--surface-hover);
+}
+
+.resumo-card.potencial { border-color: var(--success); }
+.resumo-card.potencial b { color: var(--success); font-size: 24px; }
+
+.resumo-card span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.resumo-card b {
+    display: block;
+    font-size: 20px;
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+/* ========================================= */
+
+#menu {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    max-width: 480px; 
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to top, #000000 70%, transparent);
+    z-index: 100;
+    padding: 0 24px 24px 24px;
+    height: 100px;
+}
+
+.btn-options { 
+    display: flex; 
+    justify-content: space-between; 
+    width: 100%; 
+    gap: 12px; 
+}
+
+.btn-options button {
+    border: 1px solid var(--border-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 24px;
+}
+
+.btn-options button { filter: brightness(0) invert(1); }
+
+.btn-options button:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.create { background-image: url('../src/icons/magic-wand.png'); font-size: 0;}
+.salvar { background-image: url('../src/icons/disk.png'); font-size: 0; }
+.delete { background-image: url('../src/icons/trash.png'); font-size: 0; }
+
+.toast {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 28px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    z-index: 10000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { top: 24px; }
+.toast-success { background: var(--success); }
+.toast-error { background: var(--danger); }
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal { 
+    background: var(--surface-color); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 32px 24px; 
+    border-radius: 24px; 
+    width: 320px; 
+    text-align: center; 
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
+}
+.modal h3 { color: var(--text-primary); font-weight: 800; margin-bottom: 8px; }
+.modal p { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;}
+.modal select { 
+    width: 100%; 
+    padding: 14px; 
+    margin: 10px 0 24px 0; 
+    border: 1px solid var(--border-color); 
+    background: var(--surface-hover);
+    border-radius: 12px; 
+    text-align: center; 
+    font-weight: bold; 
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: all 0.2s;
+    appearance: none;
+    cursor: pointer;
+}
+.modal select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
+}
+.modal-btns { display: flex; gap: 12px; }
+.modal-btns button { flex: 1; height: 48px; border: none; border-radius: 12px; font-size: 14px;}
+.btn-confirm { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(92, 154, 255, 0.3); }
+.btn-confirm:hover { background: var(--primary-hover); }
+.btn-cancel { background: var(--surface-hover); color: var(--text-primary); border: 1px solid var(--border-color) !important; }
+.btn-cancel:hover { background: rgba(255, 255, 255, 0.1); }
+
+#space-data { width: 100%; height: 120px; } 
+</style>
+</head>
+
+<body>
+
+<header class="page-header">
+    <div class="page-title">
+        <span>Projeção de Produção</span>
+        <small>3º Turno · carga de 380 min por pessoa</small>
+    </div>
+    <a class="home-link" href="../index.html" aria-label="Voltar para o início">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5.5 10.5V20h13v-9.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </a>
+</header>
+
+<div id="modalCriar" class="modal-overlay">
+    <div class="modal">
+        <h3>Nova Linha</h3>
+        <p>Selecione a linha de produção</p>
+        <select id="selectNomeTabela">
+            <!-- Opções preenchidas pelo JS -->
+        </select>
+        <div class="modal-btns">
+            <button type="button" class="btn-cancel" onclick="fecharModal('modalCriar')">Sair</button>
+            <button type="button" class="btn-confirm" onclick="confirmarCriacao()">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalRemover" class="modal-overlay">
+    <div class="modal">
+        <h3 style="color: var(--danger);">REMOVER LINHA?</h3>
+        <p>Selecione a linha que deseja apagar</p>
+        <select id="selectRemoverTabela">
+            <!-- Opções preenchidas pelo JS -->
+        </select>
+        <div class="modal-btns">
+            <button type="button" class="btn-cancel" onclick="fecharModal('modalRemover')">Cancelar</button>
+            <button type="button" class="btn-confirm" style="background:var(--danger); color:white; box-shadow: 0 4px 12px rgba(248, 113, 113, 0.2);" onclick="confirmarRemocao()">Sim, apagar</button>
+        </div>
+    </div>
+</div>
+
+<div id="tabelas"></div>
+<div id="resumoGeral"></div>
+
+<div id="menu">
+    <div class="btn-options">
+        <button type="button" class="salvar" aria-label="Salvar dados" title="Salvar dados" onclick="salvarDados()">SALVAR</button>
+        <button type="button" class="create" aria-label="Adicionar linha" title="Adicionar linha" onclick="abrirModal('modalCriar')">ADICIONAR</button>
+        <button type="button" class="delete" aria-label="Remover linha" title="Remover linha" onclick="abrirModalRemover()">REMOVER</button>
+    </div>
+</div>
+
+<div id="space-data"></div>
+
+<script src="../src/data/modelos-db.js"></script>
+<script>
+const STORAGE_KEY = "eficiencia_linhas_turno3";
+const LEGACY_STORAGE_KEY = "eficiencia_linhas";
+
+
+const CAPACIDADE_LINHA = 365.2;
+const CARGA_PESSOA = 380;
+
+function notify(msg, type = 'info') {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+    }, 2500);
+}
+
+function getLinhasDisponiveis() {
+    const linhasCriadas = Array.from(document.querySelectorAll(".titulo-linha")).map(el => el.innerText.trim());
+    const disponiveis = [];
+    for (let i = 1; i <= 20; i++) {
+        const nomeLinha = `LINHA ${i.toString().padStart(2, '0')}`;
+        if (!linhasCriadas.includes(nomeLinha)) {
+            disponiveis.push(nomeLinha);
+        }
+    }
+    return disponiveis;
+}
+
+function abrirModal(id) {
+    if(id === 'modalCriar') {
+        const disponiveis = getLinhasDisponiveis();
+        if(disponiveis.length === 0) {
+            notify("TODAS AS LINHAS JÁ FORAM CRIADAS!", "error");
+            return;
+        }
+        const select = document.getElementById("selectNomeTabela");
+        select.innerHTML = disponiveis.map(l => `<option value="${l}">${l}</option>`).join('');
+    }
+    document.getElementById(id).style.display = "flex";
+}
+
+function fecharModal(id) {
+    document.getElementById(id).style.display = "none";
+}
+
+function abrirModalRemover() {
+    const linhasCriadas = Array.from(document.querySelectorAll(".titulo-linha")).map(el => el.innerText.trim());
+    if (linhasCriadas.length === 0) {
+        notify("SEM LINHAS!", "error");
+        return;
+    }
+    const select = document.getElementById("selectRemoverTabela");
+    select.innerHTML = linhasCriadas.map(l => `<option value="${l}">${l}</option>`).join('');
+    abrirModal('modalRemover');
+}
+
+function confirmarCriacao() {
+    const select = document.getElementById("selectNomeTabela");
+    const nome = select.value;
+    if (!nome) {
+        notify("SELECIONE UMA LINHA!", "error");
+        return;
+    }
+    criarTabela({ titulo: nome });
+    salvarDados(true);
+    fecharModal('modalCriar');
+}
+
+function confirmarRemocao() {
+    const select = document.getElementById("selectRemoverTabela");
+    const nomeParaRemover = select.value;
+    
+    if (!nomeParaRemover) return;
+    
+    const tabelas = document.querySelectorAll(".container-tabela");
+    tabelas.forEach(tabela => {
+        if (tabela.querySelector(".titulo-linha").innerText.trim() === nomeParaRemover) {
+            tabela.remove();
+        }
+    });
+    
+    salvarDados(true);
+    atualizarResumoGeral();
+    fecharModal('modalRemover');
+}
+
+function criarSelectModelos(valor = "") {
+    let html = `<select class="modelo"><option value="">-</option>`;
+    MODELOS_DB.forEach(m => {
+        html += `<option value="${m.tempo}" ${valor == m.tempo ? "selected" : ""}>${m.nome}</option>`;
+    });
+    return html + `</select>`;
+}
+
+function ordenarTabelas() {
+    const containerTabelas = document.getElementById("tabelas");
+    const tabelas = Array.from(containerTabelas.querySelectorAll(".container-tabela"));
+    
+    tabelas.sort((a, b) => {
+        const tituloA = a.querySelector(".titulo-linha").innerText.trim();
+        const tituloB = b.querySelector(".titulo-linha").innerText.trim();
+        return tituloA.localeCompare(tituloB);
+    });
+    
+    tabelas.forEach(tabela => containerTabelas.appendChild(tabela));
+}
+
+function criarTabela(dadosTabela = null) {
+    const div = document.createElement("div");
+    div.className = "container-tabela";
+    const titulo = dadosTabela?.titulo || "LINHA 01";
+
+    div.innerHTML = `
+    <div class="titulo-linha">${titulo}</div>
+    <table data-tempo="0" data-ativos="0" data-pares="0">
+        <thead>
+            <tr><th style="width:38%">Modelo</th><th style="width:17%">Pares</th><th style="width:15%">N</th><th style="width:15%">A</th><th style="width:15%">E</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[0]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[0]?.pares || ""}"></td>
+                <td rowspan="3" class="resumo necessidade">-</td>
+                <td rowspan="3" class="resumo"><input type="number" class="ativos" value="${dadosTabela?.linhas?.[0]?.ativos || ""}"></td>
+                <td rowspan="3" class="resumo eficiencia">-</td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[1]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[1]?.pares || ""}"></td>
+            </tr>
+            <tr>
+                <td>${criarSelectModelos(dadosTabela?.linhas?.[2]?.modelo)}</td>
+                <td><input type="number" class="pares" value="${dadosTabela?.linhas?.[2]?.pares || ""}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-linha">
+        <span class="badge-total">PARES: <b>0</b></span>
+        <span class="badge-total difer">DIFER.: <b>0</b></span>
+    </div>`;
+
+    document.getElementById("tabelas").appendChild(div);
+    div.querySelectorAll("select, input").forEach(el => {
+        el.addEventListener("input", () => {
+            calcularTabela(div);
+            atualizarResumoGeral();
+            salvarDados(true);
+        });
+    });
+    calcularTabela(div);
+    atualizarResumoGeral();
+    ordenarTabelas(); 
+}
+
+function calcularTabela(container) {
+    const tabela = container.querySelector("table");
+    let tempoT = 0, paresT = 0;
+    const modelos = tabela.querySelectorAll(".modelo");
+    const pares = tabela.querySelectorAll(".pares");
+
+    modelos.forEach((m, i) => {
+        const t = parseFloat(m.value);
+        const p = parseFloat(pares[i].value);
+        if (p) paresT += p;
+        if (t && p) tempoT += t * p;
+    });
+
+    const ativos = parseFloat(tabela.querySelector(".ativos").value) || 0;
+    tabela.dataset.pares = paresT;
+    tabela.dataset.tempo = tempoT;
+    tabela.dataset.ativos = ativos;
+
+    const necessidade = tempoT ? Math.round(tempoT / CAPACIDADE_LINHA) : 0;
+    const eficiencia = ativos ? Math.round((tempoT / (ativos * CARGA_PESSOA)) * 100) : 0;
+
+    tabela.querySelector(".necessidade").innerText = necessidade || "-";
+    tabela.querySelector(".eficiencia").innerText = ativos ? eficiencia + "%" : "-";
+    
+    container.querySelector(".total-linha").innerHTML = `
+        <span class="badge-total">PARES: <b>${paresT}</b></span>
+        <span class="badge-total difer">DIFER.: <b>${ativos - necessidade}</b></span>
+    `;
+}
+
+function atualizarResumoGeral() {
+    let tPares = 0, tAtivos = 0, tTempo = 0;
+
+    const containers = document.querySelectorAll(".container-tabela");
+    
+    containers.forEach((container) => {
+        const t = container.querySelector("table");
+        const p = parseFloat(t.dataset.pares) || 0;
+        const a = parseFloat(t.dataset.ativos) || 0;
+        const temp = parseFloat(t.dataset.tempo) || 0;
+
+        tPares += p; tAtivos += a; tTempo += temp;
+    });
+
+    if (!tPares && !tAtivos) {
+        document.getElementById("resumoGeral").innerHTML = "";
+        return;
+    }
+
+    document.getElementById("resumoGeral").innerHTML = `
+    <div class="resumo-fabrica-container">
+        <div class="resumo-fabrica-titulo">Resumo da Fábrica</div>
+        <div class="resumo-grid">
+            <div class="resumo-card">
+                <span>Mão de Obra</span>
+                <b>${tAtivos}</b>
+            </div>
+            <div class="resumo-card potencial">
+                <span>Potencial</span>
+                <b id="TtPares">${tPares}</b>
+            </div>
+            <div class="resumo-card">
+                <span>Eficiência</span>
+                <b id="TtEficiencia">${tAtivos ? Math.round((tTempo / (tAtivos * CARGA_PESSOA)) * 100) + "%" : "-"}</b>
+            </div>
+        </div>
+    </div>`;
+}
+
+function salvarDados(silencioso = false) {
+    const dados = [];
+    document.querySelectorAll(".container-tabela").forEach(container => {
+        const titulo = container.querySelector(".titulo-linha").innerText;
+        const tabela = container.querySelector("table");
+        const linhas = [];
+        const modelos = tabela.querySelectorAll(".modelo");
+        const pares = tabela.querySelectorAll(".pares");
+        const ativos = tabela.querySelector(".ativos").value;
+            
+        modelos.forEach((m, i) => {
+            linhas.push({ modelo: m.value, pares: pares[i].value, ativos: i === 0 ? ativos : "" });
+        });
+        dados.push({ titulo, linhas });
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    if (!silencioso) notify("DADOS SALVOS!", "success");
+
+}
+
+function carregarDados() {
+    const dadosRaw = localStorage.getItem(STORAGE_KEY) || (LEGACY_STORAGE_KEY ? localStorage.getItem(LEGACY_STORAGE_KEY) : null) || "[]";
+    let dados = [];
+    try {
+        dados = JSON.parse(dadosRaw);
+    } catch (error) {
+        localStorage.removeItem(STORAGE_KEY);
+        notify("Dados salvos inválidos. Iniciando vazio.", "error");
+        return;
+    }
+
+    if (!Array.isArray(dados)) {
+        localStorage.removeItem(STORAGE_KEY);
+        notify("Formato salvo inválido. Iniciando vazio.", "error");
+        return;
+    }
+
+    dados.forEach(d => criarTabela(d));
+    if (dados.length && LEGACY_STORAGE_KEY && !localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+    }
+}
+
+carregarDados();
+</script>
+
+</body>
+</html>

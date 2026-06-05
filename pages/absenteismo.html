@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Absenteísmo - Dark Mode com Gráficos</title>
+    <link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="../src/icons/app-icon-192.png">
+<script defer src="../src/app-pwa.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: rgba(255, 255, 255, 0.04);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            
+            --primary: #5C9AFF;
+            --primary-hover: #4A83E5;
+            
+            --success: #34D399;
+            --success-bg: rgba(52, 211, 153, 0.1);
+            --danger: #F87171;
+            --danger-bg: rgba(248, 113, 113, 0.1);
+            --warning: #FBBF24;
+            --warning-bg: rgba(251, 191, 36, 0.1);
+
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-bottom: 5rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-hover);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .card h3 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .trend-indicator {
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 999px;
+            background: var(--surface-hover);
+        }
+
+        .trend-up { color: var(--danger); background: var(--danger-bg); }
+        .trend-down { color: var(--success); background: var(--success-bg); }
+        .trend-neutral { color: var(--text-secondary); }
+
+        .card-value-group {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card .value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 140px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .card .badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .badge-danger { color: var(--danger); background: var(--danger-bg); border: 1px solid rgba(248, 113, 113, 0.2); }
+        .badge-success { color: var(--success); background: var(--success-bg); border: 1px solid rgba(52, 211, 153, 0.2); }
+        .badge-warning { color: var(--warning); background: var(--warning-bg); border: 1px solid rgba(251, 191, 36, 0.2); }
+
+        /* ----- Ranking / Lists Items ----- */
+        .ranking-item {
+            display: flex; flex-direction: column;
+            background: rgba(255, 255, 255, 0.02); padding: 0.75rem;
+            border-radius: var(--radius-md); border: 1px solid var(--border-color);
+            margin-bottom: 0.5rem; cursor: pointer; transition: var(--transition);
+        }
+        .ranking-item:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+        .ranking-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .ranking-nome { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+        .ranking-matricula { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
+        .ranking-stats { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;}
+        .ranking-stats .badge { padding: 0.15rem 0.4rem; font-size: 0.7rem; }
+        
+        .ranking-details {
+            display: none; margin-top: 1rem; padding-top: 0.75rem;
+            border-top: 1px solid var(--border-color); font-size: 0.85rem;
+        }
+        .ranking-item.active .ranking-details { display: block; animation: fadeIn 0.3s ease; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; color: var(--text-secondary); border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .detail-row:last-child { border-bottom: none; }
+
+        /* Scrollbar para Resumo Mensal */
+        .scrollable-list::-webkit-scrollbar { width: 6px; }
+        .scrollable-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        .panel {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* ----- Acordeão do Histórico ----- */
+        .history-container { display: flex; flex-direction: column; gap: 0.75rem; }
+        .accordion-item { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; transition: var(--transition); }
+        .accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; cursor: pointer; transition: background var(--transition); }
+        .accordion-header:hover { background: var(--surface-hover); }
+        .accordion-date { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+        .accordion-summary { display: flex; align-items: center; gap: 1.2rem; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; }
+        .accordion-summary strong { color: var(--text-primary); }
+        .accordion-icon { transition: transform 0.3s ease; color: var(--text-muted); }
+        .accordion-item.active .accordion-icon { transform: rotate(180deg); }
+        .accordion-item.active { border-color: var(--border-hover); }
+        .accordion-body { display: none; padding: 0 1rem 1rem 1rem; border-top: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.2); overflow-x: auto; }
+        .accordion-item.active .accordion-body { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .inner-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; margin-top: 0.5rem; min-width: 450px; }
+        .inner-table th { color: var(--text-muted); font-weight: 500; padding: 0.5rem; border-bottom: 1px solid var(--border-color); }
+        .inner-table td { padding: 0.75rem 0.5rem; color: var(--text-secondary); border-bottom: 1px solid rgba(255, 255, 255, 0.05); vertical-align: middle; }
+        .inner-table tr:last-child td { border-bottom: none; }
+
+        .fabrica-label { background-color: rgba(255, 255, 255, 0.08); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: var(--text-primary); }
+
+        .btn-delete { background: transparent; color: var(--danger); border: 1px solid transparent; padding: 0.3rem 0.5rem; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: var(--transition); }
+        .btn-delete:hover { background: var(--danger-bg); border-color: rgba(248, 113, 113, 0.2); }
+
+        /* ----- Modals ----- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 1rem;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            width: 100%; max-width: 550px; transform: translateY(20px);
+            transition: transform 0.3s ease; position: relative; max-height: 90vh; display: flex; flex-direction: column;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header .panel-title { margin-bottom: 0; }
+        .btn-close { background: transparent; color: var(--text-secondary); border: none; font-size: 1.5rem; cursor: pointer; line-height: 1; transition: var(--transition); }
+        .btn-close:hover { color: var(--text-primary); }
+        .modal-body { overflow-y: auto; padding-right: 0.5rem; }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.85rem; color: var(--text-secondary); }
+        .form-group input[type="date"], .form-group input[type="text"], select { 
+            width: 100%; padding: 0.75rem 1rem; background-color: rgba(0, 0, 0, 0.2); 
+            color: var(--text-primary); border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); font-size: 0.95rem; outline: none; transition: var(--transition); 
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.6; cursor: pointer; }
+        select { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%239CA3AF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 98%; background-position-y: 50%; }
+        select option { background-color: #1a1a1a; color: #fff; }
+        .form-group input:hover, select:hover { border-color: var(--border-hover); }
+        .form-group input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.15); }
+
+        .btn-primary { width: 100%; padding: 0.8rem; background-color: var(--primary); color: #000; border: none; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: var(--transition); margin-top: 0.5rem; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: var(--surface-hover); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.75rem 1rem; cursor: pointer; font-weight: 500; transition: var(--transition); }
+        .btn-secondary:hover { background-color: var(--border-color); }
+
+        .fabrica-row { display: flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.02); padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 0.5rem; }
+        .fabrica-row-nome { flex: 1.5; font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+        .fabrica-row-input { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; }
+        .fabrica-row-input span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+        .fabrica-row-input input { width: 100%; padding: 0.4rem; font-size: 0.9rem; background-color: rgba(0, 0, 0, 0.2); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 4px; outline: none; }
+        .fabrica-row-input input:focus { border-color: var(--primary); }
+
+        /* ----- FAB Container ----- */
+        .fab-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 1rem; z-index: 900; }
+        .fab { width: 60px; height: 60px; border-radius: 50%; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.4); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s ease, background-color 0.2s ease; }
+        .fab:hover { transform: scale(1.08) translateY(-2px); }
+        .fab-primary { background-color: var(--primary); color: #000; }
+        .fab-primary:hover { background-color: var(--primary-hover); }
+        .fab-secondary { background-color: var(--surface-color); color: var(--primary); border: 1px solid var(--border-color); width: 50px; height: 50px; align-self: flex-end;}
+        .fab-secondary:hover { background-color: var(--surface-hover); border-color: var(--primary); }
+        
+        @media (max-width: 768px) {
+            body { padding: 1.5rem 1rem; }
+            .fab-container { bottom: 1.5rem; right: 1.5rem; }
+            .fab-primary { width: 54px; height: 54px; }
+            .fab-secondary { width: 44px; height: 44px; }
+            .dashboard { grid-template-columns: 1fr; }
+            .accordion-summary { gap: 0.5rem; font-size: 0.75rem; }
+            .accordion-date { font-size: 0.85rem; }
+            .fabrica-row { flex-wrap: wrap; }
+            .fabrica-row-nome { flex: 100%; margin-bottom: 0.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Métricas de Absenteísmo</h1>
+        <p>Acompanhamento diário, semanal e mensal de faltas, atestados e advertências por unidade e colaborador.</p>
+    </header>
+
+    <div class="dashboard">
+        <!-- Card Hoje vs Ontem -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Hoje vs Ontem</h3>
+                <div id="comparacao-ontem" class="trend-indicator"></div>
+            </div>
+            <div class="card-value-group">
+                <div id="hoje-total" class="value">0</div>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Total Ocorrências</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-hoje-ontem"></canvas>
+            </div>
+            <div class="badges">
+                <span class="badge badge-danger">F: <span id="hoje-faltas">0</span></span>
+                <span class="badge badge-success">A: <span id="hoje-atestados">0</span></span>
+                <span class="badge badge-warning">W: <span id="hoje-advertencias">0</span></span>
+            </div>
+        </div>
+
+        <!-- Card 7 Dias -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Últimos 7 Dias</h3>
+            </div>
+            <div class="card-value-group">
+                <div id="semana-total" class="value">0</div>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-7dias"></canvas>
+            </div>
+            <div class="badges">
+                <span class="badge badge-danger">F: <span id="semana-faltas">0</span></span>
+                <span class="badge badge-success">A: <span id="semana-atestados">0</span></span>
+                <span class="badge badge-warning">W: <span id="semana-advertencias">0</span></span>
+            </div>
+        </div>
+
+        <!-- Card 30 Dias -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Últimos 30 Dias</h3>
+            </div>
+            <div class="card-value-group">
+                <div id="mes-total" class="value">0</div>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart-30dias"></canvas>
+            </div>
+            <div class="badges">
+                <span class="badge badge-danger">F: <span id="mes-faltas">0</span></span>
+                <span class="badge badge-success">A: <span id="mes-atestados">0</span></span>
+                <span class="badge badge-warning">W: <span id="mes-advertencias">0</span></span>
+            </div>
+        </div>
+
+        <!-- Card Ranking Colaboradores (Top 10) -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Ranking Colaboradores (Top 10)</h3>
+            </div>
+            <div id="ranking-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+
+        <!-- NOVO: Card Resumo Mensal -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Resumo Mensal (Fábricas)</h3>
+            </div>
+            <div id="resumo-mensal-list" class="scrollable-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; max-height: 250px; padding-right: 0.5rem;">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico Sanfona (Por Fábrica) -->
+    <div class="panel">
+        <h2 class="panel-title">Histórico Geral de Ocorrências (Últimos 30 registros)</h2>
+        <div id="historico-container" class="history-container">
+            <!-- Gerado via JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Botões Flutuantes -->
+<div class="fab-container">
+    <button class="fab fab-secondary" id="btn-fab-colab" title="Registrar Ocorrência de Colaborador">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+    </button>
+    <button class="fab fab-primary" id="btn-fab" title="Novo Registro por Fábrica (Lote)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+</div>
+
+<!-- Modal 1: Registro por Fábrica (Lote) -->
+<div class="modal-overlay" id="modal">
+    <div class="modal-content panel">
+        <div class="modal-header">
+            <h2 class="panel-title">Lançamento em Lote (Fábricas)</h2>
+            <button class="btn-close" id="btn-close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="absent-form">
+                <div class="form-group">
+                    <label for="data-registro">Data da ocorrência</label>
+                    <input type="date" id="data-registro" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Lançamentos por Fábrica</label>
+                    <div id="lista-fabricas-modal"></div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <label>Gerenciar Fábricas (Adicionar nova)</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="nova-fabrica-nome" placeholder="Ex: Fábrica 05">
+                        <button type="button" id="btn-add-fabrica" class="btn-secondary">Adicionar</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Salvar Lançamentos</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Registro por Colaborador -->
+<div class="modal-overlay" id="modal-colaborador">
+    <div class="modal-content panel">
+        <div class="modal-header">
+            <h2 class="panel-title">Ocorrência de Colaborador</h2>
+            <button class="btn-close" id="btn-close-colab">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="colab-form">
+                <div class="form-group">
+                    <label for="data-colab">Data da Ocorrência</label>
+                    <input type="date" id="data-colab" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="select-colab">Colaborador</label>
+                    <select id="select-colab" required>
+                        <option value="">Selecione...</option>
+                        <option value="novo" style="color: var(--primary); font-weight: bold;">+ Cadastrar Novo Colaborador</option>
+                    </select>
+                </div>
+
+                <div id="div-novo-colab" style="display: none; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+                    <div class="form-group">
+                        <label for="nova-matricula">Matrícula</label>
+                        <input type="text" id="nova-matricula" placeholder="Ex: 12345">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="novo-nome">Nome Completo</label>
+                        <input type="text" id="novo-nome" placeholder="Ex: João da Silva">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo-ocorrencia">Tipo de Ocorrência</label>
+                    <select id="tipo-ocorrencia" required>
+                        <option value="falta">Falta Injustificada</option>
+                        <option value="atestado">Atestado Médico</option>
+                        <option value="advertencia">Advertência</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">Registrar Ocorrência</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inicialização Chart.js
+    Chart.defaults.color = '#9CA3AF';
+    Chart.defaults.font.family = 'Inter';
+    Chart.defaults.scale.grid.color = 'rgba(255, 255, 255, 0.05)';
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    
+    const colorFaltas = '#F87171'; 
+    const colorAtes = '#34D399';   
+
+    let chartHojeOntem, chart7Dias, chart30Dias;
+
+    function initCharts() {
+        const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { grid: { borderDash: [2, 4] }, beginAtZero: true, ticks: { precision: 0 } } } };
+
+        const ctxHoje = document.getElementById('chart-hoje-ontem').getContext('2d');
+        chartHojeOntem = new Chart(ctxHoje, {
+            type: 'bar',
+            data: { labels: ['Ontem', 'Hoje'], datasets: [{ label: 'Faltas', data: [0, 0], backgroundColor: colorFaltas, borderRadius: 4, barPercentage: 0.6 }, { label: 'Atestados', data: [0, 0], backgroundColor: colorAtes, borderRadius: 4, barPercentage: 0.6 }]},
+            options: { ...commonOptions, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+        });
+
+        const ctx7 = document.getElementById('chart-7dias').getContext('2d');
+        chart7Dias = new Chart(ctx7, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Faltas', data: [], backgroundColor: colorFaltas, borderRadius: {topLeft:0, topRight:0, bottomLeft:4, bottomRight:4} }, { label: 'Atestados', data: [], backgroundColor: colorAtes, borderRadius: {topLeft:4, topRight:4, bottomLeft:0, bottomRight:0} }]},
+            options: { ...commonOptions, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } }, y: { stacked: true, display: false } } }
+        });
+
+        const ctx30 = document.getElementById('chart-30dias').getContext('2d');
+        chart30Dias = new Chart(ctx30, {
+            type: 'line',
+            data: { labels: [], datasets: [ { label: 'Total F+A', data: [], borderColor: '#5C9AFF', backgroundColor: 'rgba(92, 154, 255, 0.1)', fill: true, tension: 0.4, pointRadius: 0 } ]},
+            options: { ...commonOptions, scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } }, y: { display: false } } }
+        });
+    }
+
+    // Variáveis Globais (Fábrica)
+    let registros = JSON.parse(localStorage.getItem('absenteismo_dados')) || [];
+    let fabricasAtivas = JSON.parse(localStorage.getItem('absenteismo_fabricas')) || ["Fábrica 01", "Fábrica 02", "Fábrica 03", "Fábrica 04"];
+
+    // Variáveis Globais (Colaboradores)
+    let colaboradores = JSON.parse(localStorage.getItem('absenteismo_colaboradores')) || [];
+    let registrosColab = JSON.parse(localStorage.getItem('absenteismo_registros_colab')) || [];
+
+    const modal = document.getElementById('modal');
+    const modalColab = document.getElementById('modal-colaborador');
+    const dataInput = document.getElementById('data-registro');
+    const dataColabInput = document.getElementById('data-colab');
+
+    // Bloqueia a seleção de datas futuras 
+    function limitarDataMaxima() {
+        const dataAtual = new Date();
+        const ano = dataAtual.getFullYear();
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataAtual.getDate()).padStart(2, '0');
+        const maxData = `${ano}-${mes}-${dia}`;
+        dataInput.max = maxData;
+        dataColabInput.max = maxData;
+    }
+    
+    limitarDataMaxima();
+
+    // ==========================================
+    // LÓGICA DO MODAL: FÁBRICA
+    // ==========================================
+    function renderFabricasModal() {
+        const container = document.getElementById('lista-fabricas-modal');
+        container.innerHTML = '';
+        const dataSelecionada = dataInput.value;
+        const [ano, mes, dia] = dataSelecionada.split('-');
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+
+        fabricasAtivas.forEach(fabrica => {
+            const regExistente = registros.find(r => r.data === dataFormatada && r.fabrica === fabrica);
+            const faltas = regExistente ? regExistente.faltas : 0;
+            const atestados = regExistente ? regExistente.atestados : 0;
+            const advertencias = regExistente && regExistente.advertencias ? regExistente.advertencias : 0; 
+
+            const row = document.createElement('div');
+            row.className = 'fabrica-row';
+            row.innerHTML = `
+                <div class="fabrica-row-nome">${fabrica}</div>
+                <div class="fabrica-row-input">
+                    <span>Faltas</span>
+                    <input type="number" min="0" class="input-faltas" data-fabrica="${fabrica}" value="${faltas}">
+                </div>
+                <div class="fabrica-row-input">
+                    <span>Ates.</span>
+                    <input type="number" min="0" class="input-atestados" data-fabrica="${fabrica}" value="${atestados}">
+                </div>
+                <div class="fabrica-row-input">
+                    <span title="Advertência por falta injustificada">Adv.</span>
+                    <input type="number" min="0" class="input-advertencias" data-fabrica="${fabrica}" value="${advertencias}">
+                </div>
+                <button type="button" class="btn-delete-fabrica" data-fabrica="${fabrica}" style="background:transparent; color:var(--danger); border:none; cursor:pointer; padding:0.4rem; margin-left: 0.2rem;" title="Remover Fábrica">✕</button>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    dataInput.addEventListener('change', renderFabricasModal);
+
+    document.getElementById('btn-add-fabrica').addEventListener('click', () => {
+        const nome = document.getElementById('nova-fabrica-nome').value.trim();
+        if(nome && !fabricasAtivas.includes(nome)) {
+            fabricasAtivas.push(nome);
+            localStorage.setItem('absenteismo_fabricas', JSON.stringify(fabricasAtivas));
+            document.getElementById('nova-fabrica-nome').value = '';
+            renderFabricasModal();
+        }
+    });
+
+    document.getElementById('lista-fabricas-modal').addEventListener('click', (e) => {
+        if(e.target.classList.contains('btn-delete-fabrica')) {
+            const fabrica = e.target.getAttribute('data-fabrica');
+            fabricasAtivas = fabricasAtivas.filter(f => f !== fabrica);
+            localStorage.setItem('absenteismo_fabricas', JSON.stringify(fabricasAtivas));
+            renderFabricasModal();
+        }
+    });
+
+    function openModal() {
+        modal.classList.add('active');
+        limitarDataMaxima(); 
+        dataInput.valueAsDate = new Date(); 
+        renderFabricasModal();
+    }
+    
+    function closeModal() { modal.classList.remove('active'); }
+
+    document.getElementById('btn-fab').addEventListener('click', openModal);
+    document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
+
+    document.getElementById('absent-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const dataOriginal = dataInput.value;
+        const [ano, mes, dia] = dataOriginal.split('-');
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+
+        const inputsFaltas = document.querySelectorAll('.input-faltas');
+        const inputsAtestados = document.querySelectorAll('.input-atestados');
+        const inputsAdvertencias = document.querySelectorAll('.input-advertencias'); 
+
+        inputsFaltas.forEach((inputFalta, index) => {
+            const fabrica = inputFalta.getAttribute('data-fabrica');
+            const faltas = parseInt(inputFalta.value) || 0;
+            const atestados = parseInt(inputsAtestados[index].value) || 0;
+            const advertencias = parseInt(inputsAdvertencias[index].value) || 0;
+
+            const indexExistente = registros.findIndex(r => r.data === dataFormatada && r.fabrica === fabrica);
+
+            if (faltas > 0 || atestados > 0 || advertencias > 0) {
+                if (indexExistente !== -1) {
+                    registros[indexExistente] = { data: dataFormatada, fabrica, faltas, atestados, advertencias };
+                } else {
+                    registros.push({ data: dataFormatada, fabrica, faltas, atestados, advertencias });
+                }
+            } else if (indexExistente !== -1) {
+                registros.splice(indexExistente, 1);
+            }
+        });
+
+        registros.sort((a, b) => new Date(b.data) - new Date(a.data));
+        salvarEAtualizarGeral();
+        closeModal();
+    });
+
+    function eliminarRegistro(data, fabrica) {
+        registros = registros.filter(r => !(r.data === data && r.fabrica === fabrica));
+        salvarEAtualizarGeral();
+    }
+
+    // ==========================================
+    // LÓGICA DO MODAL: COLABORADOR
+    // ==========================================
+    const selectColab = document.getElementById('select-colab');
+    const divNovoColab = document.getElementById('div-novo-colab');
+
+    function renderSelectColab() {
+        const valAtual = selectColab.value;
+        selectColab.innerHTML = '<option value="">Selecione...</option><option value="novo" style="color: var(--primary); font-weight: bold;">+ Cadastrar Novo Colaborador</option>';
+        
+        colaboradores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(c => {
+            selectColab.innerHTML += `<option value="${c.matricula}">${c.nome} (Mat: ${c.matricula})</option>`;
+        });
+        
+        if([...selectColab.options].some(o => o.value === valAtual)) {
+            selectColab.value = valAtual;
+        }
+    }
+
+    selectColab.addEventListener('change', (e) => {
+        if(e.target.value === 'novo') {
+            divNovoColab.style.display = 'block';
+            document.getElementById('nova-matricula').required = true;
+            document.getElementById('novo-nome').required = true;
+        } else {
+            divNovoColab.style.display = 'none';
+            document.getElementById('nova-matricula').required = false;
+            document.getElementById('novo-nome').required = false;
+        }
+    });
+
+    function openModalColab() {
+        modalColab.classList.add('active');
+        limitarDataMaxima();
+        dataColabInput.valueAsDate = new Date();
+        renderSelectColab();
+        divNovoColab.style.display = 'none';
+        document.getElementById('nova-matricula').value = '';
+        document.getElementById('novo-nome').value = '';
+        selectColab.value = '';
+        document.getElementById('tipo-ocorrencia').value = 'falta';
+    }
+
+    function closeModalColab() { modalColab.classList.remove('active'); }
+
+    document.getElementById('btn-fab-colab').addEventListener('click', openModalColab);
+    document.getElementById('btn-close-colab').addEventListener('click', closeModalColab);
+    modalColab.addEventListener('click', e => { if(e.target === modalColab) closeModalColab(); });
+
+    document.getElementById('colab-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const dataOrig = dataColabInput.value;
+        const [ano, mes, dia] = dataOrig.split('-');
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+        const tipo = document.getElementById('tipo-ocorrencia').value;
+        
+        let matricula = selectColab.value;
+        let nome = "";
+
+        if (matricula === 'novo') {
+            matricula = document.getElementById('nova-matricula').value.trim();
+            nome = document.getElementById('novo-nome').value.trim();
+            
+            if(colaboradores.find(c => c.matricula === matricula)) {
+                alert('Esta matrícula já está cadastrada para outro colaborador!');
+                return;
+            }
+            colaboradores.push({ matricula, nome });
+            localStorage.setItem('absenteismo_colaboradores', JSON.stringify(colaboradores));
+        } else {
+            nome = colaboradores.find(c => c.matricula === matricula).nome;
+        }
+
+        registrosColab.push({ id: Date.now().toString(), matricula, nome, data: dataFormatada, tipo });
+        localStorage.setItem('absenteismo_registros_colab', JSON.stringify(registrosColab));
+        
+        atualizarRanking();
+        closeModalColab();
+    });
+
+    // ==========================================
+    // RENDERIZAÇÃO E ATUALIZAÇÃO GERAL
+    // ==========================================
+    function salvarEAtualizarGeral() {
+        localStorage.setItem('absenteismo_dados', JSON.stringify(registros));
+        renderizarTabelaFabrica();
+        calcularMetricasEAtualizarGraficos();
+        atualizarRanking();
+        atualizarResumoMensal();
+    }
+
+    function formatarDataAdaptativa(dataString) {
+        const [ano, mes, dia] = dataString.split('-');
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    // Ranking de Colaboradores Atualizado (Top 10)
+    function atualizarRanking() {
+        const rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = '';
+
+        if(registrosColab.length === 0) {
+            rankingList.innerHTML = `<div style="text-align:center; padding: 1rem; color:var(--text-muted); font-size: 0.85rem;">Nenhum registro individual.</div>`;
+            return;
+        }
+
+        const counts = {};
+        const ocorrenciasPorMatricula = {};
+
+        registrosColab.forEach(r => {
+            if(!counts[r.matricula]) {
+                counts[r.matricula] = { nome: r.nome, faltas: 0, atestados: 0, advertencias: 0, total: 0 };
+                ocorrenciasPorMatricula[r.matricula] = [];
+            }
+            if(r.tipo === 'falta') counts[r.matricula].faltas++;
+            else if(r.tipo === 'atestado') counts[r.matricula].atestados++;
+            else if(r.tipo === 'advertencia') counts[r.matricula].advertencias++;
+
+            counts[r.matricula].total++;
+            ocorrenciasPorMatricula[r.matricula].push({ data: r.data, tipo: r.tipo });
+        });
+
+        // Ordenar por total descrescente, pegar top 10
+        const sorted = Object.entries(counts).sort((a, b) => b[1].total - a[1].total).slice(0, 10);
+
+        sorted.forEach(([matricula, data]) => {
+            // Ordenar ocorrências do colaborador por data mais recente
+            const ocorrencias = ocorrenciasPorMatricula[matricula].sort((a, b) => new Date(b.data) - new Date(a.data));
+            
+            let detailsHtml = '';
+            ocorrencias.forEach(oc => {
+                let badgeClass = oc.tipo === 'falta' ? 'badge-danger' : (oc.tipo === 'atestado' ? 'badge-success' : 'badge-warning');
+                let tipoLabel = oc.tipo === 'falta' ? 'Falta' : (oc.tipo === 'atestado' ? 'Atestado' : 'Advertência');
+                
+                detailsHtml += `
+                    <div class="detail-row">
+                        <span>${formatarDataAdaptativa(oc.data)}</span>
+                        <span class="badge ${badgeClass}" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;">${tipoLabel}</span>
+                    </div>
+                `;
+            });
+
+            rankingList.innerHTML += `
+                <div class="ranking-item" onclick="this.classList.toggle('active')" title="Clique para ver o histórico">
+                    <div class="ranking-header">
+                        <div>
+                            <div class="ranking-nome">${data.nome}</div>
+                            <div class="ranking-matricula">Mat: ${matricula}</div>
+                        </div>
+                        <div class="ranking-stats">
+                            <span class="badge badge-danger" title="Faltas">F: ${data.faltas}</span>
+                            <span class="badge badge-success" title="Atestados">A: ${data.atestados}</span>
+                            <span class="badge badge-warning" title="Advertências">W: ${data.advertencias}</span>
+                        </div>
+                    </div>
+                    <div class="ranking-details">
+                        <div style="margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Histórico de Ocorrências:
+                        </div>
+                        ${detailsHtml}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Resumo Mensal (Fábricas)
+    function atualizarResumoMensal() {
+        const list = document.getElementById('resumo-mensal-list');
+        list.innerHTML = '';
+
+        if (registros.length === 0) {
+            list.innerHTML = `<div style="text-align:center; padding: 1rem; color:var(--text-muted); font-size: 0.85rem;">Nenhum registro consolidado.</div>`;
+            return;
+        }
+
+        const totaisMensais = {};
+
+        registros.forEach(r => {
+            const mesAno = r.data.substring(0, 7); // Extrai YYYY-MM
+            if (!totaisMensais[mesAno]) {
+                totaisMensais[mesAno] = { faltas: 0, atestados: 0, advertencias: 0 };
+            }
+            totaisMensais[mesAno].faltas += r.faltas;
+            totaisMensais[mesAno].atestados += r.atestados;
+            totaisMensais[mesAno].advertencias += (r.advertencias || 0);
+        });
+
+        // Ordenar os meses do mais recente para o mais antigo
+        const mesesOrdenados = Object.keys(totaisMensais).sort((a, b) => b.localeCompare(a));
+
+        mesesOrdenados.forEach(mesAno => {
+            const [ano, mes] = mesAno.split('-');
+            const dataObj = new Date(ano, parseInt(mes) - 1, 1);
+            let nomeMes = dataObj.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            nomeMes = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+            
+            const dados = totaisMensais[mesAno];
+
+            list.innerHTML += `
+                <div class="ranking-item" style="cursor: default; flex-direction: row; justify-content: space-between; align-items: center;">
+                    <div class="ranking-nome" style="text-transform: capitalize;">${nomeMes}</div>
+                    <div class="ranking-stats">
+                        <span class="badge badge-danger" title="Faltas">F: ${dados.faltas}</span>
+                        <span class="badge badge-success" title="Atestados">A: ${dados.atestados}</span>
+                        <span class="badge badge-warning" title="Advertências">W: ${dados.advertencias}</span>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // Renderiza a Lista Sanfona (Por Fábrica) Limitado a 30 registros
+    function renderizarTabelaFabrica() {
+        const container = document.getElementById('historico-container');
+        container.innerHTML = '';
+        
+        if (registros.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding: 2rem; color:var(--text-muted);">Nenhum registro de fábrica no histórico.</div>`;
+            return;
+        }
+
+        const agrupados = {};
+        registros.forEach(r => {
+            if (!agrupados[r.data]) agrupados[r.data] = [];
+            agrupados[r.data].push(r);
+        });
+
+        const isMobile = window.innerWidth <= 768;
+        const txtF = isMobile ? 'F:' : 'Faltas:';
+        const txtA = isMobile ? 'A:' : 'Ates:';
+        const txtW = isMobile ? 'W:' : 'Adv:';
+
+        // Ordena e aplica slice limitando para os 30 últimos registros
+        const datasOrdenadas = Object.keys(agrupados)
+                                     .sort((a, b) => new Date(b) - new Date(a))
+                                     .slice(0, 30); 
+
+        datasOrdenadas.forEach(data => {
+            const regsDia = agrupados[data];
+            let totalFaltasDia = 0;
+            let totalAtesDia = 0;
+            let totalAdvDia = 0;
+
+            let htmlLinhas = '';
+            regsDia.forEach(r => {
+                const adv = r.advertencias || 0;
+                totalFaltasDia += r.faltas;
+                totalAtesDia += r.atestados;
+                totalAdvDia += adv;
+                
+                const totalLinha = r.faltas + r.atestados; 
+                let nomeFabrica = r.fabrica.replace("Fábrica", "Fab.");
+                if (!isMobile) nomeFabrica = r.fabrica;
+
+                htmlLinhas += `
+                    <tr>
+                        <td width="25%"><span class="fabrica-label">${nomeFabrica}</span></td>
+                        <td width="15%">${r.faltas}</td>
+                        <td width="15%">${r.atestados}</td>
+                        <td width="15%">${adv}</td>
+                        <td width="15%" style="color:var(--text-primary); font-weight:500;">${totalLinha}</td>
+                        <td width="15%" style="text-align: right;">
+                            <button class="btn-delete" onclick="eliminarRegistro('${r.data}', '${r.fabrica}')">Del</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const totalGeralDia = totalFaltasDia + totalAtesDia; 
+
+            const item = document.createElement('div');
+            item.className = 'accordion-item';
+            item.innerHTML = `
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="accordion-date">${formatarDataAdaptativa(data)}</div>
+                    <div class="accordion-summary">
+                        <span>${txtF} <strong style="color:var(--danger)">${totalFaltasDia}</strong></span>
+                        <span>${txtA} <strong style="color:var(--success)">${totalAtesDia}</strong></span>
+                        <span>${txtW} <strong style="color:var(--warning)">${totalAdvDia}</strong></span>
+                        <span>Tot: <strong>${totalGeralDia}</strong></span>
+                        <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accordion-body">
+                    <table class="inner-table">
+                        <thead>
+                            <tr>
+                                <th>Unidade</th>
+                                <th>Faltas</th>
+                                <th>Ates.</th>
+                                <th>Adv.</th>
+                                <th>Total</th>
+                                <th style="text-align: right;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${htmlLinhas}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    window.addEventListener('resize', renderizarTabelaFabrica);
+
+    function calcularMetricasEAtualizarGraficos() {
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        const ontem = new Date(hoje);
+        ontem.setDate(ontem.getDate() - 1);
+
+        const hojeString = hoje.toLocaleDateString('sv-SE'); 
+        const ontemString = ontem.toLocaleDateString('sv-SE');
+
+        let metricas = { 
+            hoje: { faltas: 0, atestados: 0, advertencias: 0 }, 
+            ontem: { faltas: 0, atestados: 0, advertencias: 0 }, 
+            semana: { faltas: 0, atestados: 0, advertencias: 0 }, 
+            mes: { faltas: 0, atestados: 0, advertencias: 0 } 
+        };
+        
+        let hist7Dias = { labels: [], faltas: [], atestados: [] };
+        let hist30Dias = { labels: [], total: [] };
+
+        for(let i=29; i>=0; i--) {
+            let d = new Date(hoje);
+            d.setDate(d.getDate() - i);
+            let dStr = d.toLocaleDateString('sv-SE');
+            let labelGrafico = d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+            
+            let f = 0, a = 0, w = 0;
+            registros.forEach(r => { 
+                if(r.data === dStr) { 
+                    f += r.faltas; 
+                    a += r.atestados; 
+                    w += (r.advertencias || 0);
+                } 
+            });
+
+            if(dStr === hojeString) { metricas.hoje.faltas = f; metricas.hoje.atestados = a; metricas.hoje.advertencias = w; }
+            if(dStr === ontemString) { metricas.ontem.faltas = f; metricas.ontem.atestados = a; metricas.ontem.advertencias = w;}
+            if(i < 7) { 
+                metricas.semana.faltas += f; metricas.semana.atestados += a; metricas.semana.advertencias += w;
+                hist7Dias.labels.push(labelGrafico);
+                hist7Dias.faltas.push(f);
+                hist7Dias.atestados.push(a);
+            }
+            metricas.mes.faltas += f; metricas.mes.atestados += a; metricas.mes.advertencias += w;
+            
+            hist30Dias.labels.push(labelGrafico);
+            hist30Dias.total.push(f + a);
+        }
+
+        const totalHoje = metricas.hoje.faltas + metricas.hoje.atestados;
+        const totalOntem = metricas.ontem.faltas + metricas.ontem.atestados;
+        const diff = totalHoje - totalOntem;
+        const trendEl = document.getElementById('comparacao-ontem');
+        
+        if (diff > 0) {
+            trendEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> +${diff} vs ontem`;
+            trendEl.className = 'trend-indicator trend-up';
+        } else if (diff < 0) {
+            trendEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg> ${diff} vs ontem`;
+            trendEl.className = 'trend-indicator trend-down';
+        } else {
+            trendEl.innerHTML = `<span>=</span> Igual a ontem`;
+            trendEl.className = 'trend-indicator trend-neutral';
+        }
+
+        document.getElementById('hoje-total').innerText = totalHoje;
+        document.getElementById('hoje-faltas').innerText = metricas.hoje.faltas;
+        document.getElementById('hoje-atestados').innerText = metricas.hoje.atestados;
+        document.getElementById('hoje-advertencias').innerText = metricas.hoje.advertencias;
+
+        document.getElementById('semana-total').innerText = metricas.semana.faltas + metricas.semana.atestados;
+        document.getElementById('semana-faltas').innerText = metricas.semana.faltas;
+        document.getElementById('semana-atestados').innerText = metricas.semana.atestados;
+        document.getElementById('semana-advertencias').innerText = metricas.semana.advertencias;
+
+        document.getElementById('mes-total').innerText = metricas.mes.faltas + metricas.mes.atestados;
+        document.getElementById('mes-faltas').innerText = metricas.mes.faltas;
+        document.getElementById('mes-atestados').innerText = metricas.mes.atestados;
+        document.getElementById('mes-advertencias').innerText = metricas.mes.advertencias;
+
+        if (chartHojeOntem) {
+            chartHojeOntem.data.datasets[0].data = [metricas.ontem.faltas, metricas.hoje.faltas];
+            chartHojeOntem.data.datasets[1].data = [metricas.ontem.atestados, metricas.hoje.atestados];
+            chartHojeOntem.update();
+
+            chart7Dias.data.labels = hist7Dias.labels;
+            chart7Dias.data.datasets[0].data = hist7Dias.faltas;
+            chart7Dias.data.datasets[1].data = hist7Dias.atestados;
+            chart7Dias.update();
+
+            chart30Dias.data.labels = hist30Dias.labels;
+            chart30Dias.data.datasets[0].data = hist30Dias.total;
+            chart30Dias.update();
+        }
+    }
+
+    initCharts();
+    salvarEAtualizarGeral();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Eficiência</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="../src/icons/app-icon-192.png">
+<script defer src="../src/app-pwa.js"></script>
+<style>
+    @font-face {
+        font-family: "LufgaRegular";
+        src: url("../src/fonts/LufgaRegular.ttf");
+    }
+
+    :root {
+        /* Tema Escuro e Azul Suave */
+        --bg-color: #000000;
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --input-bg: rgba(255, 255, 255, 0.05);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --border-hover: rgba(255, 255, 255, 0.2);
+        
+        --text-primary: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        --text-muted: #6B7280;
+        
+        --accent: #5C9AFF;
+        --accent-hover: #4A83E5;
+        
+        --success: #34D399;
+        --danger: #F87171;
+        
+        --surface: rgba(255, 255, 255, 0.02);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "LufgaRegular", system-ui, -apple-system, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        padding: 32px 16px;
+    }
+    
+    .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 40px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 580px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .titulo {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .titulo span {
+        color: var(--accent);
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 16px;
+    }
+
+    /* =========================================
+       INPUTS E SELECTS
+       ========================================= */
+    select, input {
+        width: 100%;
+        height: 52px;
+        padding: 0 16px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        outline: none;
+        appearance: none;
+    }
+
+    select option {
+        background-color: #111111;
+        color: #FFFFFF;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        padding-right: 40px;
+        cursor: pointer;
+    }
+
+    select:focus, input:focus, select:hover, input:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
+    }
+
+    /* Ocultar as setas padrões do input number */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .number-control {
+        display: flex;
+        gap: 8px;
+    }
+
+    .number-control input {
+        min-width: 0;
+    }
+
+    /* =========================================
+       BOTÕES DE AJUSTE (+ / -)
+       ========================================= */
+    .btn-icon {
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-icon:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 4px 12px rgba(92, 154, 255, 0.25);
+    }
+
+    .btn-icon:active {
+        transform: scale(0.95);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .global-settings {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 24px;
+        padding-top: 24px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input-group label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* =========================================
+       PAINEL DE RESULTADOS
+       ========================================= */
+    .results-panel {
+        background: var(--surface);
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid rgba(92, 154, 255, 0.2);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .result-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .result-value {
+        font-size: 28px;
+        color: var(--text-primary);
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .text-accent { color: var(--accent); }
+    .text-green { color: var(--success); }
+    .text-red { color: var(--danger); }
+    .text-muted { color: var(--text-muted); }
+
+    .explicacao {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        margin-top: 8px;
+    }
+
+    .explicacao h3 {
+        font-size: 15px;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .explicacao h3::before {
+        content: "ℹ️";
+        font-size: 16px;
+    }
+
+    .explicacao p, .explicacao li {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .explicacao ul {
+        margin-top: 12px;
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .formula-box {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-family: monospace;
+        color: var(--accent);
+        font-size: 13px;
+        margin-top: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 560px) {
+        .row { grid-template-columns: 1fr; gap: 12px; }
+        .global-settings { grid-template-columns: 1fr; gap: 16px; }
+        .results-panel { grid-template-columns: 1fr; }
+        .card { padding: 24px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="titulo">Calculadora de <span>Eficiência</span></div>
+
+    <div class="row" id="linha-unica">
+        <select id="modelo-select" onchange="calcular()">
+            </select>
+        
+        <div class="number-control">
+            <input type="number" id="pares-input" placeholder="Qtd. Pares" min="0" oninput="calcular()">
+            <button type="button" class="btn-icon" 
+                onmousedown="iniciarAjuste('pares-input', 1, event)" 
+                onmouseup="pararAjuste()" 
+                onmouseleave="pararAjuste()"
+                ontouchstart="iniciarAjuste('pares-input', 1, event)"
+                ontouchend="pararAjuste()"
+                title="Adicionar par">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            </button>
+            <button type="button" class="btn-icon" 
+                onmousedown="iniciarAjuste('pares-input', -1, event)" 
+                onmouseup="pararAjuste()" 
+                onmouseleave="pararAjuste()"
+                ontouchstart="iniciarAjuste('pares-input', -1, event)"
+                ontouchend="pararAjuste()"
+                title="Remover par">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="global-settings">
+        <div class="input-group">
+            <label>Turno de Trabalho</label>
+            <select id="turno" onchange="calcular()">
+                <option value="440">1º Turno (Carga: 440 min)</option>
+                <option value="440">2º Turno (Carga: 440 min)</option>
+                <option value="380">3º Turno (Carga: 380 min)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Pessoas Ativas (N)</label>
+            <div class="number-control">
+                <input type="number" id="ativos" placeholder="Qtd. de operadores" min="0" oninput="calcular()">
+                <button type="button" class="btn-icon" 
+                    onmousedown="iniciarAjuste('ativos', 1, event)" 
+                    onmouseup="pararAjuste()" 
+                    onmouseleave="pararAjuste()"
+                    ontouchstart="iniciarAjuste('ativos', 1, event)"
+                    ontouchend="pararAjuste()"
+                    title="Adicionar operador">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <button type="button" class="btn-icon" 
+                    onmousedown="iniciarAjuste('ativos', -1, event)" 
+                    onmouseup="pararAjuste()" 
+                    onmouseleave="pararAjuste()"
+                    ontouchstart="iniciarAjuste('ativos', -1, event)"
+                    ontouchend="pararAjuste()"
+                    title="Remover operador">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-panel">
+        <div class="result-item">
+            <span class="result-label">Total de Pares</span>
+            <span id="res-pares" class="result-value">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Necessidade de Pessoas</span>
+            <span id="res-necessidade" class="result-value">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Eficiência Atual</span>
+            <span id="res-eficiencia" class="result-value text-accent">0%</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Diferença de Pessoal</span>
+            <span id="res-diferenca" class="result-value text-muted">0</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Pares / Hora (1 Op.)</span>
+            <span id="res-pares-hora" class="result-value">0</span>
+        </div>
+    </div>
+</div>
+
+<script src="../src/data/modelos-db.js"></script>
+<script>
+
+
+    const CAPACIDADE_LINHA = 365.2;
+    let holdTimeout;
+    let holdInterval;
+
+    function inicializar() {
+        const select = document.getElementById('modelo-select');
+        let optionsHTML = '<option value="">Selecione o Modelo</option>';
+        
+        MODELOS_DB.forEach(m => {
+            optionsHTML += `<option value="${m.tempo}">${m.nome}</option>`;
+        });
+        
+        select.innerHTML = optionsHTML;
+    }
+
+    function ajustarValor(inputId, valor) {
+        const input = document.getElementById(inputId);
+        let atual = parseInt(input.value) || 0;
+        let novoValor = atual + valor;
+        
+        if (novoValor < 0) novoValor = 0; 
+        
+        input.value = novoValor;
+        calcular(); 
+    }
+
+    function iniciarAjuste(inputId, valor, evento) {
+        if(evento && evento.cancelable) evento.preventDefault(); 
+        
+        ajustarValor(inputId, valor); 
+        
+        pararAjuste(); 
+        
+        holdTimeout = setTimeout(() => {
+            holdInterval = setInterval(() => {
+                ajustarValor(inputId, valor);
+            }, 60); 
+        }, 300);
+    }
+
+    function pararAjuste() {
+        clearTimeout(holdTimeout);
+        clearInterval(holdInterval);
+    }
+
+    function calcular() {
+        const tempo = parseFloat(document.getElementById('modelo-select').value) || 0;
+        const qtd = parseFloat(document.getElementById('pares-input').value) || 0;
+        
+        const ativos = parseFloat(document.getElementById('ativos').value) || 0;
+        const cargaPessoa = parseFloat(document.getElementById('turno').value) || 440;
+
+        const tempoTotal = tempo * qtd; 
+        const totalPares = qtd;
+
+        const necessidade = tempoTotal ? Math.round(tempoTotal / CAPACIDADE_LINHA) : 0;
+        const minutosDisponiveis = ativos * cargaPessoa;
+        const eficiencia = ativos > 0 ? Math.round((tempoTotal / minutosDisponiveis) * 100) : 0;
+        const diferenca = ativos > 0 ? ativos - necessidade : 0;
+        
+        const paresPorHora = tempo > 0 ? Math.round(60 / tempo) : 0;
+
+        document.getElementById('res-pares').innerText = totalPares;
+        document.getElementById('res-necessidade').innerText = necessidade;
+        document.getElementById('res-eficiencia').innerText = ativos > 0 ? eficiencia + '%' : '0%';
+        
+        document.getElementById('res-pares-hora').innerText = paresPorHora;
+        
+        const elDiferenca = document.getElementById('res-diferenca');
+        elDiferenca.innerText = diferenca > 0 ? '+' + diferenca : diferenca;
+        
+        elDiferenca.className = 'result-value'; 
+        if (diferenca > 0) elDiferenca.classList.add('text-green');
+        else if (diferenca < 0) elDiferenca.classList.add('text-red');
+        else elDiferenca.classList.add('text-muted');
+    }
+
+    inicializar();
+</script>
+
+</body>
+</html>

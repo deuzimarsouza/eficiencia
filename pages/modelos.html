@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consulta de Modelos</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="../src/icons/app-icon-192.png">
+<script defer src="../src/app-pwa.js"></script>
+<style>
+@font-face {
+    font-family: "LufgaRegular";
+    src: url("../src/fonts/LufgaRegular.ttf");
+}
+
+:root {
+    --bg: #000000;
+    --surface: rgba(255, 255, 255, 0.045);
+    --surface-strong: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #F9FAFB;
+    --muted: #9CA3AF;
+    --soft: #6B7280;
+    --primary: #5C9AFF;
+    --success: #34D399;
+    --warning: #FBBF24;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "LufgaRegular", system-ui, -apple-system, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+}
+
+.page {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+h1 {
+    font-size: 24px;
+    line-height: 1.15;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.home-link {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+    border-color: var(--primary);
+    background: var(--surface-strong);
+}
+
+.home-link:active {
+    transform: scale(0.96);
+}
+
+.home-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text);
+}
+
+.toolbar {
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, auto) auto;
+    gap: 16px;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+.search-field {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0 16px;
+    font-size: 15px;
+    outline: none;
+}
+
+.search-field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.22);
+}
+
+.sort-control {
+    position: relative;
+}
+
+.sort-button {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.sort-button:hover,
+.sort-button:focus-visible {
+    border-color: var(--primary);
+    background: var(--surface-strong);
+    box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.16);
+}
+
+.sort-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: none;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #111111;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+}
+
+.sort-menu.active {
+    display: block;
+}
+
+.sort-menu button {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    background: transparent;
+    color: var(--text);
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sort-menu button:last-child {
+    border-bottom: 0;
+}
+
+.sort-menu button:hover,
+.sort-menu button:focus-visible,
+.sort-menu button.active {
+    background: var(--surface-strong);
+    color: var(--primary);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(104px, 1fr));
+    gap: 10px;
+}
+
+.stat-card {
+    min-height: 52px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 10px 12px;
+}
+
+.stat-card span {
+    display: block;
+    color: var(--soft);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.stat-card b {
+    color: var(--text);
+    font-size: 16px;
+}
+
+.stat-card:nth-child(2) b {
+    color: var(--success);
+}
+
+.stat-card:nth-child(3) b {
+    color: var(--warning);
+}
+
+.table-wrap {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+th {
+    color: var(--muted);
+    background: var(--surface-strong);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+td {
+    color: var(--text);
+    font-size: 14px;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+td.numeric,
+th.numeric {
+    text-align: right;
+}
+
+.empty-row td {
+    color: var(--muted);
+    text-align: center;
+    padding: 28px 16px;
+}
+
+@media (max-width: 720px) {
+    body {
+        padding: 18px;
+    }
+
+    .toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .sort-menu {
+        position: static;
+        margin-top: 8px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    th,
+    td {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .optional-col {
+        display: none;
+    }
+}
+</style>
+</head>
+<body>
+<main class="page">
+    <header class="topbar">
+        <div class="title-group">
+            <h1>Consulta de Modelos</h1>
+            <span class="subtitle">Tempos usados nos cálculos de eficiência</span>
+        </div>
+        <a class="home-link" href="../index.html" aria-label="Voltar para o início">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 11.5L12 4l9 7.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5.5 10.5V20h13v-9.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </header>
+
+    <section class="toolbar" aria-label="Filtros e indicadores">
+        <input id="searchInput" class="search-field" type="search" placeholder="Buscar modelo" autocomplete="off">
+        <div class="sort-control">
+            <button id="sortButton" class="sort-button" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="sortMenu">
+                Classificar: Ordem alfabética
+            </button>
+            <div id="sortMenu" class="sort-menu" role="menu" aria-label="Classificar modelos">
+                <button type="button" data-sort="alfabetica" class="active">Ordem alfabética</button>
+                <button type="button" data-sort="maior">Maior tempo</button>
+                <button type="button" data-sort="menor">Menor tempo</button>
+            </div>
+        </div>
+        <div class="stats" aria-live="polite">
+            <div class="stat-card">
+                <span>Modelos</span>
+                <b id="totalModelos">0</b>
+            </div>
+            <div class="stat-card">
+                <span>Menor tempo</span>
+                <b id="menorTempo">0</b>
+            </div>
+            <div class="stat-card">
+                <span>Maior tempo</span>
+                <b id="maiorTempo">0</b>
+            </div>
+        </div>
+    </section>
+
+    <section class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th class="numeric">Tempo</th>
+                    <th class="numeric optional-col">Pares/hora</th>
+                </tr>
+            </thead>
+            <tbody id="modelosBody"></tbody>
+        </table>
+    </section>
+</main>
+
+<script src="../src/data/modelos-db.js"></script>
+<script>
+const modelos = MODELOS_DB;
+
+const modelosBody = document.getElementById("modelosBody");
+const searchInput = document.getElementById("searchInput");
+const sortButton = document.getElementById("sortButton");
+const sortMenu = document.getElementById("sortMenu");
+const totalModelos = document.getElementById("totalModelos");
+const menorTempo = document.getElementById("menorTempo");
+const maiorTempo = document.getElementById("maiorTempo");
+const sortLabels = {
+    alfabetica: "Ordem alfabética",
+    maior: "Maior tempo",
+    menor: "Menor tempo"
+};
+let sortMode = "alfabetica";
+
+function normalizar(texto) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function escaparHtml(texto) {
+    return texto.replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    }[caractere]));
+}
+
+function formatarTempo(valor) {
+    return valor.toLocaleString("pt-BR", {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+    });
+}
+
+function atualizarResumo(lista) {
+    totalModelos.textContent = lista.length;
+
+    if (!lista.length) {
+        menorTempo.textContent = "-";
+        maiorTempo.textContent = "-";
+        return;
+    }
+
+    const tempos = lista.map(modelo => modelo.tempo);
+    menorTempo.textContent = formatarTempo(Math.min(...tempos));
+    maiorTempo.textContent = formatarTempo(Math.max(...tempos));
+}
+
+function ordenarModelos(lista) {
+    const ordenados = [...lista];
+
+    ordenados.sort((a, b) => {
+        if (sortMode === "maior") {
+            return b.tempo - a.tempo || a.nome.localeCompare(b.nome, "pt-BR");
+        }
+
+        if (sortMode === "menor") {
+            return a.tempo - b.tempo || a.nome.localeCompare(b.nome, "pt-BR");
+        }
+
+        return a.nome.localeCompare(b.nome, "pt-BR");
+    });
+
+    return ordenados;
+}
+
+function fecharMenuClassificacao() {
+    sortMenu.classList.remove("active");
+    sortButton.setAttribute("aria-expanded", "false");
+}
+
+function atualizarBotaoClassificacao() {
+    sortButton.textContent = `Classificar: ${sortLabels[sortMode]}`;
+
+    sortMenu.querySelectorAll("button").forEach(button => {
+        const active = button.dataset.sort === sortMode;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+    });
+}
+
+function renderizarModelos() {
+    const termo = normalizar(searchInput.value.trim());
+    const filtrados = modelos.filter(modelo => normalizar(modelo.nome).includes(termo));
+    const ordenados = ordenarModelos(filtrados);
+
+    atualizarResumo(filtrados);
+
+    if (!ordenados.length) {
+        modelosBody.innerHTML = `<tr class="empty-row"><td colspan="3">Nenhum modelo encontrado.</td></tr>`;
+        return;
+    }
+
+    modelosBody.innerHTML = ordenados.map(modelo => {
+        const paresHora = modelo.tempo > 0 ? Math.round(60 / modelo.tempo) : 0;
+
+        return `
+            <tr>
+                <td>${escaparHtml(modelo.nome)}</td>
+                <td class="numeric">${formatarTempo(modelo.tempo)}</td>
+                <td class="numeric optional-col">${paresHora}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+searchInput.addEventListener("input", renderizarModelos);
+sortButton.addEventListener("click", () => {
+    const isOpen = sortMenu.classList.toggle("active");
+    sortButton.setAttribute("aria-expanded", String(isOpen));
+});
+
+sortMenu.addEventListener("click", event => {
+    const button = event.target.closest("button[data-sort]");
+    if (!button) return;
+
+    sortMode = button.dataset.sort;
+    atualizarBotaoClassificacao();
+    fecharMenuClassificacao();
+    renderizarModelos();
+});
+
+document.addEventListener("click", event => {
+    if (!sortMenu.contains(event.target) && !sortButton.contains(event.target)) {
+        fecharMenuClassificacao();
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        fecharMenuClassificacao();
+    }
+});
+
+atualizarBotaoClassificacao();
+renderizarModelos();
+</script>
+</body>
+</html>

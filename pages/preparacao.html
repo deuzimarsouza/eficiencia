@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Produção</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="../src/icons/app-icon-192.png">
+<script defer src="../src/app-pwa.js"></script>
+<style>
+    @font-face {
+        font-family: "LufgaRegular";
+        src: url("../src/fonts/LufgaRegular.ttf");
+    }
+
+    :root {
+        /* TEMA DARK (Padrão) */
+        --bg-color: #000000;
+        --bg-gradient: radial-gradient(circle at 50% -20%, #1a1a1a, #000000);
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --input-bg: rgba(255, 255, 255, 0.05);
+        --border-color: rgba(255, 255, 255, 0.1);
+        
+        --text-primary: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        
+        --accent: #5C9AFF;
+        
+        --success: #10B981;
+        --danger: #F87171;
+        --danger-bg: rgba(248, 113, 113, 0.1);
+        --danger-border: rgba(248, 113, 113, 0.3);
+
+        --total-bg: rgba(92, 154, 255, 0.15);
+        --total-border: rgba(92, 154, 255, 0.2);
+
+        --option-bg: #111111;
+        --select-icon: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        --calendar-invert: invert(1);
+    }
+
+    [data-theme="light"] {
+        /* TEMA CLEAN (Light) */
+        --bg-color: #F8F9FA;
+        --bg-gradient: none;
+        --card-bg: #FFFFFF;
+        --input-bg: #FFFFFF;
+        --border-color: #E5E7EB;
+        
+        --text-primary: #111827;
+        --text-secondary: #6B7280;
+        
+        --accent: #2563EB; /* Azul mais forte para contraste no branco */
+        
+        --success: #059669;
+        --danger: #DC2626;
+        --danger-bg: #FEF2F2;
+        --danger-border: #FECACA;
+
+        --total-bg: #EFF6FF;
+        --total-border: #BFDBFE;
+
+        --option-bg: #FFFFFF;
+        --select-icon: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        --calendar-invert: invert(0);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "LufgaRegular", system-ui, -apple-system, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        background-image: var(--bg-gradient);
+        color: var(--text-primary);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 24px 16px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app-container {
+        width: 100%;
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 24px; /* Espaço para o botão de tema */
+    }
+
+    /* =========================================
+       BOTÃO DE TEMA
+       ========================================= */
+    .theme-toggle-btn {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1000;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+        transform: scale(1.05);
+        border-color: var(--accent);
+    }
+
+    /* =========================================
+       CARD PRINCIPAL (GLASSMORPHISM)
+       ========================================= */
+    .card {
+        background: var(--card-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 32px 24px;
+        border-radius: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .header {
+        text-align: center;
+    }
+
+    .header h2 {
+        color: var(--accent);
+        font-size: 22px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .header p {
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* =========================================
+       FILTROS (TURNO E DATA)
+       ========================================= */
+    .filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-group label {
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    select, input {
+        width: 100%;
+        height: 48px;
+        padding: 0 16px;
+        background: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        appearance: none;
+    }
+
+    select option {
+        background-color: var(--option-bg);
+        color: var(--text-primary);
+    }
+
+    select {
+        background-image: var(--select-icon);
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        cursor: pointer;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: var(--calendar-invert);
+        opacity: 0.6;
+        cursor: pointer;
+    }
+
+    select:focus, input:focus, select:hover, input:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.15);
+    }
+
+    .divider {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: 4px 0;
+    }
+
+    /* =========================================
+       LINHAS DE MODELOS
+       ========================================= */
+    #linhas-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .linha-modelo {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 12px;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================
+       TOTAL GERAL
+       ========================================= */
+    .total-box {
+        background: var(--total-bg);
+        border: 1px solid var(--total-border);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .total-box span:first-child {
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .total-box span:last-child {
+        color: var(--accent);
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    /* =========================================
+       BOTÕES DE AÇÃO
+       ========================================= */
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    button {
+        width: 100%;
+        height: 56px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    .btn-add {
+        background: var(--input-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-add:hover {
+        border-color: var(--accent);
+    }
+
+    .btn-remove {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border: 1px solid var(--danger-border);
+    }
+
+    .btn-save {
+        background: var(--success);
+        color: #FFFFFF;
+        border: none;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+    }
+
+    .btn-save:hover {
+        opacity: 0.9;
+    }
+
+    /* Padronizacao visual com as demais paginas */
+    :root,
+    [data-theme="light"] {
+        --bg-color: #000000;
+        --bg-gradient: none;
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --input-bg: rgba(255, 255, 255, 0.05);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --text-primary: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        --accent: #5C9AFF;
+        --success: #34D399;
+        --danger: #F87171;
+        --danger-bg: rgba(248, 113, 113, 0.1);
+        --danger-border: rgba(248, 113, 113, 0.3);
+        --total-bg: rgba(92, 154, 255, 0.15);
+        --total-border: rgba(92, 154, 255, 0.2);
+        --option-bg: #111111;
+        --calendar-invert: invert(1);
+    }
+
+    body {
+        display: block;
+        padding: 24px 24px 108px 24px;
+        background-image: none;
+    }
+
+    .app-container {
+        max-width: 480px;
+        min-height: 100vh;
+        margin: 0 auto;
+        gap: 16px;
+    }
+
+    .theme-toggle-btn,
+    .header,
+    .divider {
+        display: none;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 6px;
+    }
+
+    .page-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .page-title span {
+        color: var(--text-primary);
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .page-title small {
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .home-link {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        background: var(--input-bg);
+        text-decoration: none;
+        transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+    }
+
+    .home-link:hover,
+    .home-link:focus-visible {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--accent);
+    }
+
+    .home-link:active {
+        transform: scale(0.96);
+    }
+
+    .home-link svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--text-primary);
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        gap: 16px;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .section-title span {
+        color: var(--text-primary);
+        font-size: 15px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .section-title small {
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .filters,
+    .linha-modelo {
+        gap: 12px;
+    }
+
+    .linha-modelo {
+        grid-template-columns: minmax(0, 1fr) 96px;
+    }
+
+    .input-group label {
+        color: var(--text-secondary);
+        font-size: 11px;
+    }
+
+    select,
+    input {
+        height: 52px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        min-width: 0;
+    }
+
+    select:focus,
+    input:focus,
+    select:hover,
+    input:hover {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.2);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .total-box {
+        border-radius: 14px;
+        padding: 18px;
+        margin-top: 0;
+    }
+
+    .actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    button {
+        min-height: 56px;
+        height: auto;
+        padding: 0 12px;
+        border-radius: 14px;
+        font-size: 12px;
+    }
+
+    .btn-add {
+        background: var(--card-bg);
+    }
+
+    .btn-add:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-save {
+        box-shadow: 0 4px 16px rgba(52, 211, 153, 0.25);
+    }
+
+    .botoes-acao {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 480px;
+        background: #000000;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 12px 16px 20px 16px;
+        z-index: 100;
+    }
+
+    .botoes-acao button {
+        flex: 1;
+        height: 56px;
+        min-height: 56px;
+        font-size: 11px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        border-radius: 12px;
+        padding: 4px;
+        line-height: 1;
+        text-transform: uppercase;
+        box-shadow: none;
+        filter: none;
+    }
+
+    .botoes-acao button::before {
+        content: "";
+        width: 24px;
+        height: 24px;
+        display: block;
+        background: #FFFFFF;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-size: 24px 24px;
+        mask-size: 24px 24px;
+    }
+
+    .botoes-acao button:hover,
+    .botoes-acao button:focus-visible {
+        background-color: #000000;
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+    }
+
+    .botoes-acao .btn-add,
+    .botoes-acao .btn-save,
+    .botoes-acao .btn-remove,
+    .botoes-acao .btn-limpar {
+        box-shadow: none;
+    }
+
+    .btn-icon {
+        font-size: 0;
+    }
+
+    .btn-outline-red {
+        background: #000000;
+        color: #F87171;
+        border: 1px solid #1b1b1b;
+    }
+
+    .btn-outline-red::before {
+        -webkit-mask-image: url(../src/icons/trash.png);
+        mask-image: url(../src/icons/trash.png);
+    }
+
+    .btn-purple {
+        background: #000000;
+        color: #ffffff;
+        border: 1px solid #1b1b1b;
+    }
+
+    .btn-purple::before {
+        -webkit-mask-image: url(../src/icons/magic-wand.png);
+        mask-image: url(../src/icons/magic-wand.png);
+    }
+
+    .btn-green {
+        background: #000000;
+        color: #ffffff;
+        border: 1px solid #1b1b1b;
+    }
+
+    .btn-green::before {
+        -webkit-mask-image: url(../src/icons/disk.png);
+        mask-image: url(../src/icons/disk.png);
+    }
+
+    .btn-limpar {
+        background: #000000;
+        color: #F87171;
+        border: 1px solid #1b1b1b;
+    }
+
+    .btn-limpar::before {
+        -webkit-mask-image: url(../src/icons/mop.png);
+        mask-image: url(../src/icons/mop.png);
+    }
+
+    @media (max-width: 560px) {
+        body {
+            padding: 18px 18px 108px 18px;
+        }
+
+        .filters,
+        .actions {
+            grid-template-columns: 1fr;
+        }
+
+        .linha-modelo {
+            grid-template-columns: minmax(0, 1fr) 86px;
+            gap: 8px;
+        }
+    }
+
+</style>
+
+<script>
+    (function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+</script>
+
+</head>
+<body>
+
+<button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Alternar Tema"></button>
+
+<main class="app-container">
+    <header class="page-header">
+        <div class="page-title">
+            <span>Relat&oacute;rio de Produ&ccedil;&atilde;o</span>
+            <small>Prepara&ccedil;&atilde;o e cord&atilde;o - Leidiane</small>
+        </div>
+        <a class="home-link" href="../index.html" aria-label="Voltar para o inicio">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 11.5L12 4l9 7.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5.5 10.5V20h13v-9.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </header>
+
+    <div class="card">
+        <div class="section-title">
+            <span>Dados do relat&oacute;rio</span>
+            <small>Turno e data</small>
+        </div>
+
+        <div class="header">
+            <h2>RELATÓRIO DE PRODUÇÃO</h2>
+            <p>PREPARAÇÃO E CORDÃO • LEIDIANE</p>
+        </div>
+
+        <div class="filters">
+            <div class="input-group">
+                <label>TURNO</label>
+                <select id="turnoSelect">
+                    <option>1º TURNO</option>
+                    <option>2º TURNO</option>
+                    <option>3º TURNO</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>DATA</label>
+                <input type="date" id="dataInput">
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-title">
+            <span>Modelos</span>
+            <small>Pares</small>
+        </div>
+
+        <div id="linhas-container">
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="OLK. CORRE 5" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="2040" placeholder="0" aria-label="Quantidade de pares" oninput="calcularTotal()">
+            </div>
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="MIZ. TITAN 3" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="384" placeholder="0" aria-label="Quantidade de pares" oninput="calcularTotal()">
+            </div>
+            <div class="linha-modelo">
+                <input type="text" class="nome-input" value="OLK.CORRE TURBO" placeholder="Nome do modelo">
+                <input type="number" class="qtd-input" value="120" placeholder="0" aria-label="Quantidade de pares" oninput="calcularTotal()">
+            </div>
+        </div>
+
+        <div class="total-box">
+            <span>TOTAL GERAL</span>
+            <span id="total-geral">2544</span>
+        </div>
+    </div>
+
+    <div class="actions botoes-acao">
+        <button type="button" class="btn-outline-red btn-remove" aria-label="Remover ultima linha" title="Remover ultima linha" onclick="removerLinha()">
+            <span class="btn-icon"></span>
+        </button>
+        <button type="button" class="btn-purple btn-add" aria-label="Adicionar modelo" title="Adicionar modelo" onclick="adicionarLinha()">
+            <span class="btn-icon"></span>
+        </button>
+        <button type="button" class="btn-green btn-save" aria-label="Salvar alteracao" title="Salvar alteracao" onclick="salvarAlteracao()">
+            <span class="btn-icon"></span>
+        </button>
+        <button type="button" class="btn-limpar" aria-label="Limpar dados" title="Limpar dados" onclick="limparDadosPreparacao()">
+            <span class="btn-icon"></span>
+        </button>
+    </div>
+</main>
+<script>
+    const PREPARACAO_STORAGE_KEY = 'preparacao_relatorio';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Inicializa ícone do botão de tema
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        atualizarIconeBotao(currentTheme);
+
+        carregarDadosSalvos();
+        configurarPersistenciaAutomatica();
+        calcularTotal();
+        salvarDadosPreparacao();
+    });
+
+    // Lógica do Tema
+    function toggleTheme() {
+        const root = document.documentElement;
+        const currentTheme = root.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        atualizarIconeBotao(newTheme);
+    }
+
+    function atualizarIconeBotao(theme) {
+        const btn = document.getElementById('theme-toggle');
+        btn.innerHTML = theme === 'light' ? '🌙' : '☀️';
+    }
+
+    // Lógica de Negócio
+    function criarLinhaModelo(dados = {}) {
+        const linha = document.createElement('div');
+        linha.className = 'linha-modelo';
+
+        const nomeInput = document.createElement('input');
+        nomeInput.type = 'text';
+        nomeInput.className = 'nome-input';
+        nomeInput.placeholder = 'Nome do modelo';
+        nomeInput.value = dados.nome || '';
+
+        const qtdInput = document.createElement('input');
+        qtdInput.type = 'number';
+        qtdInput.className = 'qtd-input';
+        qtdInput.placeholder = '0';
+        qtdInput.setAttribute('aria-label', 'Quantidade de pares');
+        qtdInput.value = dados.quantidade || '';
+
+        linha.append(nomeInput, qtdInput);
+        return linha;
+    }
+
+    function configurarLinha(linha) {
+        if (linha.dataset.persistenciaConfigurada) return;
+
+        linha.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                calcularTotal();
+                salvarDadosPreparacao();
+            });
+        });
+
+        linha.dataset.persistenciaConfigurada = 'true';
+    }
+
+    function configurarPersistenciaAutomatica() {
+        document.getElementById('turnoSelect').addEventListener('change', salvarDadosPreparacao);
+        document.getElementById('dataInput').addEventListener('change', salvarDadosPreparacao);
+        document.querySelectorAll('.linha-modelo').forEach(configurarLinha);
+    }
+
+    function obterDadosPreparacao() {
+        const linhas = Array.from(document.querySelectorAll('.linha-modelo')).map(linha => ({
+            nome: linha.querySelector('.nome-input').value.trim(),
+            quantidade: linha.querySelector('.qtd-input').value
+        }));
+
+        return {
+            turno: document.getElementById('turnoSelect').value,
+            data: document.getElementById('dataInput').value,
+            total: document.getElementById('total-geral').innerText,
+            linhas
+        };
+    }
+
+    function salvarDadosPreparacao() {
+        localStorage.setItem(PREPARACAO_STORAGE_KEY, JSON.stringify(obterDadosPreparacao()));
+    }
+
+    function carregarDadosSalvos() {
+        const dataInput = document.getElementById('dataInput');
+        const hoje = new Date().toISOString().split('T')[0];
+        const dadosRaw = localStorage.getItem(PREPARACAO_STORAGE_KEY);
+
+        if (!dadosRaw) {
+            if (!dataInput.value) dataInput.value = hoje;
+            return;
+        }
+
+        try {
+            const dados = JSON.parse(dadosRaw);
+
+            if (dados.turno) {
+                document.getElementById('turnoSelect').value = dados.turno;
+            }
+
+            dataInput.value = dados.data || hoje;
+
+            if (Array.isArray(dados.linhas)) {
+                const container = document.getElementById('linhas-container');
+                container.innerHTML = '';
+                dados.linhas.forEach(item => {
+                    const linha = criarLinhaModelo(item);
+                    container.appendChild(linha);
+                });
+            }
+        } catch (error) {
+            localStorage.removeItem(PREPARACAO_STORAGE_KEY);
+            if (!dataInput.value) dataInput.value = hoje;
+        }
+    }
+
+    function calcularTotal() {
+        const inputsQtd = document.querySelectorAll('.qtd-input');
+        let total = 0;
+        
+        inputsQtd.forEach(input => {
+            const valor = parseInt(input.value) || 0;
+            total += valor;
+        });
+
+        document.getElementById('total-geral').innerText = total;
+    }
+
+    function adicionarLinha() {
+        const container = document.getElementById('linhas-container');
+        const novaLinha = criarLinhaModelo();
+        
+        container.appendChild(novaLinha);
+        configurarLinha(novaLinha);
+        calcularTotal();
+        salvarDadosPreparacao();
+        novaLinha.querySelector('.nome-input').focus();
+    }
+
+    function removerLinha() {
+        const container = document.getElementById('linhas-container');
+        if (container.children.length > 0) {
+            container.removeChild(container.lastElementChild);
+            calcularTotal();
+            salvarDadosPreparacao();
+        }
+    }
+
+    function salvarAlteracao() {
+        calcularTotal();
+        salvarDadosPreparacao();
+
+        const btn = document.querySelector('.btn-save');
+        btn.style.borderColor = '#34D399';
+
+        setTimeout(() => {
+            btn.style.borderColor = '';
+        }, 2000);
+    }
+
+    function limparDadosPreparacao() {
+        document.querySelectorAll('.qtd-input').forEach(input => {
+            input.value = '';
+        });
+        calcularTotal();
+        salvarDadosPreparacao();
+    }
+</script>
+
+</body>
+</html>
