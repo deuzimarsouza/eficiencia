@@ -2,9 +2,13 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Dashboard App</title>
-    <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard de Eficiência</title>
+    <link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="src/icons/app-icon-192.png">
+<script defer src="src/app-pwa.js"></script>
+<style>
         @font-face{
             font-family: "BricolageRegular";
             src: url("src/fonts/BricolageGrotesque-Regular.otf");
@@ -144,6 +148,13 @@
         .menu-box:hover {
             border-color: rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-box:focus-visible,
+        .tab-btn:focus-visible,
+        .action-btn:focus-visible,
+        .floating-menu-item:focus-visible {
+            box-shadow: 0 0 0 3px rgba(92, 154, 255, 0.35);
         }
 
         .menu-box svg {
@@ -324,6 +335,10 @@
             gap: 6px;
         }
 
+        .stat:empty {
+            display: none;
+        }
+
         .stat-label {
             font-size: 11px;
             font-weight: 700;
@@ -477,14 +492,14 @@
     <header>
         <div class="logo-box"></div>
 
-        <button id="menuBtn" class="menu-box">
+        <button id="menuBtn" class="menu-box" type="button" aria-label="Abrir menu" aria-controls="floatingMenu" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 6H20M4 12H20M4 18H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
     </header>
 
-    <div id="floatingMenu" class="floating-menu">
+    <div id="floatingMenu" class="floating-menu" aria-hidden="true">
         <a href="#" class="floating-menu-item">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M12 16V12M12 8H12.01" stroke-width="2" stroke-linecap="round"/></svg>
             Sobre
@@ -500,9 +515,9 @@
     </div>
 
     <nav class="tabs">
-        <button class="tab-btn active" data-target="producao">Produção</button>
-        <button class="tab-btn" data-target="mao-obra">Ferramentas</button>
-        <button class="tab-btn" data-target="area-tecnica">Área Técnica</button>
+        <button class="tab-btn active" type="button" data-target="producao" aria-selected="true">Produção</button>
+        <button class="tab-btn" type="button" data-target="mao-obra" aria-selected="false">Ferramentas</button>
+        <button class="tab-btn" type="button" data-target="area-tecnica" aria-selected="false">Área Técnica</button>
     </nav>
 
     <main>
@@ -520,37 +535,29 @@
                         </select>
                     </div>
                     <div class="stat">
-                        <button class="action-btn" onclick="fazerProjecao()">PROJETAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="fazerProjecao()">PROJETAR &#10140;</button>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2>Calculo de <span id="fast">Diferença</span></h2>
-                <p>Calcule e verifique o ganho e perda de uma linha em produção sem modificar na projeção diaria e com calculo rapido veja o resultado por linha.</p>
+                <h2>Cálculo de <span id="fast">Diferença</span></h2>
+                <p>Calcule ganhos e perdas de uma linha em produção sem alterar a projeção diária.</p>
                 <div class="card-footer">
+                    <div class="stat" aria-hidden="true"></div>
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/potencial-rapido.html')">CALCULAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="goTo('pages/potencial-rapido.html')">CALCULAR &#10140;</button>
                     </div>
                 </div>
             </div>
 
             <div class="card">
                 <h2>Produção Preparação</h2>
-                <p>Calcule o resultado geral produzido pelas linhas de preparação de forma rápida e intuitiva</p>
+                <p>Calcule o resultado geral produzido pelas linhas de preparação de forma rápida e intuitiva.</p>
                 <div class="card-footer">
+                    <div class="stat" aria-hidden="true"></div>
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/preparacao.html')">CALCULAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="goTo('pages/preparacao.html')">CALCULAR &#10140;</button>
                     </div>
                 </div>
             </div>
@@ -559,30 +566,22 @@
         <div id="mao-obra" class="tab-content">
             <div class="card">
                 <h2>Calculadora de Eficiência</h2>
-                <p>Verifique a eficiência do modelo por quantidade de M.O e Pares do Hora</p>
+                <p>Verifique a eficiência do modelo por quantidade de mão de obra e pares por hora.</p>
                 <div class="card-footer">
+                    <div class="stat" aria-hidden="true"></div>
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/calculadora-de-eficiencia.html')">VERIFICAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="goTo('pages/calculadora-de-eficiencia.html')">VERIFICAR &#10140;</button>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2>Absenteismo</h2>
-                <p>Controle de Faltas e Atestados dos Coolaboradores</p>
+                <h2>Absenteísmo</h2>
+                <p>Controle de faltas, atestados e advertências dos colaboradores.</p>
                 <div class="card-footer">
+                    <div class="stat" aria-hidden="true"></div>
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/absenteismo.html')">ATUALIZAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="goTo('pages/absenteismo.html')">ATUALIZAR &#10140;</button>
                     </div>
                 </div>
             </div>
@@ -591,31 +590,12 @@
 
         <div id="area-tecnica" class="tab-content">
             <div class="card">
-                <h2>Apontamento de Produção</h2>
-                <p>Consulte informações basicas dos modelos e distruição de pares por numerações.<br><br> EM DESENVOLVIMENTO</p>
-                <div class="card-footer">
-                    <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/apotamento.html')">CONSULTAR &#10140;</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
                 <h2>Modelos</h2>
-                <p>Consulte informações basicas dos modelos, componentes e suas respectivas areas de preparação.<br><br> EM DESENVOLVIMENTO</p>
+                <p>Consulte tempos cadastrados dos modelos e encontre rapidamente a referência usada nos cálculos.</p>
                 <div class="card-footer">
+                    <div class="stat" aria-hidden="true"></div>
                     <div class="stat">
-                        <select id="turnoSelectCalculadora" class="turn-select offline-select">
-                            <option>SEM FUNÇÃO</option>
-                        </select>
-                    </div>
-                    <div class="stat">
-                        <button class="action-btn" onclick="goTo('pages/modelos.html')">CONSULTAR &#10140;</button>
+                        <button class="action-btn" type="button" onclick="goTo('pages/modelos.html')">CONSULTAR &#10140;</button>
                     </div>
                 </div>
             </div>
@@ -637,7 +617,7 @@
                 splashScreen.style.display = 'none';
                 // Exibe o aplicativo principal
                 appContainer.style.display = 'block';
-            }, 100); // tempo para o fade out concluir
+            }, 500); // tempo para o fade out concluir
         }, 1000); 
     });
     // -----------------------------
@@ -647,10 +627,14 @@
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
             tabContents.forEach(content => content.classList.remove('active'));
 
             button.classList.add('active');
+            button.setAttribute('aria-selected', 'true');
 
             const targetId = button.getAttribute('data-target');
             document.getElementById(targetId).classList.add('active');
@@ -660,9 +644,15 @@
     const menuBtn = document.getElementById('menuBtn');
     const floatingMenu = document.getElementById('floatingMenu');
 
+    function setMenuOpen(isOpen) {
+        floatingMenu.classList.toggle('active', isOpen);
+        floatingMenu.setAttribute('aria-hidden', String(!isOpen));
+        menuBtn.setAttribute('aria-expanded', String(isOpen));
+    }
+
     menuBtn.addEventListener('click', (event) => {
         event.stopPropagation();
-        floatingMenu.classList.toggle('active');
+        setMenuOpen(!floatingMenu.classList.contains('active'));
     });
 
     document.addEventListener('click', (event) => {
@@ -670,7 +660,13 @@
         const isClickOnMenuBtn = menuBtn.contains(event.target);
 
         if (!isClickInsideMenu && !isClickOnMenuBtn) {
-            floatingMenu.classList.remove('active');
+            setMenuOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            setMenuOpen(false);
         }
     });
 
@@ -681,15 +677,6 @@
         
         setTimeout(() => {
             window.location.href = paginaDestino;
-        }, 150);
-    }
-
-    function fazerProjecaoRapida() {
-        const turnoSelecionadoRapido = document.getElementById('turnoSelectRapido').value;
-        const paginaDestinoRapido = `pages/potencial-rapido${turnoSelecionadoRapido}.html`;
-        
-        setTimeout(() => {
-            window.location.href = paginaDestinoRapido;
         }, 150);
     }
 
